@@ -11,4 +11,8 @@ public class ResolutionUnitAttribute extends Attribute<ResolutionUnit> {
         super(resolutionUnit);
     }
 
+    @Override
+    public Class<ResolutionUnit> getAttributeClass() {
+        return ResolutionUnit.class;
+    }
 }

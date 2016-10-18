@@ -18,4 +18,6 @@ public abstract class Attribute<T> {
         return attribute;
     }
 
+    public abstract Class<T> getAttributeClass();
+
 }

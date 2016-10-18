@@ -6,9 +6,11 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
+import rustycage.impl.AttributesStack;
 import rustycage.impl.renderer.AbstractCanvasRenderer;
 import rustycage.impl.renderer.RendererProvider;
 
@@ -25,21 +27,39 @@ public class RustyCageView extends View {
         OUTLINE_PAINT.setARGB(255,100,100,100);
     }
 
+    private static Paint DEFAULT_PAINT = new Paint();
+    static {
+        DEFAULT_PAINT.setARGB(255,30,30,30);
+    }
+
     private int width;
     private int height;
 
+    private final AttributesStack attributesStack = new AttributesStack();
+
+    private final DisplayMetrics displayMetrics = new DisplayMetrics();
+
     public RustyCageView(@NonNull Context context) {
         super(context);
+        initAttributeStack(attributesStack);
     }
 
     public RustyCageView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context,attrs);
+        initAttributeStack(attributesStack);
+    }
+
+
+    private static void initAttributeStack(@NonNull AttributesStack attributesStack) {
+        attributesStack.push(Paint.class,DEFAULT_PAINT);
+        attributesStack.push(ResolutionUnit.class,ResolutionUnit.PX);
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         if (DRAW_OUTLINE_FRAME) {
             int lx = 0;
             int rx = width -1;
@@ -51,12 +71,12 @@ public class RustyCageView extends View {
             canvas.drawLine(lx,by,lx,ty, OUTLINE_PAINT);
         }
 
-        Log.d(TAG,"rootNode = "+rootNode);
+        getDisplay().getMetrics(displayMetrics);
         if (rootNode != null) {
 
             AbstractCanvasRenderer<BaseNode> renderer = RendererProvider.getInstance().getRendererForNode(rootNode);
             Log.d(TAG,"renderer = "+renderer);
-            renderer.render(canvas,rootNode);
+            renderer.render(canvas,rootNode, attributesStack, displayMetrics);
         }
     }
 

@@ -3,8 +3,10 @@ package rustycage.impl.renderer;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 
 import rustycage.ImageNode;
+import rustycage.impl.AttributesStack;
 
 /**
  * Created by breh on 9/26/16.
@@ -12,7 +14,7 @@ import rustycage.ImageNode;
 public class ImageCanvasRenderer extends AbstractCanvasRenderer<ImageNode> {
 
     @Override
-    public void render(@NonNull Canvas canvas, @NonNull ImageNode node) {
+    public void render(@NonNull Canvas canvas, @NonNull ImageNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         Bitmap bitmap = node.getBitmap();
         if (bitmap != null) {
             canvas.drawBitmap(bitmap,node.getMatrix(),null);

@@ -13,4 +13,9 @@ public class PaintAttribute extends Attribute<Paint> {
     public PaintAttribute(@NonNull Paint attribute) {
         super(attribute);
     }
+
+    @Override
+    public Class<Paint> getAttributeClass() {
+        return Paint.class;
+    }
 }

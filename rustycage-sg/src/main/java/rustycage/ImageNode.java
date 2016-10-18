@@ -19,15 +19,18 @@ public final class ImageNode extends BaseNode {
 
     public final void setBitmap(@Nullable Bitmap bitmap) {
         this.bitmap = bitmap;
-        if (bitmap != null) {
-            setSize(bitmap.getWidth(),bitmap.getHeight());
-        } else {
-            setSize(0,0);
-        }
-        //
         markDirty();
     }
 
+    @Override
+    public float getWidth() {
+        return bitmap != null ? bitmap.getWidth() : 0;
+    }
+
+    @Override
+    public float getHeight() {
+        return bitmap != null ? bitmap.getHeight() : 0;
+    }
 
     public Bitmap getBitmap() {
         return bitmap;

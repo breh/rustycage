@@ -3,6 +3,7 @@ package rustycage;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import rustycage.impl.AttributesStack;
 import rustycage.util.Preconditions;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         } else {
             // find if there is an existing one of given type and replace
             int size = attributes.size();
-            Class<? extends Attribute> atributeClazz = attribute.getClass();
+            Class<T> atributeClazz = attribute.getAttributeClass();
             for (int i=0; i < size; i++) {
                 Attribute<?> existingAttribute = attributes.get(i);
                 if (existingAttribute.getClass().equals(atributeClazz)) {
@@ -78,12 +79,12 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         return false;
     }
 
-    public boolean removeAttribute(Class<? extends Attribute<?>> attributeClazz) {
+    public boolean removeAttribute(Class<?> attributeClazz) {
         Preconditions.assertNotNull(attributeClazz, "attributeClazz");
         if (attributes != null) {
             int size = attributes.size();
             for (int i=0; i < size; i++) {
-                if (attributes.get(i).getClass().equals(attributeClazz)) {
+                if (attributes.get(i).getAttributeClass().equals(attributeClazz)) {
                     attributes.remove(i);
                     return true;
                 }
@@ -91,6 +92,29 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         } // else
         return false;
     }
+
+    // FIXME - should not be public
+    public void pushAttributes(@NonNull AttributesStack attributesStack) {
+        if (attributes != null) {
+            int size = attributes.size();
+            for (int i = 0; i < size; i++) {
+                Attribute attr = attributes.get(i);
+                attributesStack.push(attr.getAttributeClass(),attr.getAttribute());
+            }
+        }
+    }
+
+    // FIXME - should not be public
+    public void popAttributes(@NonNull AttributesStack attributesStack) {
+        if (attributes != null) {
+            int size = attributes.size();
+            for (int i = 0; i < size; i++) {
+                Attribute attr = attributes.get(i);
+                attributesStack.pop(attr.getAttributeClass());
+            }
+        }
+    }
+
 
     public int size() {
         return nodes.size();
@@ -112,5 +136,13 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         }
     }
 
+    @Override
+    public float getWidth() {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public float getHeight() {
+        throw new UnsupportedOperationException();
+    }
 }

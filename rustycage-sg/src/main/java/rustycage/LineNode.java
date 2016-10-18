@@ -48,14 +48,6 @@ public final class LineNode extends ShapeNode {
         markDirty();
     }
 
-    public float getX2() {
-        return x2;
-    }
-
-    public float getY2() {
-        return y2;
-    }
-
     public float getX1() {
         return x1;
     }
@@ -64,4 +56,22 @@ public final class LineNode extends ShapeNode {
         return y1;
     }
 
+    public float getX2() {
+        return x2;
+    }
+
+    public float getY2() {
+        return y2;
+    }
+
+
+    @Override
+    public float getWidth() {
+        return Math.abs(x2 - x1);
+    }
+
+    @Override
+    public float getHeight() {
+        return Math.abs(y2 - y1);
+    }
 }

@@ -16,8 +16,6 @@ public abstract class BaseNode {
 
     private float bl,br,bt,bb;
 
-    private float width, height;
-
     private Matrix matrix;
     private static final Matrix IDENTIY_MATRIX = new Matrix();
 
@@ -69,9 +67,10 @@ public abstract class BaseNode {
         return py;
     }
 
+
     protected float getActualPivotX() {
         if (Float.isNaN(px)) {
-            return width / 2f;
+            return getWidth() / 2f;
         } else {
             return px;
         }
@@ -79,7 +78,7 @@ public abstract class BaseNode {
 
     protected float getActualPivotY() {
         if (Float.isNaN(py)) {
-            return height / 2f;
+            return getHeight() / 2f;
         } else {
             return py;
         }
@@ -130,29 +129,17 @@ public abstract class BaseNode {
         return bb;
     }
 
-    public final float getWidth() {
-        return br-bl;
-    }
-    public final float getHeight() {
-        return bb-bt;
-    }
+    public abstract float getWidth();
+
+    public abstract float getHeight();
 
 
+    /*
     protected final void setSize(float width, float height) {
         this.width = width;
         this.height = height;
         markDirty();
-    }
-
-    protected final void setWidth(float width) {
-        this.width = width;
-        markDirty();
-    }
-
-    protected final void setHeight(float height) {
-        this.height = height;
-        markDirty();
-    }
+    }*/
 
     private void computeMatrix() {
         if (matrix == null) {
