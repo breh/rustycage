@@ -1,6 +1,7 @@
 package rustycage;
 
 import android.graphics.Matrix;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -16,6 +17,8 @@ public abstract class BaseNode {
 
     private float bl,br,bt,bb;
 
+    private String id;
+
     private Matrix matrix;
     private static final Matrix IDENTIY_MATRIX = new Matrix();
 
@@ -26,23 +29,31 @@ public abstract class BaseNode {
 
     }
 
-    public final void translate(float tx, float ty) {
+    public @Nullable String getId() {
+        return id;
+    }
+
+    public void setId(@Nullable String id) {
+        this.id = id;
+    }
+
+    public final void setTranslation(float tx, float ty) {
         this.tx = tx;
         this.ty = ty;
         markDirty();
     }
 
-    public final void scale(float s) {
-        scale(s,s);
+    public final void setScale(float s) {
+        setScale(s,s);
     }
 
-    public final void scale(float sx, float sy) {
+    public final void setScale(float sx, float sy) {
         this.sx = sx;
         this.sy = sy;
         markDirty();
     }
 
-    public final void rotate(float r) {
+    public final void setRotation(float r) {
         this.r = r;
         markDirty();
     }
@@ -167,6 +178,52 @@ public abstract class BaseNode {
     final void setParent(@Nullable GroupNode parent) {
         this.parent = parent;
         markDirty();
+    }
+
+
+    public static abstract class Builder<B extends Builder<B,N>, N extends BaseNode> {
+
+        private final N node;
+
+        protected Builder(@NonNull N node) {
+            this.node = node;
+        }
+
+        protected @NonNull N getNode() {
+            return node;
+        }
+
+        @SuppressWarnings("unchecked")
+        protected final B getBuilder() {
+            return (B)this;
+        }
+
+        public final B txy(float x, float y) {
+            getNode().setTranslation(x,y);
+            return getBuilder();
+        }
+
+        public final B r(float r) {
+            getNode().setRotation(r);
+            return getBuilder();
+        }
+
+        public final B s(float s) {
+            getNode().setScale(s);
+            return getBuilder();
+        }
+
+        public final B id(@NonNull String id) {
+            getNode().setId(id);
+            return getBuilder();
+        }
+
+
+        public final N build() {
+            return node;
+        }
+
+
     }
 
 }

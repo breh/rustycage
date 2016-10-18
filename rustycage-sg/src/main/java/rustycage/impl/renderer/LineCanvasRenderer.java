@@ -23,7 +23,7 @@ public class LineCanvasRenderer extends ShapeCanvasRenderer<LineNode> {
         Paint paint = attributes.get(Paint.class);
 
         float x1 = node.getX1();
-        float y1 = node.getX1();
+        float y1 = node.getY1();
         float x2 = node.getX2();
         float y2 = node.getY2();
 
@@ -36,7 +36,7 @@ public class LineCanvasRenderer extends ShapeCanvasRenderer<LineNode> {
             y2 = TypedValue.applyDimension(typedValue, y2, displayMetrics);
         }
 
-        Log.d(TAG,"rendering line: "+node+" w:"+node.getX2()+", h:"+node.getY2()+", paint: "+paint);
+        Log.d(TAG,"rendering line: "+node+" xy1:["+x1+","+y1+"], xy2:["+x2+","+y2+"], paint: "+paint);
         canvas.drawLine(x1,y1,x2,y2,paint);
     }
 }

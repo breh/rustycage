@@ -35,4 +35,18 @@ public abstract class ShapeNode extends BaseNode {
             attributesStack.pop(Paint.class);
         }
     }
+
+
+    public static abstract class Builder<B extends Builder<B,N>, N extends ShapeNode> extends BaseNode.Builder<B,N> {
+
+        protected Builder(@NonNull N node) {
+            super(node);
+        }
+
+        public B paint(@NonNull Paint paint) {
+            getNode().setPaint(paint);
+            return getBuilder();
+        }
+
+    }
 }

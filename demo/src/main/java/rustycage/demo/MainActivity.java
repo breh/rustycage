@@ -10,6 +10,8 @@ import rustycage.PaintAttribute;
 import rustycage.RectangleNode;
 import rustycage.RustyCageView;
 
+import java.security.acl.Group;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -18,10 +20,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
 
-        LineNode ln = new LineNode(50,50,400,400);
-        RectangleNode rn1 = new RectangleNode(30,530,700,700);
-
-        RectangleNode rn2 = new RectangleNode(530,930,1200,1200);
         Paint redPaint = new Paint();
         redPaint.setARGB(255,255,0,0);
         redPaint.setStrokeWidth(3);
@@ -30,13 +28,6 @@ public class MainActivity extends AppCompatActivity {
         Paint greenPaint = new Paint();
         greenPaint.setARGB(255,0,255,0);
 
-        ln.setPaint(redPaint);
-        rn1.setPaint(redPaint);
-
-        GroupNode gn1 = new GroupNode();
-        gn1.addNode(ln);
-        gn1.addNode(rn1);
-        gn1.addNode(rn2);
 
         GroupNode gn2 = new GroupNode();
         for (int i=0; i < 100; i++) {
@@ -45,11 +36,17 @@ public class MainActivity extends AppCompatActivity {
         }
         gn2.setAttribute(new PaintAttribute(greenPaint));
 
+        GroupNode gn = GroupNode.create()
+                .add(GroupNode.create()
+                    .add(LineNode.createWithPoints(50,50,400,400).paint(redPaint))
+                    .add(LineNode.createWithSize(700,400,400,100).paint(redPaint))
+                    .add(RectangleNode.createWithSize(30,530,500,300))
+                    .add(RectangleNode.createWithSize(530,930,500,300).paint(redPaint))
+                )
+                .add(gn2)
+                .build();
 
-        GroupNode gnx = new GroupNode();
-        gnx.addNode(gn1);
-        gnx.addNode(gn2);
-        rcView.setRootNode(gnx);
+        rcView.setRootNode(gn);
         rcView.invalidate();
     }
 

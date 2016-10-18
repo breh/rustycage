@@ -24,7 +24,7 @@ public class RectangleCanvasRenderer extends ShapeCanvasRenderer<RectangleNode> 
         Paint paint = attributes.get(Paint.class);
 
         float x1 = node.getX1();
-        float y1 = node.getX1();
+        float y1 = node.getY1();
         float x2 = node.getX2();
         float y2 = node.getY2();
 
@@ -37,7 +37,7 @@ public class RectangleCanvasRenderer extends ShapeCanvasRenderer<RectangleNode> 
             y2 = TypedValue.applyDimension(typedValue, y2, displayMetrics);
         }
 
-        Log.d(TAG,"rendering rectangle: "+node+" w:"+node.getX2()+", h:"+node.getY2()+", paint: "+paint);
-        canvas.drawRect(x1,x2,y1,y2,paint);
+        Log.d(TAG,"rendering rectangle: "+node+" xy1:["+x1+","+y1+"], xy2:["+x2+","+y2+"], paint: "+paint);
+        canvas.drawRect(x1,y1,x2,y2,paint);
     }
 }

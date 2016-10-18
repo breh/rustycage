@@ -26,6 +26,9 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
 
     public void addNode(@NonNull BaseNode node) {
         Preconditions.assertNotNull(node,"node");
+        if (node.getParent() != null) {
+            throw new IllegalStateException("Node has already parent. Node: "+node+", parent: "+node.getParent());
+        }
         node.setParent(this);
         nodes.add(node);
         markDirty();
@@ -34,12 +37,16 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     public boolean removeNode(@NonNull BaseNode node) {
         Preconditions.assertNotNull(node,"node");
         boolean removed = nodes.remove(node);
+        if (removed) {
+            node.setParent(null);
+        }
         markDirty();
         return removed;
     }
 
     public void addNode(int index, @NonNull BaseNode node) {
         Preconditions.assertNotNull(node,"node");
+        node.setParent(this);
         nodes.add(index,node);
         markDirty();
     }
@@ -145,4 +152,45 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     public float getHeight() {
         throw new UnsupportedOperationException();
     }
+
+
+
+    public static Builder create() {
+        return new Builder();
+    }
+
+
+    public static class Builder extends BaseNode.Builder<Builder,GroupNode> {
+
+        private Builder() {
+            super(new GroupNode());
+        }
+
+
+        public Builder add(@NonNull BaseNode node) {
+            getNode().addNode(node);
+            return getBuilder();
+        }
+
+        public Builder add(@NonNull BaseNode... nodes) {
+            for (BaseNode node: nodes) {
+                getNode().addNode(node);
+            }
+            return getBuilder();
+        }
+
+        public Builder add(@NonNull BaseNode.Builder<?,?> nodeBuilder) {
+            getNode().addNode(nodeBuilder.build());
+            return getBuilder();
+        }
+
+        public Builder add(@NonNull BaseNode.Builder<?,?>... nodeBuilders) {
+            for (BaseNode.Builder<?,?> nodeBuilder: nodeBuilders) {
+                getNode().addNode(nodeBuilder.build());
+            }
+            return getBuilder();
+        }
+
+    }
+
 }

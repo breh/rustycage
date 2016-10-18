@@ -74,4 +74,20 @@ public final class LineNode extends ShapeNode {
     public float getHeight() {
         return Math.abs(y2 - y1);
     }
+
+
+    public static Builder createWithPoints(float x1, float y1, float x2, float y2) {
+        return new Builder(x1,y1,x2,y2);
+    }
+
+    public static Builder createWithSize(float x1, float y1, float width, float height) {
+        return new Builder(x1,y1,x1+width,y1+height);
+    }
+
+
+    public static class Builder extends ShapeNode.Builder<Builder,LineNode> {
+        private Builder(float x1, float y1, float x2, float y2) {
+            super(new LineNode(x1,y1,x2,y2));
+        }
+    }
 }
