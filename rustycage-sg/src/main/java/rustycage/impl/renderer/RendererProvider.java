@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import rustycage.BaseNode;
+import rustycage.EllipseNode;
 import rustycage.GroupNode;
 import rustycage.ImageNode;
 import rustycage.LineNode;
@@ -26,6 +27,7 @@ public class RendererProvider {
         registerRenderer(GroupNode.class, new GroupCanvasRenderer());
         registerRenderer(LineNode.class,new LineCanvasRenderer());
         registerRenderer(RectangleNode.class,new RectangleCanvasRenderer());
+        registerRenderer(EllipseNode.class, new EllipseCanvasRenderer());
     }
 
     private static class Holder {

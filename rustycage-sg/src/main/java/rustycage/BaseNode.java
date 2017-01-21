@@ -20,7 +20,7 @@ public abstract class BaseNode {
     private String id;
 
     private Matrix matrix;
-    private static final Matrix IDENTIY_MATRIX = new Matrix();
+    private static final Matrix IDENTITY_MATRIX = new Matrix();
 
     private boolean dirty;
 
@@ -161,7 +161,7 @@ public abstract class BaseNode {
 
     public Matrix getMatrix() {
         if (matrix == null) {
-            return IDENTIY_MATRIX;
+            return IDENTITY_MATRIX;
         } else {
             return matrix;
         }

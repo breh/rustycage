@@ -8,16 +8,13 @@ public final class RectangleNode extends ShapeNode {
 
     private float x1, y1, x2, y2;
 
-    public RectangleNode(float x1, float y1, float x2, float y2) {
+    private RectangleNode(float x1, float y1, float x2, float y2) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
     }
 
-    public RectangleNode(float x2, float y2) {
-        this(0,0,x2,y2);
-    }
 
     public void setPoints(float x1, float y1, float x2, float y2) {
         this.x1 = x1;
@@ -79,6 +76,10 @@ public final class RectangleNode extends ShapeNode {
 
     public static Builder createWithSize(float x1, float y1, float width, float height) {
         return new Builder(x1,y1,x1+width,y1+height);
+    }
+
+    public static Builder createWithSize(float width, float height) {
+        return new Builder(0,0,width,height);
     }
 
 

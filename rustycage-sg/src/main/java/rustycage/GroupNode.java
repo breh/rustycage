@@ -191,6 +191,11 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
             return getBuilder();
         }
 
+        public Builder attribute(@NonNull Attribute<?> attribute) {
+            getNode().setAttribute(attribute);
+            return getBuilder();
+        }
+
     }
 
 }
