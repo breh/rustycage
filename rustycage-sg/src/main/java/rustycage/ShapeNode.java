@@ -23,18 +23,19 @@ public abstract class ShapeNode extends BaseNode {
     }
 
     // FIXME - should not be public
+    /*
     public void pushAttributes(@NonNull AttributesStack attributesStack) {
         if (paint != null) {
             attributesStack.push(Paint.class,paint);
         }
-    }
+    }*/
 
     // FIXME - should not be public
-    public void popAttributes(@NonNull AttributesStack attributesStack) {
+    /*public void popAttributes(@NonNull AttributesStack attributesStack) {
         if (paint != null) {
             attributesStack.pop(Paint.class);
         }
-    }
+    }*/
 
 
     public static abstract class Builder<B extends Builder<B,N>, N extends ShapeNode> extends BaseNode.Builder<B,N> {

@@ -1,5 +1,7 @@
 package rustycage;
 
+import android.util.Log;
+
 /**
  * Created by breh on 9/9/16.
  */

@@ -64,11 +64,13 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
                 Attribute<?> existingAttribute = attributes.get(i);
                 if (existingAttribute.getClass().equals(atributeClazz)) {
                     attributes.set(i,attribute);
+                    markDirty();
                     return (Attribute<T>)existingAttribute;
                 }
             } // else just add the attribute at the end
             attributes.add(attribute);
         }
+        markDirty();
         return null;
     }
 
@@ -79,10 +81,12 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
             for (int i=0; i < size; i++) {
                 if (attributes.get(i).equals(attribute)) {
                     attributes.remove(i);
+                    markDirty();
                     return true;
                 }
             }
         } // else
+        markDirty();
         return false;
     }
 
@@ -92,11 +96,13 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
             int size = attributes.size();
             for (int i=0; i < size; i++) {
                 if (attributes.get(i).getAttributeClass().equals(attributeClazz)) {
+                    markDirty();
                     attributes.remove(i);
                     return true;
                 }
             }
         } // else
+        markDirty();
         return false;
     }
 
@@ -153,7 +159,17 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         throw new UnsupportedOperationException();
     }
 
-
+    @Override
+    void clearDirty() {
+        if (isDirty()) {
+            super.clearDirty();
+            int size = nodes.size();
+            for (int i=0; i < size; i++) {
+                BaseNode n = nodes.get(i);
+                n.clearDirty();
+            }
+        }
+    }
 
     public static Builder create() {
         return new Builder();

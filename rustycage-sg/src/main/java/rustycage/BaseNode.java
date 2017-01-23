@@ -3,11 +3,14 @@ package rustycage;
 import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by breh on 9/9/16.
  */
 public abstract class BaseNode {
+
+    private static final String TAG = "BaseNode";
 
     private float tx,ty;
     private float sx = 1f,sy = 1f;
@@ -117,8 +120,27 @@ public abstract class BaseNode {
 
 
     protected final void markDirty() {
-        dirty = true;
+        if (!dirty) {
+            dirty = true;
+            if (parent != null) {
+                if (!parent.isDirty()) {
+                    parent.markDirty();
+                }
+            }
+            onMarkedDirty();
+        }
     }
+
+    void onMarkedDirty() {
+    }
+
+
+    void clearDirty() {
+        if (dirty) {
+            dirty = false;
+        }
+    }
+
 
     protected final boolean isDirty() {
         return dirty;
@@ -145,13 +167,6 @@ public abstract class BaseNode {
     public abstract float getHeight();
 
 
-    /*
-    protected final void setSize(float width, float height) {
-        this.width = width;
-        this.height = height;
-        markDirty();
-    }*/
-
     private void computeMatrix() {
         if (matrix == null) {
             matrix = new Matrix();
@@ -169,15 +184,14 @@ public abstract class BaseNode {
 
 
 
-    private GroupNode parent;
+    private BaseNode parent;
 
-    public final @Nullable GroupNode getParent() {
+    public final @Nullable BaseNode getParent() {
         return parent;
     }
 
-    final void setParent(@Nullable GroupNode parent) {
+    final void setParent(@Nullable BaseNode parent) {
         this.parent = parent;
-        markDirty();
     }
 
 
@@ -227,3 +241,6 @@ public abstract class BaseNode {
     }
 
 }
+
+
+

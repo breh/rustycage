@@ -37,7 +37,7 @@ public class RectangleCanvasRenderer extends ShapeCanvasRenderer<RectangleNode> 
             y2 = TypedValue.applyDimension(typedValue, y2, displayMetrics);
         }
 
-        Log.d(TAG,"rendering rectangle: "+node+" xy1:["+x1+","+y1+"], xy2:["+x2+","+y2+"], paint: "+paint);
+        //Log.d(TAG,"rendering rectangle: "+node+" xy1:["+x1+","+y1+"], xy2:["+x2+","+y2+"], paint: "+paint);
         canvas.drawRect(x1,y1,x2,y2,paint);
     }
 }

@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.transition.Scene;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,6 +35,9 @@ public class RustyCageView extends View {
 
     private int width;
     private int height;
+
+    private SceneNode sceneNode;
+
 
     private final AttributesStack attributesStack = new AttributesStack();
 
@@ -71,12 +75,14 @@ public class RustyCageView extends View {
             canvas.drawLine(lx,by,lx,ty, OUTLINE_PAINT);
         }
 
-        getDisplay().getMetrics(displayMetrics);
-        if (rootNode != null) {
+        if (sceneNode != null) {
+            BaseNode rootNode = sceneNode.getSceneDelegate();
+
+            getDisplay().getMetrics(displayMetrics);
 
             AbstractCanvasRenderer<BaseNode> renderer = RendererProvider.getInstance().getRendererForNode(rootNode);
-            Log.d(TAG,"renderer = "+renderer);
-            renderer.render(canvas,rootNode, attributesStack, displayMetrics);
+            renderer.render(canvas, rootNode, attributesStack, displayMetrics);
+            sceneNode.clearDirty();
         }
     }
 
@@ -86,11 +92,56 @@ public class RustyCageView extends View {
         this.height = h;
     }
 
-    private BaseNode rootNode;
-
 
     public void setRootNode(@Nullable BaseNode rootNode) {
-        this.rootNode = rootNode;
+        if (rootNode != null) {
+            sceneNode = new SceneNode(rootNode);
+        } else {
+            sceneNode = null;
+        }
         invalidate();
     }
+
+
+    private class SceneNode extends BaseNode {
+
+
+        private BaseNode sceneDelegate;
+
+        public SceneNode(@NonNull BaseNode sceneDelegate) {
+            this.sceneDelegate = sceneDelegate;
+            this.sceneDelegate.setParent(this);
+        }
+
+        public @NonNull BaseNode getSceneDelegate() {
+            return sceneDelegate;
+        }
+
+        @Override
+        void onMarkedDirty() {
+            //Log.d(TAG,"SceneNode invalidated");
+            RustyCageView.this.invalidate();
+        }
+
+        @Override
+        void clearDirty() {
+            //if (isDirty()) {
+                super.clearDirty();
+                if (sceneDelegate.isDirty()) {
+                    sceneDelegate.clearDirty();
+                }
+            //}
+        }
+
+        @Override
+        public float getWidth() {
+            return sceneDelegate.getWidth();
+        }
+
+        @Override
+        public float getHeight() {
+            return sceneDelegate.getHeight();
+        }
+    }
+
 }

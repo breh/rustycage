@@ -39,7 +39,7 @@ public class EllipseCanvasRenderer extends ShapeCanvasRenderer<EllipseNode> {
             ry = TypedValue.applyDimension(typedValue, ry, displayMetrics);
         }
 
-        Log.d(TAG,"rendering ellipse: "+node+" cxy:["+cx+","+cy+"], rxy:["+rx+","+ry+"], paint: "+paint);
+        //Log.d(TAG,"rendering ellipse: "+node+" cxy:["+cx+","+cy+"], rxy:["+rx+","+ry+"], paint: "+paint);
         canvas.drawOval(cx-rx, cy-ry, cx+rx, cy+ry, paint);
     }
 }

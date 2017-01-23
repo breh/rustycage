@@ -9,6 +9,7 @@ import rustycage.GroupNode;
 import rustycage.ImageNode;
 import rustycage.LineNode;
 import rustycage.RectangleNode;
+import rustycage.TextNode;
 import rustycage.util.Preconditions;
 
 import java.util.HashMap;
@@ -28,6 +29,7 @@ public class RendererProvider {
         registerRenderer(LineNode.class,new LineCanvasRenderer());
         registerRenderer(RectangleNode.class,new RectangleCanvasRenderer());
         registerRenderer(EllipseNode.class, new EllipseCanvasRenderer());
+        registerRenderer(TextNode.class, new TextCanvasRenderer());
     }
 
     private static class Holder {
