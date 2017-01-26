@@ -18,12 +18,9 @@ public abstract class BaseNode {
 
     private float px = Float.NaN, py = Float.NaN;
 
-    private float bl,br,bt,bb;
-
     private String id;
 
     private Matrix matrix;
-    private static final Matrix IDENTITY_MATRIX = new Matrix();
 
     private boolean dirty;
 
@@ -40,10 +37,24 @@ public abstract class BaseNode {
         this.id = id;
     }
 
+    public final void setTranslationX(float tx) {
+        this.tx = tx;
+        markDirty();
+        markMatrixDirty();
+    }
+
+    public final void setTranslationY(float ty) {
+        this.ty = ty;
+        markDirty();
+        markMatrixDirty();
+    }
+
+
     public final void setTranslation(float tx, float ty) {
         this.tx = tx;
         this.ty = ty;
         markDirty();
+        markMatrixDirty();
     }
 
     public final void setScale(float s) {
@@ -54,23 +65,27 @@ public abstract class BaseNode {
         this.sx = sx;
         this.sy = sy;
         markDirty();
+        markMatrixDirty();
     }
 
     public final void setRotation(float r) {
         this.r = r;
         markDirty();
+        markMatrixDirty();
     }
 
     public void setPivot(float px, float py) {
         this.px = px;
         this.py = py;
         markDirty();
+        markMatrixDirty();
     }
 
     public void resetPivot() {
         this.px = Float.NaN;
         this.py = Float.NaN;
         markDirty();
+        markMatrixDirty();
     }
 
     public float getPivotX() {
@@ -146,40 +161,41 @@ public abstract class BaseNode {
         return dirty;
     }
 
-    public final float getLeft() {
-        return bl;
-    }
+    public abstract float getLeft();
 
-    public final float getRight() {
-        return br;
-    }
+    public abstract float getRight();
 
-    public final float getTop() {
-        return bt;
-    }
+    public abstract float getTop();
 
-    public final float getBottom() {
-        return bb;
-    }
+    public abstract float getBottom();
+
+    // size
 
     public abstract float getWidth();
 
     public abstract float getHeight();
 
 
-    private void computeMatrix() {
-        if (matrix == null) {
-            matrix = new Matrix();
+    private void markMatrixDirty() {
+        matrix = null;
+    }
+
+    private Matrix computeMatrix() {
+        if (tx == 0 && ty == 0 && r == 0 && sx == 1 && sy == 1) {
+            return null; // no matrix needed
+        } // else
+        Matrix m = new Matrix();
+        if (tx != 0 || ty != 0) {
+            m.postTranslate(tx, ty);
         }
-        matrix.setTranslate(tx,ty);
+        return m;
     }
 
     public Matrix getMatrix() {
         if (matrix == null) {
-            return IDENTITY_MATRIX;
-        } else {
-            return matrix;
+            matrix = computeMatrix();
         }
+        return matrix;
     }
 
 
@@ -192,6 +208,7 @@ public abstract class BaseNode {
 
     final void setParent(@Nullable BaseNode parent) {
         this.parent = parent;
+        markMatrixDirty();;
     }
 
 

@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 Color.argb(255,200,200,200), Color.BLACK, Shader.TileMode.MIRROR));
 
 
-        GroupNode gn2 = new GroupNode();
+        GroupNode gn2 = GroupNode.create().build();
         for (int i=0; i < 100; i++) {
             gn2.addNode(LineNode.createWithPoints(300+i*5,500,300+i*5,600).build());
         }
@@ -68,15 +68,14 @@ public class MainActivity extends AppCompatActivity {
                         .add(RectangleNode.createWithSize(530,930,500,300).paint(greenPaint))
                 )
                 .add(gn2)
-                .add(EllipseNode.createCircle(400,400,200).paint(circularGradient))
-                .add(EllipseNode.createEllipse(300,800,200,100))
+                .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient))
+                .add(EllipseNode.createEllipse(200,100,300,800))
                 .add(TextNode.create("XXXX").textPaint(textPaint).xy(50,50))
                 .attribute(new PaintAttribute(bluePaint))
                 .build();
 
 
-        GroupNode groot = new GroupNode();
-        groot.addNode(gn);
+        GroupNode groot = GroupNode.create().add(gn).build();
 
         ObjectAnimator oa = new ObjectAnimator();
         oa.setTarget(line1);
@@ -90,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static final float GAUGE_CENTER_X = 400;
-    private static final float GAUGE_CENTER_Y = 400;
     private static final float GAUGE_SIZE = 350;
 
     public BaseNode createGauge() {
@@ -100,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         circularGradient.setColor(Color.BLACK);
         circularGradient.setStrokeWidth(1);
         circularGradient.setStyle(Paint.Style.FILL_AND_STROKE);
-        circularGradient.setShader(new RadialGradient(GAUGE_CENTER_X, GAUGE_CENTER_Y, GAUGE_SIZE,
+        circularGradient.setShader(new RadialGradient(0, 0, GAUGE_SIZE,
                 Color.argb(255,150,150,150), Color.BLACK, Shader.TileMode.MIRROR));
 
 
@@ -111,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
         whitePaint.setTextAlign(Paint.Align.CENTER);
 
 
-        GroupNode root = GroupNode.create()
-                .add(EllipseNode.createCircle(GAUGE_CENTER_X,GAUGE_CENTER_Y,GAUGE_SIZE).paint(circularGradient))
+        GroupNode gauge = GroupNode.create()
+                .add(EllipseNode.createCircle(GAUGE_SIZE).paint(circularGradient))
                 .build();
 
 
@@ -121,12 +118,24 @@ public class MainActivity extends AppCompatActivity {
             String text = Integer.toString(i*10);
             // compute position
             double angle = i / 3.0 - Math.toRadians(270);
-            float x = (float)(size * Math.cos(angle) + GAUGE_CENTER_X);
-            float y = (float)(size * Math.sin(angle) + GAUGE_CENTER_Y + 10);
-            root.addNode(TextNode.create(text,x,y).build());
+            float x = (float)(size * Math.cos(angle));
+            float y = (float)(size * Math.sin(angle) + 10);
+            gauge.addNode(TextNode.create(text,x,y).build());
         }
 
-        root.setAttribute(new PaintAttribute(whitePaint));
+        gauge.setAttribute(new PaintAttribute(whitePaint));
+        gauge.setTranslation(500,500);
+
+        GroupNode root = GroupNode.create().add(gauge).build();
+
+
+        ObjectAnimator oa = new ObjectAnimator();
+        oa.setTarget(root);
+        oa.setPropertyName("translationY");
+        oa.setDuration(1000);
+        oa.setStartDelay(1000);
+        oa.setFloatValues(0,600);
+        oa.start();
 
         return root;
     }

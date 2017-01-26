@@ -1,5 +1,6 @@
 package rustycage;
 
+import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -18,9 +19,10 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     private final List<BaseNode> nodes = new ArrayList<>();
     private List<Attribute<?>> attributes;
 
+    // bounds
+    private final float[] bounds = new float[4];
 
-    public GroupNode() {
-
+    protected GroupNode() {
     }
 
 
@@ -149,6 +151,8 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         }
     }
 
+    // bounds
+
     @Override
     public float getWidth() {
         throw new UnsupportedOperationException();
@@ -157,6 +161,54 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     @Override
     public float getHeight() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void onMarkedDirty() {
+        bounds[0] = Float.NaN;
+    }
+
+    private void recomputeBoundsWhenDirty() {
+        if (Float.NaN == bounds[0]) {
+            // need to recompute bounds
+            int size = nodes.size();
+            for (int i=0; i < size; i++) {
+                BaseNode child = nodes.get(i);
+                float cbl = child.getLeft();
+                float cbr = child.getRight();
+                float cbt = child.getRight();
+                float cbb = child.getRight();
+                Matrix m = getMatrix();
+                if (m != null) {
+                    // need to transform the bounds
+                    bo
+                }
+            }
+        }
+    }
+
+    @Override
+    public float getLeft() {
+        recomputeBoundsWhenDirty();
+        return bounds[0];
+    }
+
+    @Override
+    public float getRight() {
+        recomputeBoundsWhenDirty();
+        return bounds[2];
+    }
+
+    @Override
+    public float getTop() {
+        recomputeBoundsWhenDirty();
+        return bounds[1];
+    }
+
+    @Override
+    public float getBottom() {
+        recomputeBoundsWhenDirty();
+        return bounds[3];
     }
 
     @Override

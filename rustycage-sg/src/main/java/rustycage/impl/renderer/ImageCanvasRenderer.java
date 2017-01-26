@@ -14,7 +14,7 @@ import rustycage.impl.AttributesStack;
 public class ImageCanvasRenderer extends AbstractCanvasRenderer<ImageNode> {
 
     @Override
-    public void render(@NonNull Canvas canvas, @NonNull ImageNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected void renderNode(@NonNull Canvas canvas, @NonNull ImageNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         Bitmap bitmap = node.getBitmap();
         if (bitmap != null) {
             canvas.drawBitmap(bitmap,node.getMatrix(),null);

@@ -9,7 +9,7 @@ import android.text.TextPaint;
  * Created by breh on 1/23/17.
  */
 
-public class TextNode extends BaseNode {
+public final class TextNode extends BaseNode {
 
     private float x,y;
     private TextPaint textPaint;
@@ -39,16 +39,6 @@ public class TextNode extends BaseNode {
         markDirty();
     }
 
-    @Override
-    public float getHeight() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float getWidth() {
-        throw new UnsupportedOperationException();
-    }
-
     public float getX() {
         return x;
     }
@@ -66,6 +56,38 @@ public class TextNode extends BaseNode {
         this.y = y;
         markDirty();
     }
+
+    @Override
+    public float getHeight() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getWidth() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getLeft() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getRight() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getTop() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getBottom() {
+        throw new UnsupportedOperationException();
+    }
+
+// builder
 
     public static TextNode.Builder create(@Nullable CharSequence text) {
         return new TextNode.Builder(text, 0, 0);

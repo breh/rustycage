@@ -13,7 +13,7 @@ import rustycage.impl.AttributesStack;
  */
 public abstract class ShapeCanvasRenderer<S extends ShapeNode> extends AbstractCanvasRenderer<S> {
 
-    public final void render(@NonNull Canvas canvas, @NonNull S node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected final void renderNode(@NonNull Canvas canvas, @NonNull S node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         Paint paint = node.getPaint();
         if (paint != null) {
             attributes.push(Paint.class,paint);
@@ -24,6 +24,6 @@ public abstract class ShapeCanvasRenderer<S extends ShapeNode> extends AbstractC
         }
     }
 
-    abstract public void renderShape(@NonNull Canvas canvas, @NonNull S node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics);
+    protected abstract void renderShape(@NonNull Canvas canvas, @NonNull S node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics);
 
 }

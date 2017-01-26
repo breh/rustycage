@@ -74,6 +74,27 @@ public final class LineNode extends ShapeNode {
         return Math.abs(y2 - y1);
     }
 
+    @Override
+    public float getLeft() {
+        return (x1 < x2) ? x1 : x2;
+    }
+
+    @Override
+    public float getRight() {
+        return (x1 < x2) ? x2 : x1;
+    }
+
+    @Override
+    public float getTop() {
+        return (y1 < y2) ? y1 : y2;
+    }
+
+    @Override
+    public float getBottom() {
+        return (y1 < y2) ? y2 : y1;
+    }
+
+    // Builders
 
     public static Builder createWithPoints(float x1, float y1, float x2, float y2) {
         return new Builder(x1,y1,x2,y2);

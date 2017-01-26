@@ -20,7 +20,7 @@ public class RectangleCanvasRenderer extends ShapeCanvasRenderer<RectangleNode> 
     private static final String TAG = "LineRenderer";
 
     @Override
-    public void renderShape(@NonNull Canvas canvas, @NonNull RectangleNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected void renderShape(@NonNull Canvas canvas, @NonNull RectangleNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         Paint paint = attributes.get(Paint.class);
 
         float x1 = node.getX1();

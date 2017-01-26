@@ -5,10 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.transition.Scene;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import rustycage.impl.AttributesStack;
@@ -141,6 +139,26 @@ public class RustyCageView extends View {
         @Override
         public float getHeight() {
             return sceneDelegate.getHeight();
+        }
+
+        @Override
+        public float getLeft() {
+            return sceneDelegate.getLeft();
+        }
+
+        @Override
+        public float getRight() {
+            return sceneDelegate.getRight();
+        }
+
+        @Override
+        public float getTop() {
+            return sceneDelegate.getTop();
+        }
+
+        @Override
+        public float getBottom() {
+            return sceneDelegate.getBottom();
         }
     }
 

@@ -22,7 +22,7 @@ public class EllipseCanvasRenderer extends ShapeCanvasRenderer<EllipseNode> {
     private static final String TAG = "EllipseRenderer";
 
     @Override
-    public void renderShape(@NonNull Canvas canvas, @NonNull EllipseNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected void renderShape(@NonNull Canvas canvas, @NonNull EllipseNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         Paint paint = attributes.get(Paint.class);
 
         float cx = node.getCx();

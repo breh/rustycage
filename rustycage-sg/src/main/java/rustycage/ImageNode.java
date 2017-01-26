@@ -32,6 +32,26 @@ public final class ImageNode extends BaseNode {
         return bitmap != null ? bitmap.getHeight() : 0;
     }
 
+    @Override
+    public float getLeft() {
+        return 0;
+    }
+
+    @Override
+    public float getRight() {
+        return getWidth();
+    }
+
+    @Override
+    public float getTop() {
+        return 0;
+    }
+
+    @Override
+    public float getBottom() {
+        return getHeight();
+    }
+
     public Bitmap getBitmap() {
         return bitmap;
     }

@@ -19,7 +19,7 @@ public class TextCanvasRenderer extends AbstractCanvasRenderer<TextNode> {
     private static final String TAG = "TextRenderer";
 
     @Override
-    public void render(@NonNull Canvas canvas, @NonNull TextNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected void renderNode(@NonNull Canvas canvas, @NonNull TextNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         CharSequence text = node.getText();
         if (text != null) {
             Paint textPaint = node.getTextPaint();

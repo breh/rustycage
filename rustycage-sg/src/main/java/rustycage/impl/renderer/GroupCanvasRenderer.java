@@ -14,7 +14,7 @@ import rustycage.impl.AttributesStack;
 public class GroupCanvasRenderer extends AbstractCanvasRenderer<GroupNode> {
 
     @Override
-    public void render(@NonNull Canvas canvas, @NonNull GroupNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected void renderNode(@NonNull Canvas canvas, @NonNull GroupNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         int size = node.size();
         // setup attributes
         node.pushAttributes(attributes);

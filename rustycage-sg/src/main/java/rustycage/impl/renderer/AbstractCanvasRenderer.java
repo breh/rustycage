@@ -14,6 +14,18 @@ import rustycage.impl.AttributesStack;
  */
 public abstract class AbstractCanvasRenderer<T extends BaseNode>  {
 
-    abstract public void render(@NonNull Canvas canvas, @NonNull T node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics);
+    public final void render(@NonNull Canvas canvas, @NonNull T node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+        Matrix m = node.getMatrix();
+        if (m != null) {
+            canvas.save(Canvas.MATRIX_SAVE_FLAG);
+            canvas.concat(m);
+        }
+        renderNode(canvas, node, attributes, displayMetrics);
+        if (m != null) {
+            canvas.restore();
+        }
+    }
+
+    protected abstract void renderNode(@NonNull Canvas canvas, @NonNull T node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics);
 
 }
