@@ -20,7 +20,6 @@ public final class ImageNode extends BaseNode {
 
     public final void setBitmap(@Nullable Bitmap bitmap) {
         this.bitmap = bitmap;
-        markDirty();
         markLocalBoundsDirty();
     }
 

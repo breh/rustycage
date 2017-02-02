@@ -24,32 +24,27 @@ public final class LineNode extends ShapeNode {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        markDirty();
         markLocalBoundsDirty();
     }
 
     public void setX1(float x1) {
         this.x1 = x1;
-        markDirty();
         markLocalBoundsDirty();
     }
 
     public void setY1(float y1) {
         this.y1 = y1;
-        markDirty();
         markLocalBoundsDirty();
     }
 
 
     public void setX2(float x2) {
         this.x2 = x2;
-        markDirty();
         markLocalBoundsDirty();
     }
 
     public void setY2(float y2) {
         this.y2 = y2;
-        markDirty();
         markLocalBoundsDirty();
     }
 

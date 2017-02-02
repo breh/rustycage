@@ -3,7 +3,6 @@ package rustycage;
 import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import rustycage.impl.Bounds;
 
@@ -50,22 +49,19 @@ public abstract class BaseNode {
 
     public final void setTranslationX(float tx) {
         this.tx = tx;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
     public final void setTranslationY(float ty) {
         this.ty = ty;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
 
     public final void setTranslation(float tx, float ty) {
         this.tx = tx;
         this.ty = ty;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
     public final void setScale(float s) {
@@ -75,28 +71,24 @@ public abstract class BaseNode {
     public final void setScale(float sx, float sy) {
         this.sx = sx;
         this.sy = sy;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
     public final void setRotation(float r) {
         this.r = r;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
     public void setPivot(float px, float py) {
         this.px = px;
         this.py = py;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
     public void resetPivot() {
         this.px = Float.NaN;
         this.py = Float.NaN;
-        markDirty();
-        markMatrixDirty();
+        markTransformedBoundsDirty();
     }
 
     public float getPivotX() {
@@ -149,9 +141,7 @@ public abstract class BaseNode {
         if (!dirty) {
             dirty = true;
             if (parent != null) {
-                if (!parent.isDirty()) {
-                    parent.markDirty();
-                }
+                parent.markDirty();
             }
             onMarkedDirty();
         }
@@ -209,6 +199,8 @@ public abstract class BaseNode {
 
     protected final void markLocalBoundsDirty() {
         localBoundsDirty = true;
+        markTransformedBoundsDirty();
+        markDirty();
     }
 
 
@@ -260,7 +252,9 @@ public abstract class BaseNode {
 
 
     protected final void markTransformedBoundsDirty() {
-        localBoundsDirty = true;
+        matrix = null;
+        transformedBoundsDirty = true;
+        markDirty();
     }
 
 
@@ -316,10 +310,6 @@ public abstract class BaseNode {
     }
 
 
-    private void markMatrixDirty() {
-        matrix = null;
-        markTransformedBoundsDirty();
-    }
 
     protected final boolean isMatrixDirty() {
         return matrix == null;
@@ -354,7 +344,7 @@ public abstract class BaseNode {
 
     final void setParent(@Nullable BaseNode parent) {
         this.parent = parent;
-        markMatrixDirty();;
+        markTransformedBoundsDirty();;
     }
 
 

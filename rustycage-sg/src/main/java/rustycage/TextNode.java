@@ -26,7 +26,6 @@ public final class TextNode extends BaseNode {
 
     public void setTextPaint(@Nullable TextPaint textPaint) {
         this.textPaint = textPaint;
-        markDirty();
         markLocalBoundsDirty();
     }
 
@@ -40,7 +39,6 @@ public final class TextNode extends BaseNode {
 
     public void setText(CharSequence text) {
         this.text = text;
-        markDirty();
         markLocalBoundsDirty();
     }
 
@@ -50,7 +48,6 @@ public final class TextNode extends BaseNode {
 
     public void setX(float x) {
         this.x = x;
-        markDirty();
         markLocalBoundsDirty();
     }
 
@@ -60,7 +57,6 @@ public final class TextNode extends BaseNode {
 
     public void setY(float y) {
         this.y = y;
-        markDirty();
         markLocalBoundsDirty();
     }
 

@@ -30,7 +30,6 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         }
         node.setParent(this);
         nodes.add(node);
-        markDirty();
         markLocalBoundsDirty();
     }
 
@@ -40,7 +39,6 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         if (removed) {
             node.setParent(null);
         }
-        markDirty();
         markLocalBoundsDirty();
         return removed;
     }
@@ -49,7 +47,6 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         Preconditions.assertNotNull(node,"node");
         node.setParent(this);
         nodes.add(index,node);
-        markDirty();
         markLocalBoundsDirty();
     }
 
