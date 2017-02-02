@@ -1,5 +1,6 @@
 package rustycage;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
@@ -24,27 +25,32 @@ public final class LineNode extends ShapeNode {
         this.x2 = x2;
         this.y2 = y2;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public void setX1(float x1) {
         this.x1 = x1;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public void setY1(float y1) {
         this.y1 = y1;
         markDirty();
+        markLocalBoundsDirty();
     }
 
 
     public void setX2(float x2) {
         this.x2 = x2;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public void setY2(float y2) {
         this.y2 = y2;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public float getX1() {
@@ -63,35 +69,12 @@ public final class LineNode extends ShapeNode {
         return y2;
     }
 
-
     @Override
-    public float getWidth() {
-        return Math.abs(x2 - x1);
-    }
-
-    @Override
-    public float getHeight() {
-        return Math.abs(y2 - y1);
-    }
-
-    @Override
-    public float getLeft() {
-        return (x1 < x2) ? x1 : x2;
-    }
-
-    @Override
-    public float getRight() {
-        return (x1 < x2) ? x2 : x1;
-    }
-
-    @Override
-    public float getTop() {
-        return (y1 < y2) ? y1 : y2;
-    }
-
-    @Override
-    public float getBottom() {
-        return (y1 < y2) ? y2 : y1;
+    protected void computeLocalBounds(@NonNull float[] bounds) {
+        bounds[0] = (x1 < x2) ? x1 : x2;
+        bounds[1] = (y1 < y2) ? y1 : y2;
+        bounds[2] = (x1 < x2) ? x2 : x1;
+        bounds[3] = (y1 < y2) ? y2 : y1;
     }
 
     // Builders

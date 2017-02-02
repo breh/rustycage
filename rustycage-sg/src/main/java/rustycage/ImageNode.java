@@ -1,6 +1,7 @@
 package rustycage;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import rustycage.impl.renderer.ImageCanvasRenderer;
@@ -20,36 +21,15 @@ public final class ImageNode extends BaseNode {
     public final void setBitmap(@Nullable Bitmap bitmap) {
         this.bitmap = bitmap;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     @Override
-    public float getWidth() {
-        return bitmap != null ? bitmap.getWidth() : 0;
-    }
-
-    @Override
-    public float getHeight() {
-        return bitmap != null ? bitmap.getHeight() : 0;
-    }
-
-    @Override
-    public float getLeft() {
-        return 0;
-    }
-
-    @Override
-    public float getRight() {
-        return getWidth();
-    }
-
-    @Override
-    public float getTop() {
-        return 0;
-    }
-
-    @Override
-    public float getBottom() {
-        return getHeight();
+    protected void computeLocalBounds(@NonNull float[] bounds) {
+        bounds[0] = 0;
+        bounds[1] = 0;
+        bounds[2] = bitmap != null ? bitmap.getWidth() : 0;
+        bounds[2] = bitmap != null ? bitmap.getHeight() : 0;
     }
 
     public Bitmap getBitmap() {

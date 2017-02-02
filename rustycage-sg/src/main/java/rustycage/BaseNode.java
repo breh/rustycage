@@ -5,12 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import rustycage.impl.Bounds;
+
 /**
  * Created by breh on 9/9/16.
  */
 public abstract class BaseNode {
 
     private static final String TAG = "BaseNode";
+
+    // FIXME - all these fields need memory optimization
 
     private float tx,ty;
     private float sx = 1f,sy = 1f;
@@ -21,8 +25,15 @@ public abstract class BaseNode {
     private String id;
 
     private Matrix matrix;
+    private static final Matrix IDENTITY_MATRIX = new Matrix();
 
-    private boolean dirty;
+    private float[] localBounds = new float[4];
+    private float[] transformedBounds;
+
+
+    private boolean dirty = true;
+    private boolean localBoundsDirty = true;
+    private boolean transformedBoundsDirty = true;
 
 
     BaseNode() {
@@ -161,28 +172,162 @@ public abstract class BaseNode {
         return dirty;
     }
 
-    public abstract float getLeft();
+    public final float getLeft() {
+        refreshLocalBoundsIfNeeded();
+        return localBounds[0];
+    }
 
-    public abstract float getRight();
+    public final float getRight() {
+        refreshLocalBoundsIfNeeded();
+        return localBounds[2];
+    }
 
-    public abstract float getTop();
+    public final float getTop() {
+        refreshLocalBoundsIfNeeded();
+        return localBounds[1];
+    }
 
-    public abstract float getBottom();
+    public final float getBottom() {
+        refreshLocalBoundsIfNeeded();
+        return localBounds[3];
+    }
+
+    public final @NonNull Bounds getLocalBounds() {
+        return getLocalBounds(null);
+    }
+
+
+    public final @NonNull Bounds getLocalBounds(@Nullable Bounds bounds) {
+        if (bounds == null) {
+            bounds = new Bounds();
+        }
+        refreshLocalBoundsIfNeeded();
+        bounds.set(localBounds);
+        return bounds;
+    }
+
+
+    protected final void markLocalBoundsDirty() {
+        localBoundsDirty = true;
+    }
+
+
+    private void refreshLocalBoundsIfNeeded() {
+        if (localBoundsDirty) {
+            computeLocalBounds(localBounds);
+            localBoundsDirty = false;
+        }
+    }
+
+    protected abstract void computeLocalBounds(@NonNull float[] bounds);
+
+
+    public final float getTransformedLeft() {
+        refreshTransformedBoundsIfNeeded();
+        if (transformedBounds != null) {
+            return transformedBounds[0];
+        } else {
+            return getLeft();
+        }
+    }
+
+    public final float getTransformedRight() {
+        refreshTransformedBoundsIfNeeded();
+        if (transformedBounds != null) {
+            return transformedBounds[2];
+        } else {
+            return getRight();
+        }
+    }
+
+    public final float getTransformedTop() {
+        refreshTransformedBoundsIfNeeded();
+        if (transformedBounds != null) {
+            return transformedBounds[2];
+        } else {
+            return getTop();
+        }
+    }
+
+    public final float getTransformedBottom() {
+        refreshTransformedBoundsIfNeeded();
+        if (transformedBounds != null) {
+            return transformedBounds[3];
+        } else {
+            return getBottom();
+        }
+    }
+
+
+    protected final void markTransformedBoundsDirty() {
+        localBoundsDirty = true;
+    }
+
+
+    public final @NonNull Bounds getTransformedBounds() {
+        return getTransformedBounds(null);
+    }
+
+    public final @NonNull Bounds getTransformedBounds(@Nullable Bounds bounds) {
+        if (bounds == null) {
+            bounds = new Bounds();
+        }
+        refreshTransformedBoundsIfNeeded();
+        if (transformedBounds != null) {
+            bounds.set(transformedBounds);
+        } else {
+            bounds.set(localBounds);
+        }
+        return bounds;
+    }
+
+
+    private void refreshTransformedBoundsIfNeeded() {
+        if (transformedBoundsDirty) {
+            transformedBounds = computeTransformedBounds(localBounds, getMatrix(), transformedBounds);
+            transformedBoundsDirty = false;
+        }
+    }
+
+
+    private  static float[] computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
+        if (! matrix.isIdentity()) {
+            if (transformedBounds == null) {
+                transformedBounds = new float[4];
+            }
+            matrix.mapPoints(transformedBounds, localBounds);
+        } else {
+            if (transformedBounds != null) {
+                transformedBounds = null;
+            }
+        }
+        return transformedBounds;
+    }
+
 
     // size
 
-    public abstract float getWidth();
+    public  final float getWidth() {
+        return Math.abs(getRight() - getLeft());
+    }
 
-    public abstract float getHeight();
+    public final float getHeight() {
+        return Math.abs(getBottom() - getTop());
+    }
 
 
     private void markMatrixDirty() {
         matrix = null;
+        markTransformedBoundsDirty();
+    }
+
+    protected final boolean isMatrixDirty() {
+        return matrix == null;
     }
 
     private Matrix computeMatrix() {
         if (tx == 0 && ty == 0 && r == 0 && sx == 1 && sy == 1) {
-            return null; // no matrix needed
+            return IDENTITY_MATRIX;
         } // else
         Matrix m = new Matrix();
         if (tx != 0 || ty != 0) {
@@ -197,6 +342,7 @@ public abstract class BaseNode {
         }
         return matrix;
     }
+
 
 
 

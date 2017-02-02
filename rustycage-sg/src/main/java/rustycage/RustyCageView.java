@@ -131,34 +131,10 @@ public class RustyCageView extends View {
             //}
         }
 
-        @Override
-        public float getWidth() {
-            return sceneDelegate.getWidth();
-        }
 
         @Override
-        public float getHeight() {
-            return sceneDelegate.getHeight();
-        }
-
-        @Override
-        public float getLeft() {
-            return sceneDelegate.getLeft();
-        }
-
-        @Override
-        public float getRight() {
-            return sceneDelegate.getRight();
-        }
-
-        @Override
-        public float getTop() {
-            return sceneDelegate.getTop();
-        }
-
-        @Override
-        public float getBottom() {
-            return sceneDelegate.getBottom();
+        protected void computeLocalBounds(@NonNull float[] bounds) {
+            sceneDelegate.computeLocalBounds(bounds);
         }
     }
 

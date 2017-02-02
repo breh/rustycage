@@ -37,7 +37,6 @@ public abstract class ShapeNode extends BaseNode {
         }
     }*/
 
-
     public static abstract class Builder<B extends Builder<B,N>, N extends ShapeNode> extends BaseNode.Builder<B,N> {
 
         protected Builder(@NonNull N node) {

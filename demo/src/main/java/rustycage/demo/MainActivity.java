@@ -6,9 +6,11 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
+import android.util.Log;
 
 import rustycage.BaseNode;
 import rustycage.EllipseNode;
@@ -23,6 +25,8 @@ import java.security.acl.Group;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    private static final String TAG = "MainActivity";
 
     public BaseNode createTest1Node() {
         Paint redPaint = new Paint();
@@ -126,7 +130,12 @@ public class MainActivity extends AppCompatActivity {
         gauge.setAttribute(new PaintAttribute(whitePaint));
         gauge.setTranslation(500,500);
 
+        Log.w(TAG," gauge local bounds: "+gauge.getLocalBounds());
+        Log.w(TAG," gauge transformed bounds: "+gauge.getTransformedBounds());
+
         GroupNode root = GroupNode.create().add(gauge).build();
+
+        Log.w(TAG," root local bounds: "+root.getLocalBounds());
 
 
         ObjectAnimator oa = new ObjectAnimator();

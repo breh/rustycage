@@ -1,6 +1,7 @@
 package rustycage;
 
 import android.graphics.drawable.shapes.Shape;
+import android.support.annotation.NonNull;
 
 /**
  * Created by breh on 1/21/17.
@@ -36,33 +37,11 @@ public class EllipseNode extends ShapeNode {
     }
 
     @Override
-    public float getWidth() {
-        return rx * 2;
-    }
-
-    @Override
-    public float getHeight() {
-        return ry * 2;
-    }
-
-    @Override
-    public float getLeft() {
-        return cx - rx;
-    }
-
-    @Override
-    public float getRight() {
-        return cx + rx;
-    }
-
-    @Override
-    public float getTop() {
-        return cy - ry;
-    }
-
-    @Override
-    public float getBottom() {
-        return cy + ry;
+    protected void computeLocalBounds(@NonNull float[] bounds) {
+        bounds[0] = cx - rx;;
+        bounds[1] = cy - ry;
+        bounds[2] = cx + rx;
+        bounds[3] = cy + ry;
     }
 
     public static Builder createCircle(float r) {

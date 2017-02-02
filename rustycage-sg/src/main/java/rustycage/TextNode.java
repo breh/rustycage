@@ -4,12 +4,15 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
+import android.util.Log;
 
 /**
  * Created by breh on 1/23/17.
  */
 
 public final class TextNode extends BaseNode {
+
+    private static final String TAG = "TextNode";
 
     private float x,y;
     private TextPaint textPaint;
@@ -24,6 +27,7 @@ public final class TextNode extends BaseNode {
     public void setTextPaint(@Nullable TextPaint textPaint) {
         this.textPaint = textPaint;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public TextPaint getTextPaint() {
@@ -37,6 +41,7 @@ public final class TextNode extends BaseNode {
     public void setText(CharSequence text) {
         this.text = text;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public float getX() {
@@ -46,6 +51,7 @@ public final class TextNode extends BaseNode {
     public void setX(float x) {
         this.x = x;
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public float getY() {
@@ -55,36 +61,13 @@ public final class TextNode extends BaseNode {
     public void setY(float y) {
         this.y = y;
         markDirty();
+        markLocalBoundsDirty();
     }
 
-    @Override
-    public float getHeight() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
-    public float getWidth() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float getLeft() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float getRight() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float getTop() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float getBottom() {
-        throw new UnsupportedOperationException();
+    protected void computeLocalBounds(@NonNull float[] bounds) {
+        Log.w(TAG,"computeLocalBounds() - unsupported opearion");
     }
 
 // builder

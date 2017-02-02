@@ -19,9 +19,6 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     private final List<BaseNode> nodes = new ArrayList<>();
     private List<Attribute<?>> attributes;
 
-    // bounds
-    private final float[] bounds = new float[4];
-
     protected GroupNode() {
     }
 
@@ -34,6 +31,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         node.setParent(this);
         nodes.add(node);
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public boolean removeNode(@NonNull BaseNode node) {
@@ -43,6 +41,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
             node.setParent(null);
         }
         markDirty();
+        markLocalBoundsDirty();
         return removed;
     }
 
@@ -51,6 +50,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         node.setParent(this);
         nodes.add(index,node);
         markDirty();
+        markLocalBoundsDirty();
     }
 
     public @Nullable <T> Attribute<T> setAttribute(@NonNull Attribute<T> attribute) {
@@ -154,62 +154,42 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     // bounds
 
     @Override
-    public float getWidth() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float getHeight() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     protected void onMarkedDirty() {
-        bounds[0] = Float.NaN;
+        markLocalBoundsDirty();
     }
 
-    private void recomputeBoundsWhenDirty() {
-        if (Float.NaN == bounds[0]) {
-            // need to recompute bounds
-            int size = nodes.size();
-            for (int i=0; i < size; i++) {
-                BaseNode child = nodes.get(i);
-                float cbl = child.getLeft();
-                float cbr = child.getRight();
-                float cbt = child.getRight();
-                float cbb = child.getRight();
-                Matrix m = getMatrix();
-                if (m != null) {
-                    // need to transform the bounds
-                    bo
-                }
+    @Override
+    protected void computeLocalBounds(@NonNull float[] bounds) {
+        int size = nodes.size();
+        float left = Float.MAX_VALUE;
+        float top = Float.MAX_VALUE;
+        float right = Float.MIN_VALUE;
+        float bottom = Float.MIN_VALUE;
+        for (int i=0; i < size; i++) {
+            BaseNode n = nodes.get(i);
+            float nodeLeft = n.getTransformedLeft();
+            float nodeTop = n.getTransformedTop();
+            float nodeRight = n.getTransformedRight();
+            float nodeBottom = n.getTransformedBottom();
+            if (nodeLeft < left) {
+                left = nodeLeft;
+            }
+            if (nodeTop < top) {
+                top = nodeTop;
+            }
+            if (nodeRight > right) {
+                right = nodeRight;
+            }
+            if (nodeBottom > bottom) {
+                bottom = nodeBottom;
             }
         }
+        bounds[0] = left;
+        bounds[1] = top;
+        bounds[2] = right;
+        bounds[3] = bottom;
     }
 
-    @Override
-    public float getLeft() {
-        recomputeBoundsWhenDirty();
-        return bounds[0];
-    }
-
-    @Override
-    public float getRight() {
-        recomputeBoundsWhenDirty();
-        return bounds[2];
-    }
-
-    @Override
-    public float getTop() {
-        recomputeBoundsWhenDirty();
-        return bounds[1];
-    }
-
-    @Override
-    public float getBottom() {
-        recomputeBoundsWhenDirty();
-        return bounds[3];
-    }
 
     @Override
     void clearDirty() {
