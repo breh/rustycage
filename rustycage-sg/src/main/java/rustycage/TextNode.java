@@ -1,10 +1,10 @@
 package rustycage;
 
-import android.os.Build;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
-import android.util.Log;
 
 /**
  * Created by breh on 1/23/17.
@@ -14,8 +14,10 @@ public final class TextNode extends BaseNode {
 
     private static final String TAG = "TextNode";
 
+    private static final TextPaint DEFAULT_TEXT_PAINT = new TextPaint();
+
     private float x,y;
-    private TextPaint textPaint;
+    private TextPaint textPaint = DEFAULT_TEXT_PAINT;
     private CharSequence text;
 
     private TextNode(@Nullable CharSequence text, float x, float y) {
@@ -30,7 +32,11 @@ public final class TextNode extends BaseNode {
     }
 
     public TextPaint getTextPaint() {
-        return textPaint;
+        if (textPaint != DEFAULT_TEXT_PAINT) {
+            return textPaint;
+        } else {
+            return null;
+        }
     }
 
     public CharSequence getText() {
@@ -63,7 +69,33 @@ public final class TextNode extends BaseNode {
 
     @Override
     protected void computeLocalBounds(@NonNull float[] bounds) {
-        Log.w(TAG,"computeLocalBounds() - unsupported opearion");
+        if (text != null) {
+            Rect textBounds = new Rect();
+            textPaint.getTextBounds(text.toString(), 0, text.length(), textBounds);
+            Paint.Align align = textPaint.getTextAlign();
+            switch (align) {
+                case LEFT:
+                    bounds[0] = x + textBounds.left;
+                    bounds[2] = x + textBounds.right;
+                    break;
+                case CENTER:
+                    float halfTextWidth = (textBounds.right - textBounds.left) / 2f;
+                    bounds[0] = x - halfTextWidth;
+                    bounds[2] = x + halfTextWidth;
+                    break;
+                case RIGHT:
+                    bounds[0] = x - textBounds.left;
+                    bounds[2] = x - textBounds.right;
+                    break;
+            }
+            bounds[1] = y + textBounds.top;
+            bounds[3] = y + textBounds.bottom;
+        } else {
+            bounds[0] = 0;
+            bounds[1] = 0;
+            bounds[2] = 0;
+            bounds[3] = 0;
+        }
     }
 
 // builder

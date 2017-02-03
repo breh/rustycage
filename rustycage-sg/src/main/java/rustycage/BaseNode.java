@@ -37,7 +37,6 @@ public abstract class BaseNode {
 
 
     BaseNode() {
-
     }
 
     public @Nullable String getId() {
@@ -138,7 +137,12 @@ public abstract class BaseNode {
     }
 
 
-    protected final void markDirty() {
+    /**
+     * Marks item dirty. Typically not used by a library user, only when things like ShapeNode paint
+     * object is updated / animated (there is no listener which would allow to listen on
+     * changes to the paint object)
+     */
+    public final void markDirty() {
         if (!dirty) {
             dirty = true;
             if (parent != null) {

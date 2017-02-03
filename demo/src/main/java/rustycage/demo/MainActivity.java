@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
         LineNode line1 = LineNode.createWithPoints(50,50,400,400).paint(redPaint).build();
 
+        TextNode textNode = null;
+
         GroupNode gn = GroupNode.create()
                 .add(GroupNode.create()
                         .add(line1)
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 .add(gn2)
                 .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient))
                 .add(EllipseNode.createEllipse(200,100,300,800))
-                .add(TextNode.create("XXXX").textPaint(textPaint).xy(50,50))
+                .add(textNode = TextNode.create("XXXX").textPaint(textPaint).xy(300,300).build())
                 .attribute(new PaintAttribute(bluePaint))
                 .build();
 
@@ -88,6 +90,16 @@ public class MainActivity extends AppCompatActivity {
         oa.setStartDelay(1000);
         oa.setFloatValues(50,500);
         oa.start();
+
+        ObjectAnimator rotationA = new ObjectAnimator();
+        rotationA.setTarget(textNode);
+        rotationA.setPropertyName("rotation");
+        rotationA.setDuration(2000);
+        rotationA.setStartDelay(1000);
+        rotationA.setFloatValues(0,720);
+        rotationA.start();
+
+
 
         return groot;
     }
@@ -124,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             double angle = i / 3.0 - Math.toRadians(270);
             float x = (float)(size * Math.cos(angle));
             float y = (float)(size * Math.sin(angle) + 10);
-            gauge.addNode(TextNode.create(text,x,y).build());
+            gauge.addNode(TextNode.create(text,x,y).r(i*15).build());
         }
 
         gauge.setAttribute(new PaintAttribute(whitePaint));
@@ -177,7 +189,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
 
-        BaseNode root = createGauge();
+        BaseNode root = createTest1Node();
+        //BaseNode root = createGauge();
         rcView.setRootNode(root);
 
 

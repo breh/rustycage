@@ -3,6 +3,7 @@ package rustycage;
 import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import rustycage.impl.AttributesStack;
 import rustycage.util.Preconditions;
@@ -16,6 +17,8 @@ import java.util.List;
  */
 public class GroupNode extends BaseNode implements Iterable<BaseNode> {
 
+    private static final String TAG = "GroupNode";
+
     private final List<BaseNode> nodes = new ArrayList<>();
     private List<Attribute<?>> attributes;
 
@@ -23,7 +26,32 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     }
 
 
-    public void addNode(@NonNull BaseNode node) {
+    public final @Nullable <T extends BaseNode> T findById(@NonNull String id, @NonNull Class<T> nodeClass) {
+        Preconditions.assertNotNull(id, "id");
+        Preconditions.assertNotNull(nodeClass, "nodeClass");
+        int size = nodes.size();
+        for (int i=0; i < size; i++) {
+            BaseNode node = nodes.get(i);
+            if (id.equals(node.getId())) {
+                if (nodeClass.isInstance(node)) {
+                    return (T)node;
+                } else {
+                    Log.w(TAG, "Found node with id: "+id+", desired class: "+nodeClass.getSimpleName()+", obtained class: "+node.getClass().getSimpleName());
+                    return null;
+                }
+            }
+            if (node instanceof GroupNode) {
+                T foundNode = ((GroupNode)node).findById(id, nodeClass);
+                if (foundNode != null) {
+                    return foundNode;
+                }
+            }
+        } // else
+        return null;
+    }
+
+
+    public final void addNode(@NonNull BaseNode node) {
         Preconditions.assertNotNull(node,"node");
         if (node.getParent() != null) {
             throw new IllegalStateException("Node has already parent. Node: "+node+", parent: "+node.getParent());
@@ -33,7 +61,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         markLocalBoundsDirty();
     }
 
-    public boolean removeNode(@NonNull BaseNode node) {
+    public final boolean removeNode(@NonNull BaseNode node) {
         Preconditions.assertNotNull(node,"node");
         boolean removed = nodes.remove(node);
         if (removed) {
@@ -43,14 +71,14 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         return removed;
     }
 
-    public void addNode(int index, @NonNull BaseNode node) {
+    public final void addNode(int index, @NonNull BaseNode node) {
         Preconditions.assertNotNull(node,"node");
         node.setParent(this);
         nodes.add(index,node);
         markLocalBoundsDirty();
     }
 
-    public @Nullable <T> Attribute<T> setAttribute(@NonNull Attribute<T> attribute) {
+    public final @Nullable <T> Attribute<T> setAttribute(@NonNull Attribute<T> attribute) {
         Preconditions.assertGenericTypeNotNull(attribute, "attribute");
         if (attributes == null) {
             attributes = new ArrayList<>();
@@ -73,7 +101,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         return null;
     }
 
-    public boolean removeAttribute(@NonNull Attribute<?> attribute) {
+    public final boolean removeAttribute(@NonNull Attribute<?> attribute) {
         Preconditions.assertGenericTypeNotNull(attribute, "attribute");
         if (attributes != null) {
             int size = attributes.size();
@@ -89,7 +117,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         return false;
     }
 
-    public boolean removeAttribute(Class<?> attributeClazz) {
+    public final boolean removeAttribute(Class<?> attributeClazz) {
         Preconditions.assertNotNull(attributeClazz, "attributeClazz");
         if (attributes != null) {
             int size = attributes.size();
@@ -106,7 +134,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     }
 
     // FIXME - should not be public
-    public void pushAttributes(@NonNull AttributesStack attributesStack) {
+    public final void pushAttributes(@NonNull AttributesStack attributesStack) {
         if (attributes != null) {
             int size = attributes.size();
             for (int i = 0; i < size; i++) {
@@ -117,7 +145,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     }
 
     // FIXME - should not be public
-    public void popAttributes(@NonNull AttributesStack attributesStack) {
+    public final void popAttributes(@NonNull AttributesStack attributesStack) {
         if (attributes != null) {
             int size = attributes.size();
             for (int i = 0; i < size; i++) {
@@ -128,12 +156,22 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     }
 
 
-    public int size() {
+    public final int size() {
         return nodes.size();
     }
 
-    public BaseNode get(int index) {
+    public final @NonNull BaseNode get(int index) {
         return nodes.get(index);
+    }
+
+    public final @Nullable <T extends BaseNode> T get(int index, @NonNull Class<T> nodeClass) {
+        BaseNode node = nodes.get(index);
+        if (nodeClass.isInstance(node)) {
+            return (T)node;
+        } else {
+            Log.w(TAG, "node at index:  "+index+", desired class: "+nodeClass.getSimpleName()+", obtained class: "+node.getClass().getSimpleName());
+            return null;
+        }
     }
 
     public @NonNull Iterator<BaseNode> iterator() {
