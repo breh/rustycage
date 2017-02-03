@@ -3,6 +3,7 @@ package rustycage;
 import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import rustycage.impl.Bounds;
 
@@ -102,7 +103,7 @@ public abstract class BaseNode {
 
     protected float getActualPivotX() {
         if (Float.isNaN(px)) {
-            return getWidth() / 2f;
+            return (getRight() + getLeft()) / 2f;
         } else {
             return px;
         }
@@ -110,7 +111,7 @@ public abstract class BaseNode {
 
     protected float getActualPivotY() {
         if (Float.isNaN(py)) {
-            return getHeight() / 2f;
+            return (getBottom() + getTop()) / 2f;
         } else {
             return py;
         }
@@ -235,7 +236,7 @@ public abstract class BaseNode {
     public final float getTransformedTop() {
         refreshTransformedBoundsIfNeeded();
         if (transformedBounds != null) {
-            return transformedBounds[2];
+            return transformedBounds[1];
         } else {
             return getTop();
         }
@@ -320,13 +321,19 @@ public abstract class BaseNode {
             return IDENTITY_MATRIX;
         } // else
         Matrix m = new Matrix();
+        if (sx != 1 || sy != 1) {
+            m.postScale(sx, sy, getActualPivotX(), getActualPivotY());
+        }
+        if (r != 0) {
+            m.postRotate(r, getActualPivotX(), getActualPivotY());
+        }
         if (tx != 0 || ty != 0) {
             m.postTranslate(tx, ty);
         }
         return m;
     }
 
-    public Matrix getMatrix() {
+    public final Matrix getMatrix() {
         if (matrix == null) {
             matrix = computeMatrix();
         }

@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         gauge.setAttribute(new PaintAttribute(whitePaint));
         gauge.setTranslation(500,500);
+        gauge.setScale(0.5f);
 
         Log.w(TAG," gauge local bounds: "+gauge.getLocalBounds());
         Log.w(TAG," gauge transformed bounds: "+gauge.getTransformedBounds());
@@ -138,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         Log.w(TAG," root local bounds: "+root.getLocalBounds());
 
 
+
         ObjectAnimator oa = new ObjectAnimator();
         oa.setTarget(root);
         oa.setPropertyName("translationY");
@@ -145,6 +147,24 @@ public class MainActivity extends AppCompatActivity {
         oa.setStartDelay(1000);
         oa.setFloatValues(0,600);
         oa.start();
+
+        ObjectAnimator rotationA = new ObjectAnimator();
+        rotationA.setTarget(gauge);
+        rotationA.setPropertyName("rotation");
+        rotationA.setDuration(2000);
+        rotationA.setStartDelay(1000);
+        rotationA.setFloatValues(0,720);
+        rotationA.start();
+
+        ObjectAnimator scaleA = new ObjectAnimator();
+        scaleA.setTarget(gauge);
+        scaleA.setPropertyName("scale");
+        scaleA.setDuration(2000);
+        scaleA.setStartDelay(1000);
+        scaleA.setFloatValues(0.5f, 1.0f);
+        scaleA.start();
+
+        root.setRotation(-20);
 
         return root;
     }

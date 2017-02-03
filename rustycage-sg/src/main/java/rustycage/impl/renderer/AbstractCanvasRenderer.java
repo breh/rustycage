@@ -16,6 +16,9 @@ public abstract class AbstractCanvasRenderer<T extends BaseNode>  {
 
     public final void render(@NonNull Canvas canvas, @NonNull T node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         Matrix m = node.getMatrix();
+        if (m.isIdentity()) {
+            m = null;
+        }
         if (m != null) {
             canvas.save(Canvas.MATRIX_SAVE_FLAG);
             canvas.concat(m);
