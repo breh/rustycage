@@ -4,11 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 
 import rustycage.ResolutionUnit;
 import rustycage.TextNode;
 import rustycage.impl.AttributesStack;
+import rustycage.impl.FloatStack;
 
 /**
  * Created by breh on 1/23/17.
@@ -19,7 +21,8 @@ public class TextCanvasRenderer extends AbstractCanvasRenderer<TextNode> {
     private static final String TAG = "TextRenderer";
 
     @Override
-    protected void renderNode(@NonNull Canvas canvas, @NonNull TextNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
+    protected void renderNode(@NonNull Canvas canvas, @NonNull TextNode node, @NonNull FloatStack opacityStack,
+                              @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         CharSequence text = node.getText();
         if (text != null) {
             Paint textPaint = node.getTextPaint();
@@ -37,7 +40,16 @@ public class TextCanvasRenderer extends AbstractCanvasRenderer<TextNode> {
                     y = TypedValue.applyDimension(typedValue, y, displayMetrics);
                 }
 
+                float opacityValue = opacityStack.peek();
+                int originalAlpha = textPaint.getAlpha();
+                if (opacityValue < 1f) {
+                    int actualAlpha = getActualAlpha(textPaint, opacityValue);
+                    textPaint.setAlpha(actualAlpha);
+                }
+
                 canvas.drawText(text, 0, text.length(), x, y, textPaint);
+
+                textPaint.setAlpha(originalAlpha);
             }
         }
     }

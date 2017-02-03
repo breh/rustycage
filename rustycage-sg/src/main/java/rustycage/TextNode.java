@@ -66,7 +66,6 @@ public final class TextNode extends BaseNode {
         markLocalBoundsDirty();
     }
 
-
     @Override
     protected void computeLocalBounds(@NonNull float[] bounds) {
         if (text != null) {

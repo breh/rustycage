@@ -41,8 +41,6 @@ public class RendererProvider {
     }
 
 
-
-
     <T extends BaseNode> void registerRenderer(@NonNull Class<T> nodeClass, @NonNull AbstractCanvasRenderer<T> renderer) {
         Preconditions.assertNotNull(nodeClass,"nodeClass");
         Preconditions.assertNotNull(renderer,"renderer");

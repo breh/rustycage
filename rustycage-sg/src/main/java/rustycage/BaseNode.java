@@ -35,6 +35,7 @@ public abstract class BaseNode {
     private boolean localBoundsDirty = true;
     private boolean transformedBoundsDirty = true;
 
+    private float opacity = 1f;
 
     BaseNode() {
     }
@@ -134,6 +135,18 @@ public abstract class BaseNode {
 
     public final float getRotation() {
         return r;
+    }
+
+
+    public float getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(float opacity) {
+        if (opacity > 1f) opacity = 1f;
+        if (opacity < 0f) opacity = 0f;
+        this.opacity = opacity;
+        markDirty();
     }
 
 
@@ -359,6 +372,7 @@ public abstract class BaseNode {
     }
 
 
+
     public static abstract class Builder<B extends Builder<B,N>, N extends BaseNode> {
 
         private final N node;
@@ -393,6 +407,11 @@ public abstract class BaseNode {
 
         public final B id(@NonNull String id) {
             getNode().setId(id);
+            return getBuilder();
+        }
+
+        public final B opacity(float opacity) {
+            getNode().setOpacity(opacity);
             return getBuilder();
         }
 

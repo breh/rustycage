@@ -10,6 +10,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import rustycage.impl.AttributesStack;
+import rustycage.impl.FloatStack;
 import rustycage.impl.renderer.AbstractCanvasRenderer;
 import rustycage.impl.renderer.RendererProvider;
 
@@ -38,17 +39,20 @@ public class RustyCageView extends View {
 
 
     private final AttributesStack attributesStack = new AttributesStack();
+    private final FloatStack opacityStack = new FloatStack();
 
     private final DisplayMetrics displayMetrics = new DisplayMetrics();
 
     public RustyCageView(@NonNull Context context) {
         super(context);
         initAttributeStack(attributesStack);
+        opacityStack.push(1f); // start with full visibility
     }
 
     public RustyCageView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context,attrs);
         initAttributeStack(attributesStack);
+        opacityStack.push(1f); // start with full visibility
     }
 
 
@@ -79,7 +83,7 @@ public class RustyCageView extends View {
             getDisplay().getMetrics(displayMetrics);
 
             AbstractCanvasRenderer<BaseNode> renderer = RendererProvider.getInstance().getRendererForNode(rootNode);
-            renderer.render(canvas, rootNode, attributesStack, displayMetrics);
+            renderer.render(canvas, rootNode, opacityStack, attributesStack, displayMetrics);
             sceneNode.clearDirty();
         }
     }

@@ -3,13 +3,14 @@ package rustycage.impl.renderer;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 
 import rustycage.EllipseNode;
 import rustycage.ResolutionUnit;
 import rustycage.impl.AttributesStack;
+import rustycage.impl.FloatStack;
 
 /**
  * Created by breh on 1/21/17.
@@ -22,15 +23,13 @@ public class EllipseCanvasRenderer extends ShapeCanvasRenderer<EllipseNode> {
     private static final String TAG = "EllipseRenderer";
 
     @Override
-    protected void renderShape(@NonNull Canvas canvas, @NonNull EllipseNode node, @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
-        Paint paint = attributes.get(Paint.class);
-
+    protected void renderShape(@NonNull Canvas canvas, @NonNull EllipseNode node, @Nullable Paint paint,
+                               @Nullable ResolutionUnit resolutionUnit,  @NonNull DisplayMetrics displayMetrics) {
         float cx = node.getCx();
         float cy = node.getCy();
         float rx = node.getRx();
         float ry = node.getRy();
 
-        ResolutionUnit resolutionUnit = attributes.get(ResolutionUnit.class);
         if (resolutionUnit != ResolutionUnit.PX) {
             final int typedValue = resolutionUnit.getTypedValue();
             cx = TypedValue.applyDimension(typedValue, cx, displayMetrics);

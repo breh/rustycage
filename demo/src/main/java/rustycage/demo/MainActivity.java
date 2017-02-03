@@ -1,5 +1,6 @@
 package rustycage.demo;
 
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -7,6 +8,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.nfc.Tag;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
@@ -39,12 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         Paint bluePaint = new Paint();
-        bluePaint.setARGB(255,0,0,255);
+        bluePaint.setARGB(200,0,0,255);
         bluePaint.setStrokeWidth(20);
-        bluePaint.setStyle(Paint.Style.STROKE);
+        bluePaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         TextPaint textPaint = new TextPaint();
         textPaint.set(greenPaint);
+        textPaint.setAlpha(100);
         textPaint.setTextSize(50);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             gn2.addNode(LineNode.createWithPoints(300+i*5,500,300+i*5,600).build());
         }
         gn2.setAttribute(new PaintAttribute(redPaint));
+        gn2.setOpacity(0.3f);
 
         LineNode line1 = LineNode.createWithPoints(50,50,400,400).paint(redPaint).build();
 
@@ -71,17 +75,49 @@ public class MainActivity extends AppCompatActivity {
                         .add(line1)
                         .add(LineNode.createWithSize(700,400,400,100).paint(redPaint))
                         .add(RectangleNode.createWithSize(30,530,500,300))
-                        .add(RectangleNode.createWithSize(530,930,500,300).paint(greenPaint))
+                        .add(RectangleNode.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
                 )
                 .add(gn2)
-                .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient))
+                .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))
                 .add(EllipseNode.createEllipse(200,100,300,800))
                 .add(textNode = TextNode.create("XXXX").textPaint(textPaint).xy(300,300).build())
                 .attribute(new PaintAttribute(bluePaint))
+                .opacity(0f)
                 .build();
 
 
-        GroupNode groot = GroupNode.create().add(gn).build();
+
+
+        LineNode l1 = LineNode.createWithPoints(0,0,80,0).build();
+        LineNode l2 = LineNode.createWithPoints(0,40,80,40).build();
+        LineNode l3 = LineNode.createWithPoints(0,80,80,80).build();
+        GroupNode button = GroupNode.create().add(l1, l2, l3).attribute(new PaintAttribute(redPaint)).txy(400,400).build();
+
+        // button animation
+        ObjectAnimator l1Anim = new ObjectAnimator();
+        l1Anim.setTarget(l1);
+        l1Anim.setPropertyName("y2");
+        l1Anim.setFloatValues(0,80);
+
+        ObjectAnimator l2Anim = new ObjectAnimator();
+        l2Anim.setTarget(l2);
+        l2Anim.setPropertyName("opacity");
+        l2Anim.setFloatValues(1,0);
+
+
+        ObjectAnimator l3Anim = new ObjectAnimator();
+        l3Anim.setTarget(l3);
+        l3Anim.setPropertyName("y2");
+        l3Anim.setFloatValues(80,0);
+
+        AnimatorSet buttonAnimator = new AnimatorSet();
+        buttonAnimator.setDuration(300);
+        buttonAnimator.setStartDelay(1000);
+        buttonAnimator.playTogether(l1Anim, l2Anim, l3Anim);
+        buttonAnimator.start();
+
+
+        GroupNode groot = GroupNode.create().add(gn, button).build();
 
         ObjectAnimator oa = new ObjectAnimator();
         oa.setTarget(line1);
@@ -98,6 +134,15 @@ public class MainActivity extends AppCompatActivity {
         rotationA.setStartDelay(1000);
         rotationA.setFloatValues(0,720);
         rotationA.start();
+
+
+        ObjectAnimator opacityAnim = new ObjectAnimator();
+        opacityAnim.setTarget(gn);
+        opacityAnim.setPropertyName("opacity");
+        opacityAnim.setFloatValues(0, 1);
+        opacityAnim.setDuration(1000);
+        opacityAnim.setStartDelay(700);
+        opacityAnim.start();
 
 
 
