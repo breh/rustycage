@@ -22,6 +22,7 @@ import rustycage.PaintAttribute;
 import rustycage.RectangleNode;
 import rustycage.RustyCageView;
 import rustycage.TextNode;
+import rustycage.animation.FadeTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.w(TAG," root local bounds: "+root.getLocalBounds());
 
+        root.setRotation(-20);
 
         GroupTransition.createParallel()
                 .add(TranslationTransition.create(root).byX(300).toY(500))
@@ -207,8 +209,6 @@ public class MainActivity extends AppCompatActivity {
                 .duration(2000)
                 .delay(1000)
                 .start();
-
-        root.setRotation(-20);
 
         return root;
     }
@@ -221,8 +221,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
 
-        //BaseNode root = createTest1Node();
-        BaseNode root = createGauge();
+        BaseNode root = createTest1Node();
+        //BaseNode root = createGauge();
         rcView.setRootNode(root);
 
 

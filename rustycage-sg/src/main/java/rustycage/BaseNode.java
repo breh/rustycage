@@ -15,25 +15,12 @@ public abstract class BaseNode {
     private static final String TAG = "BaseNode";
 
     // FIXME - all these fields need memory optimization
-
-    private float tx,ty;
-    private float sx = 1f,sy = 1f;
-    private float r;
-
-    private float px = Float.NaN, py = Float.NaN;
-
     private String id;
 
-    private Matrix matrix;
-    private static final Matrix IDENTITY_MATRIX = new Matrix();
-
     private float[] localBounds = new float[4];
-    private float[] transformedBounds;
-
 
     private boolean dirty = true;
     private boolean localBoundsDirty = true;
-    private boolean transformedBoundsDirty = true;
 
     private float opacity = 1f;
 
@@ -49,20 +36,21 @@ public abstract class BaseNode {
     }
 
     public final void setTranslationX(float tx) {
-        this.tx = tx;
-        markTransformedBoundsDirty();
+        getOrCreateTransformationSupport().setTx(tx);
+        markDirty();
     }
 
     public final void setTranslationY(float ty) {
-        this.ty = ty;
-        markTransformedBoundsDirty();
+        getOrCreateTransformationSupport().setTy(ty);
+        markDirty();
     }
 
 
     public final void setTranslation(float tx, float ty) {
-        this.tx = tx;
-        this.ty = ty;
-        markTransformedBoundsDirty();
+        NodeTransformationSupport support = getOrCreateTransformationSupport();
+        support.setTx(tx);
+        support.setTy(tx);
+        markDirty();
     }
 
     public final void setScale(float s) {
@@ -70,71 +58,54 @@ public abstract class BaseNode {
     }
 
     public final void setScale(float sx, float sy) {
-        this.sx = sx;
-        this.sy = sy;
-        markTransformedBoundsDirty();
+        NodeTransformationSupport support = getOrCreateTransformationSupport();
+        support.setScaleX(sx);
+        support.setScaleY(sy);
+        markDirty();
     }
 
     public final void setRotation(float r) {
-        this.r = r;
-        markTransformedBoundsDirty();
+        getOrCreateTransformationSupport().setRotation(r);
+        markDirty();
     }
 
     public void setPivot(float px, float py) {
-        this.px = px;
-        this.py = py;
-        markTransformedBoundsDirty();
+        getOrCreateTransformationSupport().setPivot(px, py);
+        markDirty();
     }
 
     public void resetPivot() {
-        this.px = Float.NaN;
-        this.py = Float.NaN;
-        markTransformedBoundsDirty();
+        getOrCreateTransformationSupport().resetPivot();
+        markDirty();
     }
 
     public float getPivotX() {
-        return px;
+        return transformationSupport != null ? transformationSupport.getPivotX() : Float.NaN;
     }
 
     public float getPivotY() {
-        return py;
+        return transformationSupport != null ? transformationSupport.getPivotY() : Float.NaN;
     }
 
-
-    protected float getActualPivotX() {
-        if (Float.isNaN(px)) {
-            return (getRight() + getLeft()) / 2f;
-        } else {
-            return px;
-        }
-    }
-
-    protected float getActualPivotY() {
-        if (Float.isNaN(py)) {
-            return (getBottom() + getTop()) / 2f;
-        } else {
-            return py;
-        }
-    }
 
     public final float getTranslationX() {
-        return tx;
+        return transformationSupport != null ? transformationSupport.getTx() : Float.NaN;
     }
 
     public final float getTranslationY() {
-        return ty;
+        return transformationSupport != null ? transformationSupport.getTy() : Float.NaN;
     }
 
     public final float getScaleX() {
-        return sx;
+        return transformationSupport != null ? transformationSupport.getSx() : Float.NaN;
     }
 
     public final float getScaleY() {
-        return sy;
+        return transformationSupport != null ? transformationSupport.getSy() : Float.NaN;
     }
 
     public final float getRotation() {
-        return r;
+        return transformationSupport != null ? transformationSupport.getR() : Float.NaN;
     }
 
 
@@ -217,7 +188,9 @@ public abstract class BaseNode {
 
     protected final void markLocalBoundsDirty() {
         localBoundsDirty = true;
-        markTransformedBoundsDirty();
+        if (transformationSupport != null) {
+            transformationSupport.markTransformedBoundsDirty();
+        }
         markDirty();
     }
 
@@ -233,90 +206,31 @@ public abstract class BaseNode {
 
 
     public final float getTransformedLeft() {
-        refreshTransformedBoundsIfNeeded();
-        if (transformedBounds != null) {
-            return transformedBounds[0];
-        } else {
-            return getLeft();
-        }
+        return transformationSupport != null ? transformationSupport.getTransformedLeft(this) : getLeft();
     }
 
     public final float getTransformedRight() {
-        refreshTransformedBoundsIfNeeded();
-        if (transformedBounds != null) {
-            return transformedBounds[2];
-        } else {
-            return getRight();
-        }
+        return transformationSupport != null ? transformationSupport.getTransformedRight(this) : getRight();
     }
 
     public final float getTransformedTop() {
-        refreshTransformedBoundsIfNeeded();
-        if (transformedBounds != null) {
-            return transformedBounds[1];
-        } else {
-            return getTop();
-        }
+        return transformationSupport != null ? transformationSupport.getTransformedTop(this) : getTop();
     }
 
     public final float getTransformedBottom() {
-        refreshTransformedBoundsIfNeeded();
-        if (transformedBounds != null) {
-            return transformedBounds[3];
-        } else {
-            return getBottom();
-        }
+        return transformationSupport != null ? transformationSupport.getTransformedBottom(this) : getBottom();
     }
 
-
-    protected final void markTransformedBoundsDirty() {
-        matrix = null;
-        transformedBoundsDirty = true;
-        markDirty();
-    }
 
 
     public final @NonNull Bounds getTransformedBounds() {
-        return getTransformedBounds(null);
-    }
-
-    public final @NonNull Bounds getTransformedBounds(@Nullable Bounds bounds) {
-        if (bounds == null) {
-            bounds = new Bounds();
-        }
-        refreshTransformedBoundsIfNeeded();
-        if (transformedBounds != null) {
-            bounds.set(transformedBounds);
-        } else {
-            bounds.set(localBounds);
-        }
-        return bounds;
+        return transformationSupport != null ? transformationSupport.getTransformedBounds(this, null) : getLocalBounds();
     }
 
 
-    private void refreshTransformedBoundsIfNeeded() {
-        if (transformedBoundsDirty) {
-            transformedBounds = computeTransformedBounds(localBounds, getMatrix(), transformedBounds);
-            transformedBoundsDirty = false;
-        }
+    public final @Nullable Matrix getMatrix() {
+        return transformationSupport != null ? transformationSupport.getMatrix(this) : null;
     }
-
-
-    private  static float[] computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
-        if (! matrix.isIdentity()) {
-            if (transformedBounds == null) {
-                transformedBounds = new float[4];
-            }
-            matrix.mapPoints(transformedBounds, localBounds);
-        } else {
-            if (transformedBounds != null) {
-                transformedBounds = null;
-            }
-        }
-        return transformedBounds;
-    }
-
-
     // size
 
     public  final float getWidth() {
@@ -329,35 +243,13 @@ public abstract class BaseNode {
 
 
 
-    protected final boolean isMatrixDirty() {
-        return matrix == null;
+    private NodeTransformationSupport transformationSupport;
+    private NodeTransformationSupport getOrCreateTransformationSupport() {
+        if (transformationSupport == null) {
+            transformationSupport = new NodeTransformationSupport(localBounds);
+        }
+        return transformationSupport;
     }
-
-    private Matrix computeMatrix() {
-        if (tx == 0 && ty == 0 && r == 0 && sx == 1 && sy == 1) {
-            return IDENTITY_MATRIX;
-        } // else
-        Matrix m = new Matrix();
-        if (sx != 1 || sy != 1) {
-            m.postScale(sx, sy, getActualPivotX(), getActualPivotY());
-        }
-        if (r != 0) {
-            m.postRotate(r, getActualPivotX(), getActualPivotY());
-        }
-        if (tx != 0 || ty != 0) {
-            m.postTranslate(tx, ty);
-        }
-        return m;
-    }
-
-    public final Matrix getMatrix() {
-        if (matrix == null) {
-            matrix = computeMatrix();
-        }
-        return matrix;
-    }
-
-
 
 
     private BaseNode parent;
@@ -368,7 +260,6 @@ public abstract class BaseNode {
 
     final void setParent(@Nullable BaseNode parent) {
         this.parent = parent;
-        markTransformedBoundsDirty();;
     }
 
 
@@ -422,6 +313,207 @@ public abstract class BaseNode {
 
 
     }
+
+
+    // node transformation support
+    private final static class NodeTransformationSupport {
+
+        private float tx,ty;
+        private float sx = 1f,sy = 1f;
+        private float r;
+
+        private float px = Float.NaN, py = Float.NaN;
+
+        private Matrix matrix;
+        private static final Matrix IDENTITY_MATRIX = new Matrix();
+
+        private float[] transformedBounds = new float[4];
+
+        private boolean transformedBoundsDirty = true;
+
+        public NodeTransformationSupport(@NonNull float[] localBounds) {
+            transformedBounds[0] = localBounds[0];
+            transformedBounds[1] = localBounds[1];
+            transformedBounds[2] = localBounds[2];
+            transformedBounds[3] = localBounds[3];
+        }
+
+        public final void setTx(float tx) {
+            this.tx = tx;
+            markTransformedBoundsDirty();
+        }
+
+        public final void setTy(float ty) {
+            this.ty = ty;
+            markTransformedBoundsDirty();
+        }
+
+
+        public final void setScaleX(float sx) {
+            this.sx = sx;
+            markTransformedBoundsDirty();
+        }
+
+        public final void setScaleY(float sy) {
+            this.sy = sy;
+            markTransformedBoundsDirty();
+        }
+
+
+        public final void setRotation(float r) {
+            this.r = r;
+            markTransformedBoundsDirty();
+        }
+
+        public void setPivot(float px, float py) {
+            this.px = px;
+            this.py = py;
+            markTransformedBoundsDirty();
+        }
+
+        public void resetPivot() {
+            this.px = Float.NaN;
+            this.py = Float.NaN;
+            markTransformedBoundsDirty();
+        }
+
+        public float getPivotX() {
+            return px;
+        }
+
+        public float getPivotY() {
+            return py;
+        }
+
+
+        protected float getActualPivotX(@NonNull BaseNode node) {
+            if (Float.isNaN(px)) {
+                return (node.getRight() + node.getLeft()) / 2f;
+            } else {
+                return px;
+            }
+        }
+
+        protected float getActualPivotY(@NonNull BaseNode node) {
+            if (Float.isNaN(py)) {
+                return (node.getBottom() + node.getTop()) / 2f;
+            } else {
+                return py;
+            }
+        }
+
+        public final float getTx() {
+            return tx;
+        }
+
+        public final float getTy() {
+            return ty;
+        }
+
+        public final float getSx() {
+            return sx;
+        }
+
+        public final float getSy() {
+            return sy;
+        }
+
+        public final float getR() {
+            return r;
+        }
+
+
+        public final float getTransformedLeft(@NonNull BaseNode node) {
+            refreshTransformedBoundsIfNeeded(node);
+            return transformedBounds[0];
+        }
+
+        public final float getTransformedRight(@NonNull BaseNode node) {
+            refreshTransformedBoundsIfNeeded(node);
+            return transformedBounds[2];
+        }
+
+        public final float getTransformedTop(@NonNull BaseNode node) {
+            refreshTransformedBoundsIfNeeded(node);
+            return transformedBounds[1];
+        }
+
+        public final float getTransformedBottom(@NonNull BaseNode node) {
+            refreshTransformedBoundsIfNeeded(node);
+            return transformedBounds[3];
+        }
+
+
+        protected final void markTransformedBoundsDirty() {
+            matrix = null;
+            transformedBoundsDirty = true;
+        }
+
+        public final @NonNull Bounds getTransformedBounds(@NonNull BaseNode node, @Nullable Bounds bounds) {
+            if (bounds == null) {
+                bounds = new Bounds();
+            }
+            refreshTransformedBoundsIfNeeded(node);
+            if (transformedBounds != null) {
+                bounds.set(transformedBounds);
+            } else {
+                node.getLocalBounds(bounds);
+            }
+            return bounds;
+        }
+
+
+        private void refreshTransformedBoundsIfNeeded(@NonNull BaseNode node) {
+            if (transformedBoundsDirty) {
+                computeTransformedBounds(node.localBounds, getMatrix(node), transformedBounds);
+                transformedBoundsDirty = false;
+            }
+        }
+
+
+        private static void computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
+            if (! matrix.isIdentity()) {
+                matrix.mapPoints(transformedBounds, localBounds);
+            } else {
+                transformedBounds[0] = localBounds[0];
+                transformedBounds[1] = localBounds[1];
+                transformedBounds[2] = localBounds[2];
+                transformedBounds[3] = localBounds[3];
+            }
+        }
+
+
+        protected final boolean isMatrixDirty() {
+            return matrix == null;
+        }
+
+        private Matrix computeMatrix(@NonNull BaseNode node) {
+            if (tx == 0 && ty == 0 && r == 0 && sx == 1 && sy == 1) {
+                return IDENTITY_MATRIX;
+            } // else
+            Matrix m = new Matrix();
+            if (sx != 1 || sy != 1) {
+                m.postScale(sx, sy, getActualPivotX(node), getActualPivotY(node));
+            }
+            if (r != 0) {
+                m.postRotate(r, getActualPivotX(node), getActualPivotY(node));
+            }
+            if (tx != 0 || ty != 0) {
+                m.postTranslate(tx, ty);
+            }
+            return m;
+        }
+
+        public final Matrix getMatrix(@NonNull BaseNode node) {
+            if (matrix == null) {
+                matrix = computeMatrix(node);
+            }
+            return matrix;
+        }
+
+
+    }
+
 
 }
 

@@ -28,7 +28,7 @@ public abstract class AbstractCanvasRenderer<T extends BaseNode>  {
 
             // matrix
             Matrix m = node.getMatrix();
-            if (m.isIdentity()) {
+            if (m!= null && m.isIdentity()) {
                 m = null;
             }
             if (m != null) {
