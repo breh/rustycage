@@ -22,6 +22,7 @@ import rustycage.PaintAttribute;
 import rustycage.RectangleNode;
 import rustycage.RustyCageView;
 import rustycage.TextNode;
+import rustycage.animation.TranslationTransition;
 
 import java.security.acl.Group;
 
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         gauge.setAttribute(new PaintAttribute(whitePaint));
-        gauge.setTranslation(500,500);
+        gauge.setTranslation(350,350);
         gauge.setScale(0.5f);
 
         Log.w(TAG," gauge local bounds: "+gauge.getLocalBounds());
@@ -196,14 +197,7 @@ public class MainActivity extends AppCompatActivity {
         Log.w(TAG," root local bounds: "+root.getLocalBounds());
 
 
-
-        ObjectAnimator oa = new ObjectAnimator();
-        oa.setTarget(root);
-        oa.setPropertyName("translationY");
-        oa.setDuration(1000);
-        oa.setStartDelay(1000);
-        oa.setFloatValues(0,600);
-        oa.start();
+        TranslationTransition.create(root).byX(300).toY(500).duration(1000).delay(1000).start();
 
         ObjectAnimator rotationA = new ObjectAnimator();
         rotationA.setTarget(gauge);
@@ -234,8 +228,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
 
-        BaseNode root = createTest1Node();
-        //BaseNode root = createGauge();
+        //BaseNode root = createTest1Node();
+        BaseNode root = createGauge();
         rcView.setRootNode(root);
 
 
