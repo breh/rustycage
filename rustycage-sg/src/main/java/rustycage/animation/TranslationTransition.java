@@ -85,7 +85,7 @@ public final class TranslationTransition extends AbstractTransition<TranslationT
 
 
     @Override
-    protected Animator createAnimator() {
+    protected Animator build() {
         boolean hasFromX = !Float.isNaN(fromX);
         boolean hasToX = !Float.isNaN(toX);
         boolean hasFromY = !Float.isNaN(fromY);

@@ -50,12 +50,12 @@ public abstract class AbstractTransition<T extends AbstractTransition<T, A>, A e
 
     public final void start() {
         if (animator == null) {
-            animator = createAnimator();
+            animator = build();
         }
         animator.start();
     }
 
-    protected abstract @NonNull A createAnimator();
+    protected abstract @NonNull A build();
 
     @CallSuper
     protected void fill(@NonNull A animator) {

@@ -22,6 +22,9 @@ import rustycage.PaintAttribute;
 import rustycage.RectangleNode;
 import rustycage.RustyCageView;
 import rustycage.TextNode;
+import rustycage.animation.GroupTransition;
+import rustycage.animation.RotationTransition;
+import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
 
 import java.security.acl.Group;
@@ -197,23 +200,13 @@ public class MainActivity extends AppCompatActivity {
         Log.w(TAG," root local bounds: "+root.getLocalBounds());
 
 
-        TranslationTransition.create(root).byX(300).toY(500).duration(1000).delay(1000).start();
-
-        ObjectAnimator rotationA = new ObjectAnimator();
-        rotationA.setTarget(gauge);
-        rotationA.setPropertyName("rotation");
-        rotationA.setDuration(2000);
-        rotationA.setStartDelay(1000);
-        rotationA.setFloatValues(0,720);
-        rotationA.start();
-
-        ObjectAnimator scaleA = new ObjectAnimator();
-        scaleA.setTarget(gauge);
-        scaleA.setPropertyName("scale");
-        scaleA.setDuration(2000);
-        scaleA.setStartDelay(1000);
-        scaleA.setFloatValues(0.5f, 1.0f);
-        scaleA.start();
+        GroupTransition.createParallel()
+                .add(TranslationTransition.create(root).byX(300).toY(500))
+                .add(RotationTransition.create(gauge).to(720))
+                .add(ScaleTransition.create(gauge).from(0.5f).to(1f))
+                .duration(2000)
+                .delay(1000)
+                .start();
 
         root.setRotation(-20);
 
