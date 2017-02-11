@@ -163,11 +163,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG,"onTouchEvent node: "+node+",: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
                         if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             // scale the gauge
-                            //ScaleTransition.create(node).to(1.5f).duration(300).start();
-                            //GroupTransition.createSequential(node).add(RotationTransition.create(node).by(30).duration(300)).start();
+                            ScaleTransition.create(node).to(1.5f).duration(300).start();
                             FadeTransition.create(node).to(0.5f).duration(300).start();
                         } else if (touchEvent.getAction() == MotionEvent.ACTION_UP) {
-                            //ScaleTransition.create(node).to(1f).duration(300).start();
+                            ScaleTransition.create(node).to(1f).duration(300).start();
                             FadeTransition.create(node).to(1f).duration(300).start();
                         }
                         return false;
@@ -215,8 +214,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         gauge.setAttribute(new PaintAttribute(whitePaint));
-        gauge.setTranslation(350,350);
-        gauge.setScale(0.5f);
 
         Log.w(TAG," gauge local bounds: "+gauge.getLocalBounds());
         Log.w(TAG," gauge transformed bounds: "+gauge.getTransformedBounds());
@@ -229,8 +226,8 @@ public class MainActivity extends AppCompatActivity {
 
         GroupTransition.createParallel()
                 .add(TranslationTransition.create(root).byX(300).toY(500))
-                .add(RotationTransition.create(gauge).to(720))
-                .add(ScaleTransition.create(gauge).from(0.5f).to(1f))
+                .add(RotationTransition.create(root).to(720))
+                .add(ScaleTransition.create(root).from(0.5f).to(1f))
                 .duration(2000)
                 .delay(1000)
                 .start();
@@ -259,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
-
         BaseNode root = createTest1Node();
         //BaseNode root = createGauge();
         rcView.setRootNode(root);

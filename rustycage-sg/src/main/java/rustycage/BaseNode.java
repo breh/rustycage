@@ -51,7 +51,7 @@ public abstract class BaseNode {
     public final void setTranslation(float tx, float ty) {
         NodeTransformationSupport support = getOrCreateTransformationSupport();
         support.setTx(tx);
-        support.setTy(tx);
+        support.setTy(ty);
         markDirty();
     }
 
@@ -91,23 +91,23 @@ public abstract class BaseNode {
 
 
     public final float getTranslationX() {
-        return transformationSupport != null ? transformationSupport.getTx() : Float.NaN;
+        return transformationSupport != null ? transformationSupport.getTx() :0f;
     }
 
     public final float getTranslationY() {
-        return transformationSupport != null ? transformationSupport.getTy() : Float.NaN;
+        return transformationSupport != null ? transformationSupport.getTy() : 0f;
     }
 
     public final float getScaleX() {
-        return transformationSupport != null ? transformationSupport.getSx() : Float.NaN;
+        return transformationSupport != null ? transformationSupport.getSx() : 1f;
     }
 
     public final float getScaleY() {
-        return transformationSupport != null ? transformationSupport.getSy() : Float.NaN;
+        return transformationSupport != null ? transformationSupport.getSy() : 1f;
     }
 
     public final float getRotation() {
-        return transformationSupport != null ? transformationSupport.getR() : Float.NaN;
+        return transformationSupport != null ? transformationSupport.getR() : 0f;
     }
 
 
@@ -394,9 +394,9 @@ public abstract class BaseNode {
     // node transformation support
     private final static class NodeTransformationSupport {
 
-        private float tx,ty;
+        private float tx,ty = 0f;
         private float sx = 1f,sy = 1f;
-        private float r;
+        private float r = 0f;
 
         private float px = Float.NaN, py = Float.NaN;
 
@@ -565,17 +565,17 @@ public abstract class BaseNode {
         }
 
         private Matrix computeMatrix(@NonNull BaseNode node) {
-            if (tx == 0 && ty == 0 && r == 0 && sx == 1 && sy == 1) {
+            if (tx == 0f && ty == 0f && r == 0f && sx == 1f && sy == 1f) {
                 return IDENTITY_MATRIX;
             } // else
             Matrix m = new Matrix();
-            if (sx != 1 || sy != 1) {
+            if (sx != 1f || sy != 1f) {
                 m.postScale(sx, sy, getActualPivotX(node), getActualPivotY(node));
             }
-            if (r != 0) {
+            if (r != 0f) {
                 m.postRotate(r, getActualPivotX(node), getActualPivotY(node));
             }
-            if (tx != 0 || ty != 0) {
+            if (tx != 0f || ty != 0f) {
                 m.postTranslate(tx, ty);
             }
             return m;
