@@ -2,6 +2,8 @@ package rustycage.demo;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
@@ -19,6 +21,7 @@ import android.view.MotionEvent;
 import rustycage.BaseNode;
 import rustycage.EllipseNode;
 import rustycage.GroupNode;
+import rustycage.ImageNode;
 import rustycage.LineNode;
 import rustycage.PaintAttribute;
 import rustycage.RectangleNode;
@@ -79,12 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
         TextNode textNode = null;
 
+        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
+
         GroupNode gn = GroupNode.create()
                 .add(GroupNode.create()
                         .add(line1)
                         .add(LineNode.createWithSize(700,400,400,100).paint(redPaint))
                         .add(RectangleNode.createWithSize(30,530,500,300))
                         .add(RectangleNode.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
+                        .add(ImageNode.createWithBitmap(bitmap1))
                 )
                 .add(gn2)
                 .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))

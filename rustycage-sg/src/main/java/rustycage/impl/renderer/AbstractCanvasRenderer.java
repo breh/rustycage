@@ -19,6 +19,8 @@ public abstract class AbstractCanvasRenderer<T extends BaseNode>  {
 
     protected static final Paint OPACITY_PAINT = new Paint();
 
+    protected static final Matrix IDENTITY_MATRIX = new Matrix();
+
     public final void render(@NonNull Canvas canvas, @NonNull T node, @NonNull FloatStack opacityStack,
                              @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         // opacity
