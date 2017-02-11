@@ -8,11 +8,13 @@ import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.nfc.Tag;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import rustycage.BaseNode;
 import rustycage.EllipseNode;
@@ -27,6 +29,8 @@ import rustycage.animation.GroupTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
+import rustycage.event.TouchEventListener;
+import rustycage.util.Walker;
 
 import java.security.acl.Group;
 
@@ -150,6 +154,27 @@ public class MainActivity extends AppCompatActivity {
         opacityAnim.start();
 
 
+        Walker.forEachLeaf(groot, new Walker.Action() {
+            @Override
+            public void onNode(final @NonNull BaseNode node) {
+                node.setOnTouchEventListener(new TouchEventListener() {
+                    @Override
+                    public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
+                        Log.d(TAG,"onTouchEvent node: "+node+",: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
+                        if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                            // scale the gauge
+                            //ScaleTransition.create(node).to(1.5f).duration(300).start();
+                            //GroupTransition.createSequential(node).add(RotationTransition.create(node).by(30).duration(300)).start();
+                            FadeTransition.create(node).to(0.5f).duration(300).start();
+                        } else if (touchEvent.getAction() == MotionEvent.ACTION_UP) {
+                            //ScaleTransition.create(node).to(1f).duration(300).start();
+                            FadeTransition.create(node).to(1f).duration(300).start();
+                        }
+                        return false;
+                    }
+                }, false);
+            }
+        });
 
         return groot;
     }
@@ -174,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         whitePaint.setTextAlign(Paint.Align.CENTER);
 
 
-        GroupNode gauge = GroupNode.create()
+        final GroupNode gauge = GroupNode.create()
                 .add(EllipseNode.createCircle(GAUGE_SIZE).paint(circularGradient))
                 .build();
 
@@ -209,6 +234,20 @@ public class MainActivity extends AppCompatActivity {
                 .duration(2000)
                 .delay(1000)
                 .start();
+
+        gauge.setOnTouchEventListener(new TouchEventListener() {
+            @Override
+            public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
+                Log.d(TAG,"onTouchEvent gauge: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
+                if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    // scale the gauge
+                    ScaleTransition.create(gauge).to(1.5f).duration(300).start();
+                } else if (touchEvent.getAction() == MotionEvent.ACTION_UP) {
+                    ScaleTransition.create(gauge).to(1f).duration(300).start();
+                }
+                return false;
+            }
+        }, false);
 
         return root;
     }

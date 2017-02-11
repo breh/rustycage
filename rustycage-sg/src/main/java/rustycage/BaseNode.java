@@ -4,7 +4,9 @@ import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MotionEvent;
 
+import rustycage.event.TouchEventListener;
 import rustycage.impl.Bounds;
 
 /**
@@ -227,6 +229,13 @@ public abstract class BaseNode {
         return transformationSupport != null ? transformationSupport.getTransformedBounds(this, null) : getLocalBounds();
     }
 
+    void computeTransformedBounds(@NonNull float[] bounds) {
+        if (transformationSupport != null) {
+            NodeTransformationSupport.computeTransformedBounds(localBounds, transformationSupport.getMatrix(this), bounds);
+        } else {
+            computeLocalBounds(bounds);
+        }
+    }
 
     public final @Nullable Matrix getMatrix() {
         return transformationSupport != null ? transformationSupport.getMatrix(this) : null;
@@ -251,6 +260,73 @@ public abstract class BaseNode {
         return transformationSupport;
     }
 
+
+    private EventSupport eventSupport;
+    EventSupport getEventSupport() {
+        if (eventSupport == null) {
+            eventSupport = new EventSupport();
+        }
+        return eventSupport;
+    }
+
+    boolean hasCaptureListener() {
+        return eventSupport != null && eventSupport.capturePhase;
+    }
+
+    boolean hasBubbleListener() {
+        return eventSupport != null && !eventSupport.capturePhase;
+    }
+
+    public void setOnTouchEventListener(@Nullable TouchEventListener listener, boolean capturePhase) {
+        getEventSupport().setTouchEventListener(listener, capturePhase);
+        if (listener == null) {
+            eventSupport = null;
+        }
+    }
+
+
+    /**
+     * Checks whether given point is within bounds of this node.
+     * @param point in "parent" (transformed) coordinates
+     * @return true if it is within bounds
+     */
+    private boolean isWithinBounds(@NonNull float[] point) {
+        float x = point[0];
+        float y = point[1];
+        return (x >= getTransformedLeft() && x <= getTransformedRight()
+                && y >= getTransformedTop() && y <= getTransformedBottom());
+    }
+
+
+    /**
+     * Tests is the touch point is in the bounds of this node. If true, converts the touch point
+     * to the local coordinates of this node (if applicable)
+     * @param touchPoint
+     * @return
+     */
+    final boolean findHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
+        //Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedLeft()+", "+getTransformedRight()
+        //        +"; "+getTransformedTop()+", "+getTransformedBottom()+"], lbounds: ["+getLeft()+", "+getRight()
+        //        +"; "+getTop()+", "+getBottom()+"]");
+        if (isWithinBounds(touchPoint)) {
+            // succeeded hit test, adding to hit path
+            if (transformationSupport != null) {
+                // need to transform to local coordinates
+                getOrCreateTransformationSupport().getInverseMatrix(this).mapPoints(touchPoint);
+            }
+            //Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
+            nodeHitPath.pushNode(this, touchPoint[0], touchPoint[1]);
+            searchForHitPath(nodeHitPath, touchPoint);
+            return true;
+        } else {
+            // failed hit test
+            return false;
+        }
+    }
+
+    // looks for children nodes
+    void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
+    }
 
     private BaseNode parent;
 
@@ -325,6 +401,7 @@ public abstract class BaseNode {
         private float px = Float.NaN, py = Float.NaN;
 
         private Matrix matrix;
+        private Matrix inverseMatrix;
         private static final Matrix IDENTITY_MATRIX = new Matrix();
 
         private float[] transformedBounds = new float[4];
@@ -471,7 +548,7 @@ public abstract class BaseNode {
         }
 
 
-        private static void computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
+        static void computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
             if (! matrix.isIdentity()) {
                 matrix.mapPoints(transformedBounds, localBounds);
             } else {
@@ -504,14 +581,49 @@ public abstract class BaseNode {
             return m;
         }
 
-        public final Matrix getMatrix(@NonNull BaseNode node) {
+        public final @NonNull Matrix getMatrix(@NonNull BaseNode node) {
             if (matrix == null) {
                 matrix = computeMatrix(node);
             }
             return matrix;
         }
 
+        public final @Nullable Matrix getInverseMatrix(@NonNull BaseNode node) {
+            if (inverseMatrix == null) {
+                Matrix inverse = new Matrix();
+                boolean inverted = getMatrix(node).invert(inverse);
+                if (inverted) {
+                    inverseMatrix = inverse;
+                } else {
+                    Log.w(TAG,"Cannot compute inverted matrix");
+                }
+            }
+            return inverseMatrix;
+        }
+    }
 
+
+
+    // node event support
+    static class EventSupport {
+
+        private boolean capturePhase;
+        private TouchEventListener listener;
+
+
+        public void setTouchEventListener(@Nullable TouchEventListener listener, boolean capturePhase) {
+            this.listener = listener;
+            this.capturePhase = capturePhase;
+        }
+
+
+        public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY, boolean isCapture) {
+            if (capturePhase == isCapture && listener != null) {
+                return listener.onTouchEvent(motionEvent, localX, localY, isCapture);
+            } else {
+                return false;
+            }
+        }
     }
 
 

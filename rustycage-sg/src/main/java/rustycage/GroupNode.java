@@ -4,6 +4,7 @@ import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import rustycage.impl.AttributesStack;
 import rustycage.util.Preconditions;
@@ -237,6 +238,21 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
             }
         }
     }
+
+
+
+
+    void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
+        for (int i= nodes.size() - 1 ; i >= 0; i--) {
+            BaseNode node = nodes.get(i);
+            boolean foundHitPath = node.findHitPath(nodeHitPath, touchPoint);
+            if (foundHitPath) {
+                // we are done
+                break;
+            }
+        }
+    }
+
 
     public static Builder create() {
         return new Builder();

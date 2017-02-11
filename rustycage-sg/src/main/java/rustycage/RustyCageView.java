@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import rustycage.impl.AttributesStack;
@@ -36,6 +38,8 @@ public class RustyCageView extends View {
     private int height;
 
     private SceneNode sceneNode;
+    private NodeHitPath nodeHitPath;
+    private float[] touchPoint = new float[2];
 
 
     private final AttributesStack attributesStack = new AttributesStack();
@@ -94,12 +98,32 @@ public class RustyCageView extends View {
         this.height = h;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // capture and bubble through scenegraph
+        if (sceneNode != null) {
+            //Log.d(TAG,"onTouchEvent: localXY["+event.getX()+", "+event.getY()
+            //        +"], raw:["+event.getRawX()+", "+event.getRawY()+"]");
+            touchPoint[0] = event.getX();
+            touchPoint[1] = event.getY();
+            boolean foundHitPath = sceneNode.findHitPath(nodeHitPath, touchPoint);
+            //Log.d(TAG,"found: "+foundHitPath+", hitPath: "+nodeHitPath);
+            if (foundHitPath) {
+                nodeHitPath.deliverEvent(event);
+                nodeHitPath.clear();
+            }
+        }
+        // FIXME?
+        return true;
+    }
 
     public void setRootNode(@Nullable BaseNode rootNode) {
         if (rootNode != null) {
             sceneNode = new SceneNode(rootNode);
+            nodeHitPath = new NodeHitPath();
         } else {
             sceneNode = null;
+            nodeHitPath = null;
         }
         invalidate();
     }
@@ -135,10 +159,15 @@ public class RustyCageView extends View {
             //}
         }
 
+        @Override
+        void searchForHitPath(@NonNull NodeHitPath nodeHitPath, final float[] touchPoint) {
+            //Log.d(TAG,"delegate.searchForHitPath touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"]");
+            sceneDelegate.findHitPath(nodeHitPath, touchPoint);
+        }
 
         @Override
         protected void computeLocalBounds(@NonNull float[] bounds) {
-            sceneDelegate.computeLocalBounds(bounds);
+            sceneDelegate.computeTransformedBounds(bounds);
         }
     }
 
