@@ -3,6 +3,7 @@ package rustycage.impl.renderer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import rustycage.ArcNode;
 import rustycage.BaseNode;
 import rustycage.EllipseNode;
 import rustycage.GroupNode;
@@ -29,6 +30,7 @@ public class RendererProvider {
         registerRenderer(LineNode.class,new LineCanvasRenderer());
         registerRenderer(RectangleNode.class,new RectangleCanvasRenderer());
         registerRenderer(EllipseNode.class, new EllipseCanvasRenderer());
+        registerRenderer(ArcNode.class, new ArcCanvasRenderer());
         registerRenderer(TextNode.class, new TextCanvasRenderer());
     }
 

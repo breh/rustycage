@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.graphics.drawable.shapes.ArcShape;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.ColorUtils;
@@ -18,6 +19,7 @@ import android.text.TextPaint;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import rustycage.ArcNode;
 import rustycage.BaseNode;
 import rustycage.EllipseNode;
 import rustycage.GroupNode;
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                         .add(RectangleNode.createWithSize(30,530,500,300))
                         .add(RectangleNode.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
                         .add(ImageNode.createWithBitmap(bitmap1))
+                        .add(ArcNode.create(100,100,300,300,220,30))
                 )
                 .add(gn2)
                 .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))
@@ -164,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNode(final @NonNull BaseNode node) {
                 node.setOnTouchEventListener(new TouchEventListener() {
+                    private float lastX, lastY;
+
                     @Override
                     public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
                         Log.d(TAG,"onTouchEvent node: "+node+",: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
@@ -171,9 +176,14 @@ public class MainActivity extends AppCompatActivity {
                             // scale the gauge
                             ScaleTransition.create(node).to(1.5f).duration(300).start();
                             FadeTransition.create(node).to(0.5f).duration(300).start();
+                            lastX = localX;
+                            lastY = localY;
+                            node.getParent().moveToFront(node);
                         } else if (touchEvent.getAction() == MotionEvent.ACTION_UP) {
                             ScaleTransition.create(node).to(1f).duration(300).start();
                             FadeTransition.create(node).to(1f).duration(300).start();
+                        } else if (touchEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                            node.setTranslation(localX - lastX, localY - lastY);
                         }
                         return false;
                     }

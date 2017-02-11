@@ -153,22 +153,22 @@ public abstract class BaseNode {
         return dirty;
     }
 
-    public final float getLeft() {
+    public final float getLocalBoundsLeft() {
         refreshLocalBoundsIfNeeded();
         return localBounds[0];
     }
 
-    public final float getRight() {
+    public final float getLocalBoundsRight() {
         refreshLocalBoundsIfNeeded();
         return localBounds[2];
     }
 
-    public final float getTop() {
+    public final float getLocalBoundsTop() {
         refreshLocalBoundsIfNeeded();
         return localBounds[1];
     }
 
-    public final float getBottom() {
+    public final float getLocalBoundsBottom() {
         refreshLocalBoundsIfNeeded();
         return localBounds[3];
     }
@@ -207,20 +207,20 @@ public abstract class BaseNode {
     protected abstract void computeLocalBounds(@NonNull float[] bounds);
 
 
-    public final float getTransformedLeft() {
-        return transformationSupport != null ? transformationSupport.getTransformedLeft(this) : getLeft();
+    public final float getTransformedBoundsLeft() {
+        return transformationSupport != null ? transformationSupport.getTransformedLeft(this) : getLocalBoundsLeft();
     }
 
-    public final float getTransformedRight() {
-        return transformationSupport != null ? transformationSupport.getTransformedRight(this) : getRight();
+    public final float getTransformedBoundsRight() {
+        return transformationSupport != null ? transformationSupport.getTransformedRight(this) : getLocalBoundsRight();
     }
 
-    public final float getTransformedTop() {
-        return transformationSupport != null ? transformationSupport.getTransformedTop(this) : getTop();
+    public final float getTransformedBoundsTop() {
+        return transformationSupport != null ? transformationSupport.getTransformedTop(this) : getLocalBoundsTop();
     }
 
-    public final float getTransformedBottom() {
-        return transformationSupport != null ? transformationSupport.getTransformedBottom(this) : getBottom();
+    public final float getTransformedBoundsBottom() {
+        return transformationSupport != null ? transformationSupport.getTransformedBottom(this) : getLocalBoundsBottom();
     }
 
 
@@ -243,11 +243,11 @@ public abstract class BaseNode {
     // size
 
     public  final float getWidth() {
-        return Math.abs(getRight() - getLeft());
+        return Math.abs(getLocalBoundsRight() - getLocalBoundsLeft());
     }
 
     public final float getHeight() {
-        return Math.abs(getBottom() - getTop());
+        return Math.abs(getLocalBoundsBottom() - getLocalBoundsTop());
     }
 
 
@@ -293,8 +293,8 @@ public abstract class BaseNode {
     private boolean isWithinBounds(@NonNull float[] point) {
         float x = point[0];
         float y = point[1];
-        return (x >= getTransformedLeft() && x <= getTransformedRight()
-                && y >= getTransformedTop() && y <= getTransformedBottom());
+        return (x >= getTransformedBoundsLeft() && x <= getTransformedBoundsRight()
+                && y >= getTransformedBoundsTop() && y <= getTransformedBoundsBottom());
     }
 
 
@@ -305,9 +305,9 @@ public abstract class BaseNode {
      * @return
      */
     final boolean findHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
-        //Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedLeft()+", "+getTransformedRight()
-        //        +"; "+getTransformedTop()+", "+getTransformedBottom()+"], lbounds: ["+getLeft()+", "+getRight()
-        //        +"; "+getTop()+", "+getBottom()+"]");
+        //Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedBoundsLeft()+", "+getTransformedBoundsRight()
+        //        +"; "+getTransformedBoundsTop()+", "+getTransformedBoundsBottom()+"], lbounds: ["+getLocalBoundsLeft()+", "+getLocalBoundsRight()
+        //        +"; "+getLocalBoundsTop()+", "+getLocalBoundsBottom()+"]");
         if (isWithinBounds(touchPoint)) {
             // succeeded hit test, adding to hit path
             if (transformationSupport != null) {
@@ -328,13 +328,13 @@ public abstract class BaseNode {
     void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
     }
 
-    private BaseNode parent;
+    private GroupNode parent;
 
-    public final @Nullable BaseNode getParent() {
+    public final @Nullable GroupNode getParent() {
         return parent;
     }
 
-    final void setParent(@Nullable BaseNode parent) {
+    final void setParent(@Nullable GroupNode parent) {
         this.parent = parent;
     }
 
@@ -465,7 +465,7 @@ public abstract class BaseNode {
 
         protected float getActualPivotX(@NonNull BaseNode node) {
             if (Float.isNaN(px)) {
-                return (node.getRight() + node.getLeft()) / 2f;
+                return (node.getLocalBoundsRight() + node.getLocalBoundsLeft()) / 2f;
             } else {
                 return px;
             }
@@ -473,7 +473,7 @@ public abstract class BaseNode {
 
         protected float getActualPivotY(@NonNull BaseNode node) {
             if (Float.isNaN(py)) {
-                return (node.getBottom() + node.getTop()) / 2f;
+                return (node.getLocalBoundsBottom() + node.getLocalBoundsTop()) / 2f;
             } else {
                 return py;
             }

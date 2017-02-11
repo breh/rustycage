@@ -39,6 +39,7 @@ public class EllipseCanvasRenderer extends ShapeCanvasRenderer<EllipseNode> {
         }
 
         //Log.d(TAG,"rendering ellipse: "+node+" cxy:["+cx+","+cy+"], rxy:["+rx+","+ry+"], paint: "+paint);
+        // FIXME - might want to draw circle in the case rx/ry are equal - could be faster !!!
         canvas.drawOval(cx-rx, cy-ry, cx+rx, cy+ry, paint);
     }
 }

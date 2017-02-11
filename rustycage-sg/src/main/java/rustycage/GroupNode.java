@@ -1,10 +1,8 @@
 package rustycage;
 
-import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import rustycage.impl.AttributesStack;
 import rustycage.util.Preconditions;
@@ -77,6 +75,16 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         node.setParent(this);
         nodes.add(index,node);
         markLocalBoundsDirty();
+    }
+
+    public final void moveToFront(@NonNull BaseNode node) {
+        Preconditions.assertNotNull(node,"node");
+        int index = nodes.indexOf(node);
+        if (index >= 0) {
+            nodes.remove(index);
+            nodes.add(node);
+        }
+        markDirty();
     }
 
     public final @Nullable <T> Attribute<T> setAttribute(@NonNull Attribute<T> attribute) {
@@ -203,10 +211,10 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         float bottom = Float.MIN_VALUE;
         for (int i=0; i < size; i++) {
             BaseNode n = nodes.get(i);
-            float nodeLeft = n.getTransformedLeft();
-            float nodeTop = n.getTransformedTop();
-            float nodeRight = n.getTransformedRight();
-            float nodeBottom = n.getTransformedBottom();
+            float nodeLeft = n.getTransformedBoundsLeft();
+            float nodeTop = n.getTransformedBoundsTop();
+            float nodeRight = n.getTransformedBoundsRight();
+            float nodeBottom = n.getTransformedBoundsBottom();
             if (nodeLeft < left) {
                 left = nodeLeft;
             }

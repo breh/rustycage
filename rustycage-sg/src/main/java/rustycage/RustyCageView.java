@@ -129,7 +129,7 @@ public class RustyCageView extends View {
     }
 
 
-    private class SceneNode extends BaseNode {
+    private class SceneNode extends GroupNode {
 
 
         private BaseNode sceneDelegate;
@@ -144,7 +144,7 @@ public class RustyCageView extends View {
         }
 
         @Override
-        void onMarkedDirty() {
+        protected void onMarkedDirty() {
             //Log.d(TAG,"SceneNode invalidated");
             RustyCageView.this.invalidate();
         }
