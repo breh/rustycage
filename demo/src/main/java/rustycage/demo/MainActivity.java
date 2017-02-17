@@ -23,6 +23,7 @@ import rustycage.SgGroup;
 import rustycage.SgImage;
 import rustycage.SgLine;
 import rustycage.PaintAttribute;
+import rustycage.SgPath;
 import rustycage.SgRectangle;
 import rustycage.RustyCageView;
 import rustycage.SgText;
@@ -81,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
         Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
 
+        SgPath sgPath = SgPath.create().arcTo(-250,-250,100,100,180,90)/*.rLineTo(0,40)*/
+                .arcTo(-150,-150,0,0,270,-90).close().txy(800,300).s(1)
+                        .paint(greenPaint).build();
+
         SgGroup gn = SgGroup.create()
                 .add(SgGroup.create()
                         .add(line1)
@@ -94,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 .add(SgEllipse.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))
                 .add(SgEllipse.createEllipse(200,100,300,800))
                 .add(textNode = SgText.create("XXXX").textPaint(textPaint).xy(300,300).build())
+                .add(sgPath)
+                .add(SgEllipse.createCircle(30).txy(800,300))
+
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
                 .build();

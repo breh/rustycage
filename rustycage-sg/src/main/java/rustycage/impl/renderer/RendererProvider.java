@@ -8,6 +8,7 @@ import rustycage.SgEllipse;
 import rustycage.SgGroup;
 import rustycage.SgImage;
 import rustycage.SgLine;
+import rustycage.SgPath;
 import rustycage.SgRectangle;
 import rustycage.SgText;
 import rustycage.util.Preconditions;
@@ -30,6 +31,7 @@ public class RendererProvider {
         registerRenderer(SgRectangle.class,new RectangleCanvasRenderer());
         registerRenderer(SgEllipse.class, new EllipseCanvasRenderer());
         registerRenderer(SgArc.class, new ArcCanvasRenderer());
+        registerRenderer(SgPath.class, new PathCanvasRenderer());
         registerRenderer(SgText.class, new TextCanvasRenderer());
     }
 

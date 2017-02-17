@@ -384,7 +384,7 @@ public abstract class SgNode {
         }
 
 
-        public final N build() {
+        public N build() {
             return node;
         }
 
