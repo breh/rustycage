@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
@@ -19,11 +19,11 @@ public final class FadeTransition extends AbstractTransition<FadeTransition, Ani
 
     private static final String PROPERTY_NAME = "opacity";
 
-    private FadeTransition(@NonNull BaseNode targetNode) {
+    private FadeTransition(@NonNull SgNode targetNode) {
         super(targetNode);
     }
 
-    public static FadeTransition create(@NonNull BaseNode targetNode) {
+    public static FadeTransition create(@NonNull SgNode targetNode) {
         Preconditions.assertNotNull(targetNode,"targetNode");
         return new FadeTransition(targetNode);
     }

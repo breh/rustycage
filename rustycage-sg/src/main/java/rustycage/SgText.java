@@ -10,9 +10,9 @@ import android.text.TextPaint;
  * Created by breh on 1/23/17.
  */
 
-public final class TextNode extends BaseNode {
+public final class SgText extends SgNode {
 
-    private static final String TAG = "TextNode";
+    private static final String TAG = "SgText";
 
     private static final TextPaint DEFAULT_TEXT_PAINT = new TextPaint();
 
@@ -20,7 +20,7 @@ public final class TextNode extends BaseNode {
     private TextPaint textPaint = DEFAULT_TEXT_PAINT;
     private CharSequence text;
 
-    private TextNode(@Nullable CharSequence text, float x, float y) {
+    private SgText(@Nullable CharSequence text, float x, float y) {
         this.text = text;
         this.x = x;
         this.y = y;
@@ -99,19 +99,19 @@ public final class TextNode extends BaseNode {
 
 // builder
 
-    public static TextNode.Builder create(@Nullable CharSequence text) {
-        return new TextNode.Builder(text, 0, 0);
+    public static SgText.Builder create(@Nullable CharSequence text) {
+        return new SgText.Builder(text, 0, 0);
     }
 
-    public static TextNode.Builder create(@Nullable CharSequence text, float x, float y) {
-        return new TextNode.Builder(text, x, y);
+    public static SgText.Builder create(@Nullable CharSequence text, float x, float y) {
+        return new SgText.Builder(text, x, y);
     }
 
 
-    public static class Builder extends BaseNode.Builder<Builder,TextNode> {
+    public static class Builder extends SgNode.Builder<Builder, SgText> {
 
         private Builder(@Nullable CharSequence text, float x, float y) {
-            super(new TextNode(text, x, y));
+            super(new SgText(text, x, y));
         }
 
         public Builder textPaint(@NonNull TextPaint paint) {

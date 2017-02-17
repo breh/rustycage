@@ -1,18 +1,17 @@
 package rustycage;
 
-import android.graphics.drawable.shapes.Shape;
 import android.support.annotation.NonNull;
 
 /**
  * Created by breh on 1/21/17.
  */
 
-public class EllipseNode extends ShapeNode {
+public class SgEllipse extends SgShape {
 
 
     private float cx, cy, rx, ry;
 
-    private EllipseNode(float rx, float ry, float cx, float cy) {
+    private SgEllipse(float rx, float ry, float cx, float cy) {
         this.rx = rx;
         this.ry = ry;
         this.cx = cx;
@@ -63,9 +62,9 @@ public class EllipseNode extends ShapeNode {
 
 
 
-    public static class Builder extends ShapeNode.Builder<Builder,EllipseNode> {
+    public static class Builder extends SgShape.Builder<Builder, SgEllipse> {
         private Builder(float cx, float cy, float rx, float ry) {
-            super(new EllipseNode(cx,cy,rx,ry));
+            super(new SgEllipse(cx,cy,rx,ry));
         }
     }
 

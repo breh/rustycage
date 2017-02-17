@@ -5,7 +5,7 @@ import android.animation.AnimatorSet;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public final class GroupTransition extends AbstractTransition<GroupTransition,An
     private List<Animator> animators = new ArrayList<>();
     private final boolean parallel;
 
-    protected GroupTransition(@Nullable BaseNode node, boolean parallel) {
+    protected GroupTransition(@Nullable SgNode node, boolean parallel) {
         super(node);
         this.parallel = parallel;
     }
@@ -58,16 +58,16 @@ public final class GroupTransition extends AbstractTransition<GroupTransition,An
     }
 
 
-    public static GroupTransition createParallel(@Nullable BaseNode baseNode) {
-        return new GroupTransition(baseNode, true);
+    public static GroupTransition createParallel(@Nullable SgNode sgNode) {
+        return new GroupTransition(sgNode, true);
     }
 
     public static GroupTransition createParallel() {
         return new GroupTransition(null, true);
     }
 
-    public static GroupTransition createSequential(@Nullable BaseNode baseNode) {
-        return new GroupTransition(baseNode, false);
+    public static GroupTransition createSequential(@Nullable SgNode sgNode) {
+        return new GroupTransition(sgNode, false);
     }
 
     public static GroupTransition createSequential() {

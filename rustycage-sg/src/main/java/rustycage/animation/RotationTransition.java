@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
@@ -19,11 +19,11 @@ public final class RotationTransition extends AbstractTransition<RotationTransit
 
     private static final String PROPERTY_NAME = "rotation";
 
-    private RotationTransition(@NonNull BaseNode targetNode) {
+    private RotationTransition(@NonNull SgNode targetNode) {
         super(targetNode);
     }
 
-    public static RotationTransition create(@NonNull BaseNode targetNode) {
+    public static RotationTransition create(@NonNull SgNode targetNode) {
         Preconditions.assertNotNull(targetNode,"targetNode");
         return new RotationTransition(targetNode);
     }

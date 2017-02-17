@@ -5,7 +5,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 
 /**
  * Created by breh on 2/3/17.
@@ -13,16 +13,16 @@ import rustycage.BaseNode;
 
 public abstract class AbstractTransition<T extends AbstractTransition<T, A>, A extends Animator> {
 
-    private BaseNode targetNode;
+    private SgNode targetNode;
     private int delay = Integer.MIN_VALUE;
     private int duration = Integer.MAX_VALUE;
     private A animator;
 
-    protected AbstractTransition(@Nullable BaseNode targetNode) {
+    protected AbstractTransition(@Nullable SgNode targetNode) {
         this.targetNode = targetNode;
     }
 
-    protected final BaseNode getTargetNode() {
+    protected final SgNode getTargetNode() {
         return targetNode;
     }
 

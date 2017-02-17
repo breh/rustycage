@@ -1,17 +1,16 @@
 package rustycage;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 /**
  * Created by breh on 9/9/16.
  */
-public final class LineNode extends ShapeNode {
+public final class SgLine extends SgShape {
 
 
     private float x1, y1, x2,y2;
 
-    private LineNode(float x1, float y1, float x2, float y2) {
+    private SgLine(float x1, float y1, float x2, float y2) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -83,9 +82,9 @@ public final class LineNode extends ShapeNode {
     }
 
 
-    public static class Builder extends ShapeNode.Builder<Builder,LineNode> {
+    public static class Builder extends SgShape.Builder<Builder, SgLine> {
         private Builder(float x1, float y1, float x2, float y2) {
-            super(new LineNode(x1,y1,x2,y2));
+            super(new SgLine(x1,y1,x2,y2));
         }
     }
 }

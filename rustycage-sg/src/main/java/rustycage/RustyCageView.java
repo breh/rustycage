@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -37,7 +36,7 @@ public class RustyCageView extends View {
     private int width;
     private int height;
 
-    private SceneNode sceneNode;
+    private SgScene sceneNode;
     private NodeHitPath nodeHitPath;
     private float[] touchPoint = new float[2];
 
@@ -82,11 +81,11 @@ public class RustyCageView extends View {
         }
 
         if (sceneNode != null) {
-            BaseNode rootNode = sceneNode.getSceneDelegate();
+            SgNode rootNode = sceneNode.getSceneDelegate();
 
             getDisplay().getMetrics(displayMetrics);
 
-            AbstractCanvasRenderer<BaseNode> renderer = RendererProvider.getInstance().getRendererForNode(rootNode);
+            AbstractCanvasRenderer<SgNode> renderer = RendererProvider.getInstance().getRendererForNode(rootNode);
             renderer.render(canvas, rootNode, opacityStack, attributesStack, displayMetrics);
             sceneNode.clearDirty();
         }
@@ -117,9 +116,9 @@ public class RustyCageView extends View {
         return true;
     }
 
-    public void setRootNode(@Nullable BaseNode rootNode) {
+    public void setRootNode(@Nullable SgNode rootNode) {
         if (rootNode != null) {
-            sceneNode = new SceneNode(rootNode);
+            sceneNode = new SgScene(rootNode);
             nodeHitPath = new NodeHitPath();
         } else {
             sceneNode = null;
@@ -129,23 +128,24 @@ public class RustyCageView extends View {
     }
 
 
-    private class SceneNode extends GroupNode {
+    private class SgScene extends SgGroup {
 
 
-        private BaseNode sceneDelegate;
+        private SgNode sceneDelegate;
 
-        public SceneNode(@NonNull BaseNode sceneDelegate) {
+        public SgScene(@NonNull SgNode sceneDelegate) {
             this.sceneDelegate = sceneDelegate;
             this.sceneDelegate.setParent(this);
         }
 
-        public @NonNull BaseNode getSceneDelegate() {
+        public @NonNull
+        SgNode getSceneDelegate() {
             return sceneDelegate;
         }
 
         @Override
         protected void onMarkedDirty() {
-            //Log.d(TAG,"SceneNode invalidated");
+            //Log.d(TAG,"SgScene invalidated");
             RustyCageView.this.invalidate();
         }
 

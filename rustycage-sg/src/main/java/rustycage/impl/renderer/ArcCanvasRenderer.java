@@ -7,19 +7,18 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import rustycage.ArcNode;
-import rustycage.RectangleNode;
+import rustycage.SgArc;
 import rustycage.ResolutionUnit;
 
 /**
  * Created by breh on 10/14/16.
  */
-public class ArcCanvasRenderer extends ShapeCanvasRenderer<ArcNode> {
+public class ArcCanvasRenderer extends ShapeCanvasRenderer<SgArc> {
 
     private static final String TAG = "ArcRenderer";
 
     @Override
-    protected void renderShape(@NonNull Canvas canvas, @NonNull ArcNode node, @NonNull Paint paint,
+    protected void renderShape(@NonNull Canvas canvas, @NonNull SgArc node, @NonNull Paint paint,
                                @Nullable ResolutionUnit resolutionUnit, @NonNull DisplayMetrics displayMetrics) {
 
         float left = node.getLeft();

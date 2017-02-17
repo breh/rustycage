@@ -7,18 +7,18 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import rustycage.LineNode;
+import rustycage.SgLine;
 import rustycage.ResolutionUnit;
 
 /**
  * Created by breh on 10/14/16.
  */
-public class LineCanvasRenderer extends ShapeCanvasRenderer<LineNode> {
+public class LineCanvasRenderer extends ShapeCanvasRenderer<SgLine> {
 
     private static final String TAG = "LineRenderer";
 
     @Override
-    protected void renderShape(@NonNull Canvas canvas, @NonNull LineNode node, @Nullable Paint paint,
+    protected void renderShape(@NonNull Canvas canvas, @NonNull SgLine node, @Nullable Paint paint,
                                @Nullable ResolutionUnit resolutionUnit, @NonNull DisplayMetrics displayMetrics) {
 
 

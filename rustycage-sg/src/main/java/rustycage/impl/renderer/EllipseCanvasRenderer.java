@@ -7,24 +7,22 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import rustycage.EllipseNode;
+import rustycage.SgEllipse;
 import rustycage.ResolutionUnit;
-import rustycage.impl.AttributesStack;
-import rustycage.impl.FloatStack;
 
 /**
  * Created by breh on 1/21/17.
  */
 
-public class EllipseCanvasRenderer extends ShapeCanvasRenderer<EllipseNode> {
+public class EllipseCanvasRenderer extends ShapeCanvasRenderer<SgEllipse> {
 
 
 
     private static final String TAG = "EllipseRenderer";
 
     @Override
-    protected void renderShape(@NonNull Canvas canvas, @NonNull EllipseNode node, @Nullable Paint paint,
-                               @Nullable ResolutionUnit resolutionUnit,  @NonNull DisplayMetrics displayMetrics) {
+    protected void renderShape(@NonNull Canvas canvas, @NonNull SgEllipse node, @Nullable Paint paint,
+                               @Nullable ResolutionUnit resolutionUnit, @NonNull DisplayMetrics displayMetrics) {
         float cx = node.getCx();
         float cy = node.getCy();
         float rx = node.getRx();

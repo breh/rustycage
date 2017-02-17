@@ -15,10 +15,10 @@ final class NodeHitPath {
     private static final int INITIAL_SIZE = 50; // depth of 50
 
     private float[] hitCoordinates = new float[2*INITIAL_SIZE];
-    private List<BaseNode> path = new ArrayList<>(INITIAL_SIZE);
+    private List<SgNode> path = new ArrayList<>(INITIAL_SIZE);
 
 
-    public void pushNode(@NonNull BaseNode node, float localX, float localY) {
+    public void pushNode(@NonNull SgNode node, float localX, float localY) {
         int currentIndex = path.size();
         path.add(node);
         int coordinatesIndex = currentIndex*2;
@@ -32,7 +32,8 @@ final class NodeHitPath {
         return path.size();
     }
 
-    public @NonNull BaseNode getNodeAt(int index) {
+    public @NonNull
+    SgNode getNodeAt(int index) {
         return path.get(index);
     }
 
@@ -65,7 +66,7 @@ final class NodeHitPath {
         // capture
         int size = path.size();
         for (int i=0; i < size; i++) {
-            BaseNode node = path.get(i);
+            SgNode node = path.get(i);
             if (node.hasCaptureListener()) {
                 int coordinatesIndex = i*2;
                 float localX = hitCoordinates[coordinatesIndex];
@@ -79,7 +80,7 @@ final class NodeHitPath {
         }
         // bubble
         for (int i=size -1; i >= 0; i--) {
-            BaseNode node = path.get(i);
+            SgNode node = path.get(i);
             if (node.hasBubbleListener()) {
                 int coordinatesIndex = i*2;
                 float localX = hitCoordinates[coordinatesIndex];

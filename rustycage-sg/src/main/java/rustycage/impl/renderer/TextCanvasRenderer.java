@@ -4,11 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 
 import rustycage.ResolutionUnit;
-import rustycage.TextNode;
+import rustycage.SgText;
 import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
@@ -16,12 +15,12 @@ import rustycage.impl.FloatStack;
  * Created by breh on 1/23/17.
  */
 
-public class TextCanvasRenderer extends AbstractCanvasRenderer<TextNode> {
+public class TextCanvasRenderer extends AbstractCanvasRenderer<SgText> {
 
     private static final String TAG = "TextRenderer";
 
     @Override
-    protected void renderNode(@NonNull Canvas canvas, @NonNull TextNode node, @NonNull FloatStack opacityStack,
+    protected void renderNode(@NonNull Canvas canvas, @NonNull SgText node, @NonNull FloatStack opacityStack,
                               @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics) {
         CharSequence text = node.getText();
         if (text != null) {

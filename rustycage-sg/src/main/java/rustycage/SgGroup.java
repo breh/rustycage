@@ -14,23 +14,23 @@ import java.util.List;
 /**
  * Created by breh on 9/9/16.
  */
-public class GroupNode extends BaseNode implements Iterable<BaseNode> {
+public class SgGroup extends SgNode implements Iterable<SgNode> {
 
-    private static final String TAG = "GroupNode";
+    private static final String TAG = "SgGroup";
 
-    private final List<BaseNode> nodes = new ArrayList<>();
+    private final List<SgNode> nodes = new ArrayList<>();
     private List<Attribute<?>> attributes;
 
-    protected GroupNode() {
+    protected SgGroup() {
     }
 
 
-    public final @Nullable <T extends BaseNode> T findById(@NonNull String id, @NonNull Class<T> nodeClass) {
+    public final @Nullable <T extends SgNode> T findById(@NonNull String id, @NonNull Class<T> nodeClass) {
         Preconditions.assertNotNull(id, "id");
         Preconditions.assertNotNull(nodeClass, "nodeClass");
         int size = nodes.size();
         for (int i=0; i < size; i++) {
-            BaseNode node = nodes.get(i);
+            SgNode node = nodes.get(i);
             if (id.equals(node.getId())) {
                 if (nodeClass.isInstance(node)) {
                     return (T)node;
@@ -39,8 +39,8 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
                     return null;
                 }
             }
-            if (node instanceof GroupNode) {
-                T foundNode = ((GroupNode)node).findById(id, nodeClass);
+            if (node instanceof SgGroup) {
+                T foundNode = ((SgGroup)node).findById(id, nodeClass);
                 if (foundNode != null) {
                     return foundNode;
                 }
@@ -50,7 +50,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     }
 
 
-    public final void addNode(@NonNull BaseNode node) {
+    public final void addNode(@NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         if (node.getParent() != null) {
             throw new IllegalStateException("Node has already parent. Node: "+node+", parent: "+node.getParent());
@@ -60,7 +60,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         markLocalBoundsDirty();
     }
 
-    public final boolean removeNode(@NonNull BaseNode node) {
+    public final boolean removeNode(@NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         boolean removed = nodes.remove(node);
         if (removed) {
@@ -70,14 +70,14 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         return removed;
     }
 
-    public final void addNode(int index, @NonNull BaseNode node) {
+    public final void addNode(int index, @NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         node.setParent(this);
         nodes.add(index,node);
         markLocalBoundsDirty();
     }
 
-    public final void moveToFront(@NonNull BaseNode node) {
+    public final void moveToFront(@NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         int index = nodes.indexOf(node);
         if (index >= 0) {
@@ -169,12 +169,13 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         return nodes.size();
     }
 
-    public final @NonNull BaseNode get(int index) {
+    public final @NonNull
+    SgNode get(int index) {
         return nodes.get(index);
     }
 
-    public final @Nullable <T extends BaseNode> T get(int index, @NonNull Class<T> nodeClass) {
-        BaseNode node = nodes.get(index);
+    public final @Nullable <T extends SgNode> T get(int index, @NonNull Class<T> nodeClass) {
+        SgNode node = nodes.get(index);
         if (nodeClass.isInstance(node)) {
             return (T)node;
         } else {
@@ -183,7 +184,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         }
     }
 
-    public @NonNull Iterator<BaseNode> iterator() {
+    public @NonNull Iterator<SgNode> iterator() {
         return nodes.iterator();
     }
 
@@ -210,7 +211,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
         float right = Float.MIN_VALUE;
         float bottom = Float.MIN_VALUE;
         for (int i=0; i < size; i++) {
-            BaseNode n = nodes.get(i);
+            SgNode n = nodes.get(i);
             float nodeLeft = n.getTransformedBoundsLeft();
             float nodeTop = n.getTransformedBoundsTop();
             float nodeRight = n.getTransformedBoundsRight();
@@ -241,7 +242,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
             super.clearDirty();
             int size = nodes.size();
             for (int i=0; i < size; i++) {
-                BaseNode n = nodes.get(i);
+                SgNode n = nodes.get(i);
                 n.clearDirty();
             }
         }
@@ -252,7 +253,7 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
 
     void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
         for (int i= nodes.size() - 1 ; i >= 0; i--) {
-            BaseNode node = nodes.get(i);
+            SgNode node = nodes.get(i);
             boolean foundHitPath = node.findHitPath(nodeHitPath, touchPoint);
             if (foundHitPath) {
                 // we are done
@@ -267,32 +268,32 @@ public class GroupNode extends BaseNode implements Iterable<BaseNode> {
     }
 
 
-    public static class Builder extends BaseNode.Builder<Builder,GroupNode> {
+    public static class Builder extends SgNode.Builder<Builder, SgGroup> {
 
         private Builder() {
-            super(new GroupNode());
+            super(new SgGroup());
         }
 
 
-        public Builder add(@NonNull BaseNode node) {
+        public Builder add(@NonNull SgNode node) {
             getNode().addNode(node);
             return getBuilder();
         }
 
-        public Builder add(@NonNull BaseNode... nodes) {
-            for (BaseNode node: nodes) {
+        public Builder add(@NonNull SgNode... nodes) {
+            for (SgNode node: nodes) {
                 getNode().addNode(node);
             }
             return getBuilder();
         }
 
-        public Builder add(@NonNull BaseNode.Builder<?,?> nodeBuilder) {
+        public Builder add(@NonNull SgNode.Builder<?,?> nodeBuilder) {
             getNode().addNode(nodeBuilder.build());
             return getBuilder();
         }
 
-        public Builder add(@NonNull BaseNode.Builder<?,?>... nodeBuilders) {
-            for (BaseNode.Builder<?,?> nodeBuilder: nodeBuilders) {
+        public Builder add(@NonNull SgNode.Builder<?,?>... nodeBuilders) {
+            for (SgNode.Builder<?,?> nodeBuilder: nodeBuilders) {
                 getNode().addNode(nodeBuilder.build());
             }
             return getBuilder();

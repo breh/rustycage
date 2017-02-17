@@ -1,16 +1,15 @@
 package rustycage.impl.renderer;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import rustycage.ArcNode;
-import rustycage.BaseNode;
-import rustycage.EllipseNode;
-import rustycage.GroupNode;
-import rustycage.ImageNode;
-import rustycage.LineNode;
-import rustycage.RectangleNode;
-import rustycage.TextNode;
+import rustycage.SgArc;
+import rustycage.SgNode;
+import rustycage.SgEllipse;
+import rustycage.SgGroup;
+import rustycage.SgImage;
+import rustycage.SgLine;
+import rustycage.SgRectangle;
+import rustycage.SgText;
 import rustycage.util.Preconditions;
 
 import java.util.HashMap;
@@ -25,13 +24,13 @@ public class RendererProvider {
 
     // FIXME - registation should be done elsewhere
     private RendererProvider() {
-        registerRenderer(ImageNode.class, new ImageCanvasRenderer());
-        registerRenderer(GroupNode.class, new GroupCanvasRenderer());
-        registerRenderer(LineNode.class,new LineCanvasRenderer());
-        registerRenderer(RectangleNode.class,new RectangleCanvasRenderer());
-        registerRenderer(EllipseNode.class, new EllipseCanvasRenderer());
-        registerRenderer(ArcNode.class, new ArcCanvasRenderer());
-        registerRenderer(TextNode.class, new TextCanvasRenderer());
+        registerRenderer(SgImage.class, new ImageCanvasRenderer());
+        registerRenderer(SgGroup.class, new GroupCanvasRenderer());
+        registerRenderer(SgLine.class,new LineCanvasRenderer());
+        registerRenderer(SgRectangle.class,new RectangleCanvasRenderer());
+        registerRenderer(SgEllipse.class, new EllipseCanvasRenderer());
+        registerRenderer(SgArc.class, new ArcCanvasRenderer());
+        registerRenderer(SgText.class, new TextCanvasRenderer());
     }
 
     private static class Holder {
@@ -43,14 +42,14 @@ public class RendererProvider {
     }
 
 
-    <T extends BaseNode> void registerRenderer(@NonNull Class<T> nodeClass, @NonNull AbstractCanvasRenderer<T> renderer) {
+    <T extends SgNode> void registerRenderer(@NonNull Class<T> nodeClass, @NonNull AbstractCanvasRenderer<T> renderer) {
         Preconditions.assertNotNull(nodeClass,"nodeClass");
         Preconditions.assertNotNull(renderer,"renderer");
         rendererRegistry.put(nodeClass,renderer);
     }
 
     @SuppressWarnings("unchecked")
-    public @NonNull <T extends BaseNode> AbstractCanvasRenderer<T> getRendererForNode(@NonNull T node) {
+    public @NonNull <T extends SgNode> AbstractCanvasRenderer<T> getRendererForNode(@NonNull T node) {
         Preconditions.assertNotNull(node,"node");
         Class<?> nodeClass = node.getClass();
         AbstractCanvasRenderer<?> renderer = rendererRegistry.get(nodeClass);

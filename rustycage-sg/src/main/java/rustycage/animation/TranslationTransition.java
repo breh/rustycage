@@ -5,7 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
@@ -24,11 +24,11 @@ public final class TranslationTransition extends AbstractTransition<TranslationT
     private static final String X_PROPERTY_NAME = "translationX";
     private static final String Y_PROPERTY_NAME = "translationY";
 
-    private TranslationTransition(@NonNull BaseNode targetNode) {
+    private TranslationTransition(@NonNull SgNode targetNode) {
         super(targetNode);
     }
 
-    public static TranslationTransition create(@NonNull BaseNode targetNode) {
+    public static TranslationTransition create(@NonNull SgNode targetNode) {
         Preconditions.assertNotNull(targetNode,"targetNode");
         return new TranslationTransition(targetNode);
     }

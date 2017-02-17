@@ -7,18 +7,18 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import rustycage.RectangleNode;
+import rustycage.SgRectangle;
 import rustycage.ResolutionUnit;
 
 /**
  * Created by breh on 10/14/16.
  */
-public class RectangleCanvasRenderer extends ShapeCanvasRenderer<RectangleNode> {
+public class RectangleCanvasRenderer extends ShapeCanvasRenderer<SgRectangle> {
 
     private static final String TAG = "LineRenderer";
 
     @Override
-    protected void renderShape(@NonNull Canvas canvas, @NonNull RectangleNode node, @NonNull Paint paint,
+    protected void renderShape(@NonNull Canvas canvas, @NonNull SgRectangle node, @NonNull Paint paint,
                                @Nullable ResolutionUnit resolutionUnit, @NonNull DisplayMetrics displayMetrics) {
 
         float x1 = node.getX1();

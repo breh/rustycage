@@ -3,21 +3,17 @@ package rustycage;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import rustycage.impl.renderer.ImageCanvasRenderer;
-import rustycage.impl.renderer.RendererProvider;
 
 /**
  * Created by breh on 9/9/16.
  */
-public final class ImageNode extends BaseNode {
+public final class SgImage extends SgNode {
 
-    private static final String TAG = "ImageNode";
+    private static final String TAG = "SgImage";
 
     private Bitmap bitmap;
 
-    private ImageNode(@Nullable Bitmap bitmap) {
+    private SgImage(@Nullable Bitmap bitmap) {
         setBitmap(bitmap);
     }
 
@@ -45,9 +41,9 @@ public final class ImageNode extends BaseNode {
     }
 
 
-    public static class Builder extends BaseNode.Builder<ImageNode.Builder,ImageNode> {
+    public static class Builder extends SgNode.Builder<SgImage.Builder, SgImage> {
         private Builder(@Nullable Bitmap bitmap) {
-            super(new ImageNode(bitmap));
+            super(new SgImage(bitmap));
         }
     }
 

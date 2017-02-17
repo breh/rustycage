@@ -4,12 +4,10 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rustycage.impl.AttributesStack;
-
 /**
  * Created by breh on 9/9/16.
  */
-public abstract class ShapeNode extends BaseNode {
+public abstract class SgShape extends SgNode {
 
     private Paint paint;
 
@@ -38,7 +36,7 @@ public abstract class ShapeNode extends BaseNode {
     }*/
 
 
-    public static abstract class Builder<B extends Builder<B,N>, N extends ShapeNode> extends BaseNode.Builder<B,N> {
+    public static abstract class Builder<B extends Builder<B,N>, N extends SgShape> extends SgNode.Builder<B,N> {
 
         protected Builder(@NonNull N node) {
             super(node);

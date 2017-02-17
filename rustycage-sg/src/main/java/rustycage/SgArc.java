@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
  * Created by breh on 2/10/17.
  */
 
-public final class ArcNode extends ShapeNode {
+public final class SgArc extends SgShape {
 
 
     private float left, top, right, bottom;
@@ -14,7 +14,7 @@ public final class ArcNode extends ShapeNode {
     private boolean useCenter = true;
 
 
-    private ArcNode(float left, float top, float right, float bottom, float startAngle, float sweepAngle) {
+    private SgArc(float left, float top, float right, float bottom, float startAngle, float sweepAngle) {
         this.left = left;
         this.top = top;
         this.right = right;
@@ -104,9 +104,9 @@ public final class ArcNode extends ShapeNode {
     }
 
 
-    public static class Builder extends ShapeNode.Builder<ArcNode.Builder,ArcNode> {
+    public static class Builder extends SgShape.Builder<SgArc.Builder, SgArc> {
         private Builder(float left, float top, float right, float bottom, float startAngle, float sweepAngle) {
-            super(new ArcNode(left, top, right, bottom, startAngle, sweepAngle));
+            super(new SgArc(left, top, right, bottom, startAngle, sweepAngle));
         }
     }
 

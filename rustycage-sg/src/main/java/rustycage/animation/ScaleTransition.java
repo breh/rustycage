@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
@@ -19,11 +19,11 @@ public final class ScaleTransition extends AbstractTransition<ScaleTransition, A
 
     private static final String PROPERTY_NAME = "scale";
 
-    private ScaleTransition(@NonNull BaseNode targetNode) {
+    private ScaleTransition(@NonNull SgNode targetNode) {
         super(targetNode);
     }
 
-    public static ScaleTransition create(@NonNull BaseNode targetNode) {
+    public static ScaleTransition create(@NonNull SgNode targetNode) {
         Preconditions.assertNotNull(targetNode,"targetNode");
         return new ScaleTransition(targetNode);
     }

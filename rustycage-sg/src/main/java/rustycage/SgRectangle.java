@@ -5,12 +5,12 @@ import android.support.annotation.NonNull;
 /**
  * Created by breh on 9/9/16.
  */
-public final class RectangleNode extends ShapeNode {
+public final class SgRectangle extends SgShape {
 
 
     private float x1, y1, x2, y2;
 
-    private RectangleNode(float x1, float y1, float x2, float y2) {
+    private SgRectangle(float x1, float y1, float x2, float y2) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -87,9 +87,9 @@ public final class RectangleNode extends ShapeNode {
     }
 
 
-    public static class Builder extends ShapeNode.Builder<Builder,RectangleNode> {
+    public static class Builder extends SgShape.Builder<Builder, SgRectangle> {
         private Builder(float x1, float y1, float x2, float y2) {
-            super(new RectangleNode(x1,y1,x2,y2));
+            super(new SgRectangle(x1,y1,x2,y2));
         }
     }
 

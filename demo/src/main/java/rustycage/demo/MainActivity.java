@@ -9,26 +9,23 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
-import android.graphics.drawable.shapes.ArcShape;
-import android.nfc.Tag;
 import android.support.annotation.NonNull;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import rustycage.ArcNode;
-import rustycage.BaseNode;
-import rustycage.EllipseNode;
-import rustycage.GroupNode;
-import rustycage.ImageNode;
-import rustycage.LineNode;
+import rustycage.SgArc;
+import rustycage.SgNode;
+import rustycage.SgEllipse;
+import rustycage.SgGroup;
+import rustycage.SgImage;
+import rustycage.SgLine;
 import rustycage.PaintAttribute;
-import rustycage.RectangleNode;
+import rustycage.SgRectangle;
 import rustycage.RustyCageView;
-import rustycage.TextNode;
+import rustycage.SgText;
 import rustycage.animation.FadeTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.RotationTransition;
@@ -37,14 +34,12 @@ import rustycage.animation.TranslationTransition;
 import rustycage.event.TouchEventListener;
 import rustycage.util.Walker;
 
-import java.security.acl.Group;
-
 public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
 
-    public BaseNode createTest1Node() {
+    public SgNode createTest1Node() {
         Paint redPaint = new Paint();
         redPaint.setARGB(255,255,0,0);
         redPaint.setStrokeWidth(3);
@@ -73,32 +68,32 @@ public class MainActivity extends AppCompatActivity {
                 Color.argb(255,200,200,200), Color.BLACK, Shader.TileMode.MIRROR));
 
 
-        GroupNode gn2 = GroupNode.create().build();
+        SgGroup gn2 = SgGroup.create().build();
         for (int i=0; i < 100; i++) {
-            gn2.addNode(LineNode.createWithPoints(300+i*5,500,300+i*5,600).build());
+            gn2.addNode(SgLine.createWithPoints(300+i*5,500,300+i*5,600).build());
         }
         gn2.setAttribute(new PaintAttribute(redPaint));
         gn2.setOpacity(0.3f);
 
-        LineNode line1 = LineNode.createWithPoints(50,50,400,400).paint(redPaint).build();
+        SgLine line1 = SgLine.createWithPoints(50,50,400,400).paint(redPaint).build();
 
-        TextNode textNode = null;
+        SgText textNode = null;
 
         Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
 
-        GroupNode gn = GroupNode.create()
-                .add(GroupNode.create()
+        SgGroup gn = SgGroup.create()
+                .add(SgGroup.create()
                         .add(line1)
-                        .add(LineNode.createWithSize(700,400,400,100).paint(redPaint))
-                        .add(RectangleNode.createWithSize(30,530,500,300))
-                        .add(RectangleNode.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
-                        .add(ImageNode.createWithBitmap(bitmap1))
-                        .add(ArcNode.create(100,100,300,300,220,30))
+                        .add(SgLine.createWithSize(700,400,400,100).paint(redPaint))
+                        .add(SgRectangle.createWithSize(30,530,500,300))
+                        .add(SgRectangle.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
+                        .add(SgImage.createWithBitmap(bitmap1))
+                        .add(SgArc.create(100,100,300,300,220,30))
                 )
                 .add(gn2)
-                .add(EllipseNode.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))
-                .add(EllipseNode.createEllipse(200,100,300,800))
-                .add(textNode = TextNode.create("XXXX").textPaint(textPaint).xy(300,300).build())
+                .add(SgEllipse.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))
+                .add(SgEllipse.createEllipse(200,100,300,800))
+                .add(textNode = SgText.create("XXXX").textPaint(textPaint).xy(300,300).build())
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
                 .build();
@@ -106,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        LineNode l1 = LineNode.createWithPoints(0,0,80,0).build();
-        LineNode l2 = LineNode.createWithPoints(0,40,80,40).build();
-        LineNode l3 = LineNode.createWithPoints(0,80,80,80).build();
-        GroupNode button = GroupNode.create().add(l1, l2, l3).attribute(new PaintAttribute(redPaint)).txy(400,400).build();
+        SgLine l1 = SgLine.createWithPoints(0,0,80,0).build();
+        SgLine l2 = SgLine.createWithPoints(0,40,80,40).build();
+        SgLine l3 = SgLine.createWithPoints(0,80,80,80).build();
+        SgGroup button = SgGroup.create().add(l1, l2, l3).attribute(new PaintAttribute(redPaint)).txy(400,400).build();
 
         // button animation
         ObjectAnimator l1Anim = new ObjectAnimator();
@@ -135,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         buttonAnimator.start();
 
 
-        GroupNode groot = GroupNode.create().add(gn, button).build();
+        SgGroup groot = SgGroup.create().add(gn, button).build();
 
         ObjectAnimator oa = new ObjectAnimator();
         oa.setTarget(line1);
@@ -165,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
         Walker.forEachLeaf(groot, new Walker.Action() {
             @Override
-            public void onNode(final @NonNull BaseNode node) {
+            public void onNode(final @NonNull SgNode node) {
                 node.setOnTouchEventListener(new TouchEventListener() {
                     private float lastX, lastY;
 
@@ -197,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final float GAUGE_SIZE = 350;
 
-    public BaseNode createGauge() {
+    public SgNode createGauge() {
 
         Paint circularGradient = new Paint();
         circularGradient.setColor(Color.BLACK);
@@ -214,8 +209,8 @@ public class MainActivity extends AppCompatActivity {
         whitePaint.setTextAlign(Paint.Align.CENTER);
 
 
-        final GroupNode gauge = GroupNode.create()
-                .add(EllipseNode.createCircle(GAUGE_SIZE).paint(circularGradient))
+        final SgGroup gauge = SgGroup.create()
+                .add(SgEllipse.createCircle(GAUGE_SIZE).paint(circularGradient))
                 .build();
 
 
@@ -226,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             double angle = i / 3.0 - Math.toRadians(270);
             float x = (float)(size * Math.cos(angle));
             float y = (float)(size * Math.sin(angle) + 10);
-            gauge.addNode(TextNode.create(text,x,y).r(i*15).build());
+            gauge.addNode(SgText.create(text,x,y).r(i*15).build());
         }
 
         gauge.setAttribute(new PaintAttribute(whitePaint));
@@ -234,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         Log.w(TAG," gauge local bounds: "+gauge.getLocalBounds());
         Log.w(TAG," gauge transformed bounds: "+gauge.getTransformedBounds());
 
-        GroupNode root = GroupNode.create().add(gauge).build();
+        SgGroup root = SgGroup.create().add(gauge).build();
 
         Log.w(TAG," root local bounds: "+root.getLocalBounds());
 
@@ -272,8 +267,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
-        BaseNode root = createTest1Node();
-        //BaseNode root = createGauge();
+        SgNode root = createTest1Node();
+        //SgNode root = createGauge();
         rcView.setRootNode(root);
 
 

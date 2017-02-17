@@ -6,16 +6,15 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
-import rustycage.BaseNode;
+import rustycage.SgNode;
 import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
 /**
  * Created by breh on 9/26/16.
  */
-public abstract class AbstractCanvasRenderer<T extends BaseNode>  {
+public abstract class AbstractCanvasRenderer<T extends SgNode>  {
 
     protected static final Paint OPACITY_PAINT = new Paint();
 

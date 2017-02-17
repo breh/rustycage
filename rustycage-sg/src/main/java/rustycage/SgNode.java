@@ -12,9 +12,9 @@ import rustycage.impl.Bounds;
 /**
  * Created by breh on 9/9/16.
  */
-public abstract class BaseNode {
+public abstract class SgNode {
 
-    private static final String TAG = "BaseNode";
+    private static final String TAG = "SgNode";
 
     // FIXME - all these fields need memory optimization
     private String id;
@@ -26,7 +26,7 @@ public abstract class BaseNode {
 
     private float opacity = 1f;
 
-    BaseNode() {
+    SgNode() {
     }
 
     public @Nullable String getId() {
@@ -124,7 +124,7 @@ public abstract class BaseNode {
 
 
     /**
-     * Marks item dirty. Typically not used by a library user, only when things like ShapeNode paint
+     * Marks item dirty. Typically not used by a library user, only when things like SgShape paint
      * object is updated / animated (there is no listener which would allow to listen on
      * changes to the paint object)
      */
@@ -328,19 +328,20 @@ public abstract class BaseNode {
     void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
     }
 
-    private GroupNode parent;
+    private SgGroup parent;
 
-    public final @Nullable GroupNode getParent() {
+    public final @Nullable
+    SgGroup getParent() {
         return parent;
     }
 
-    final void setParent(@Nullable GroupNode parent) {
+    final void setParent(@Nullable SgGroup parent) {
         this.parent = parent;
     }
 
 
 
-    public static abstract class Builder<B extends Builder<B,N>, N extends BaseNode> {
+    public static abstract class Builder<B extends Builder<B,N>, N extends SgNode> {
 
         private final N node;
 
@@ -463,7 +464,7 @@ public abstract class BaseNode {
         }
 
 
-        protected float getActualPivotX(@NonNull BaseNode node) {
+        protected float getActualPivotX(@NonNull SgNode node) {
             if (Float.isNaN(px)) {
                 return (node.getLocalBoundsRight() + node.getLocalBoundsLeft()) / 2f;
             } else {
@@ -471,7 +472,7 @@ public abstract class BaseNode {
             }
         }
 
-        protected float getActualPivotY(@NonNull BaseNode node) {
+        protected float getActualPivotY(@NonNull SgNode node) {
             if (Float.isNaN(py)) {
                 return (node.getLocalBoundsBottom() + node.getLocalBoundsTop()) / 2f;
             } else {
@@ -500,22 +501,22 @@ public abstract class BaseNode {
         }
 
 
-        public final float getTransformedLeft(@NonNull BaseNode node) {
+        public final float getTransformedLeft(@NonNull SgNode node) {
             refreshTransformedBoundsIfNeeded(node);
             return transformedBounds[0];
         }
 
-        public final float getTransformedRight(@NonNull BaseNode node) {
+        public final float getTransformedRight(@NonNull SgNode node) {
             refreshTransformedBoundsIfNeeded(node);
             return transformedBounds[2];
         }
 
-        public final float getTransformedTop(@NonNull BaseNode node) {
+        public final float getTransformedTop(@NonNull SgNode node) {
             refreshTransformedBoundsIfNeeded(node);
             return transformedBounds[1];
         }
 
-        public final float getTransformedBottom(@NonNull BaseNode node) {
+        public final float getTransformedBottom(@NonNull SgNode node) {
             refreshTransformedBoundsIfNeeded(node);
             return transformedBounds[3];
         }
@@ -526,7 +527,7 @@ public abstract class BaseNode {
             transformedBoundsDirty = true;
         }
 
-        public final @NonNull Bounds getTransformedBounds(@NonNull BaseNode node, @Nullable Bounds bounds) {
+        public final @NonNull Bounds getTransformedBounds(@NonNull SgNode node, @Nullable Bounds bounds) {
             if (bounds == null) {
                 bounds = new Bounds();
             }
@@ -540,7 +541,7 @@ public abstract class BaseNode {
         }
 
 
-        private void refreshTransformedBoundsIfNeeded(@NonNull BaseNode node) {
+        private void refreshTransformedBoundsIfNeeded(@NonNull SgNode node) {
             if (transformedBoundsDirty) {
                 computeTransformedBounds(node.localBounds, getMatrix(node), transformedBounds);
                 transformedBoundsDirty = false;
@@ -564,7 +565,7 @@ public abstract class BaseNode {
             return matrix == null;
         }
 
-        private Matrix computeMatrix(@NonNull BaseNode node) {
+        private Matrix computeMatrix(@NonNull SgNode node) {
             if (tx == 0f && ty == 0f && r == 0f && sx == 1f && sy == 1f) {
                 return IDENTITY_MATRIX;
             } // else
@@ -581,14 +582,14 @@ public abstract class BaseNode {
             return m;
         }
 
-        public final @NonNull Matrix getMatrix(@NonNull BaseNode node) {
+        public final @NonNull Matrix getMatrix(@NonNull SgNode node) {
             if (matrix == null) {
                 matrix = computeMatrix(node);
             }
             return matrix;
         }
 
-        public final @Nullable Matrix getInverseMatrix(@NonNull BaseNode node) {
+        public final @Nullable Matrix getInverseMatrix(@NonNull SgNode node) {
             if (inverseMatrix == null) {
                 Matrix inverse = new Matrix();
                 boolean inverted = getMatrix(node).invert(inverse);
