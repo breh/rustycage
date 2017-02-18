@@ -299,47 +299,76 @@ public abstract class SgNode {
 
 
     /**
+     * Checks if the given point is in hit target - by default returns true
+     * as it assumes if point is withing bounds it is hit target
+     * but can be cusomized
+     * @param point
+     * @return
+     */
+    boolean isPointInHitTarget(@NonNull float[] point) {
+        return true;
+    }
+
+    /**
      * Tests is the touch point is in the bounds of this node. If true, converts the touch point
      * to the local coordinates of this node (if applicable)
      * @param touchPoint
      * @return
      */
     final boolean findHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
-        Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedBoundsLeft()+", "+getTransformedBoundsRight()
-                +"; "+getTransformedBoundsTop()+", "+getTransformedBoundsBottom()+"], lbounds: ["+getLocalBoundsLeft()+", "+getLocalBoundsRight()
-                +"; "+getLocalBoundsTop()+", "+getLocalBoundsBottom()+"]");
+        //Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedBoundsLeft()+", "+getTransformedBoundsRight()
+        //        +"; "+getTransformedBoundsTop()+", "+getTransformedBoundsBottom()+"], lbounds: ["+getLocalBoundsLeft()+", "+getLocalBoundsRight()
+        //        +"; "+getLocalBoundsTop()+", "+getLocalBoundsBottom()+"]");
         if (isWithinBounds(touchPoint)) {
-            // succeeded hit test, adding to hit path
+            // succeeded hit test, now check if it the event hits the node
+            // adding to hit path
+            float tpX = 0;
+            float tpY = 0;
             if (transformationSupport != null) {
                 // need to transform to local coordinates
+                tpX = touchPoint[0];
+                tpY = touchPoint[1];
                 getOrCreateTransformationSupport().getInverseMatrix(this).mapPoints(touchPoint);
             }
-            Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
-            nodeHitPath.pushNode(this, touchPoint[0], touchPoint[1]);
-            searchForHitPath(nodeHitPath, touchPoint);
-            return true;
-        } else {
-            // failed hit test
-            return false;
-        }
+            //Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
+            if (isPointInHitTarget(touchPoint)) {
+                nodeHitPath.pushNode(this, touchPoint[0], touchPoint[1]);
+                searchForHitPath(nodeHitPath, touchPoint);
+                return true;
+            } else {
+                // restore touch point values
+                if (transformationSupport != null) {
+                    touchPoint[0] = tpX;
+                    touchPoint[1] = tpY;
+                }
+            }
+        } // else failed hit test
+        return false;
     }
 
     // looks for children nodes
     void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
     }
 
-    private SgGroup parent;
+    private SgNode parent;
 
-    public final @Nullable
-    SgGroup getParent() {
+    public final @Nullable SgNode getParent() {
         return parent;
     }
 
-    final void setParent(@Nullable SgGroup parent) {
+    final void setParent(@Nullable SgNode parent) {
         this.parent = parent;
     }
 
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(super.toString());
+        if (id != null) {
+            sb.append(", id: '").append(id).append("'");
+        }
+        return sb.toString();
+    }
 
     public static abstract class Builder<B extends Builder<B,N>, N extends SgNode> {
 

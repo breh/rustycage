@@ -146,7 +146,6 @@ public class RustyCageView extends View {
 
         @Override
         protected void onMarkedDirty() {
-            //Log.d(TAG,"SgScene invalidated");
             RustyCageView.this.invalidate();
         }
 

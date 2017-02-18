@@ -43,6 +43,19 @@ public class SgEllipse extends SgShape {
         bounds[3] = cy + ry;
     }
 
+    @Override
+    boolean isPointInHitTarget(@NonNull float[] point) {
+        // need to check the ellipse
+        float dx = point[0] - cx;
+        float dy = point[1] - cy;
+        float dx2 = dx*dx;
+        float dy2 = dy*dy;
+        float cx2 = cx*cx;
+        float cy2 = cy*cy;
+        float value = dx2 / cx2 + dy2 / cy2;
+        return value < 1f;
+    }
+
     public static Builder createCircle(float r) {
         return new Builder(r, r, 0, 0);
     }

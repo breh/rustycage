@@ -2,7 +2,9 @@ package rustycage;
 
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * Created by breh on 2/16/17.
@@ -10,10 +12,18 @@ import android.support.annotation.NonNull;
 
 public final class SgPath extends SgShape {
 
+    private static final String TAG = "SgPath";
+
     private Path path;
+    private Region region;
 
     private SgPath(@NonNull Path path) {
         this.path = path;
+    }
+
+    @Override
+    void onMarkedDirty() {
+        region = null;
     }
 
     @Override
@@ -24,6 +34,24 @@ public final class SgPath extends SgShape {
         bounds[1] = rectF.top;
         bounds[2] = rectF.right;
         bounds[3] = rectF.bottom;
+    }
+
+    @Override
+    boolean isPointInHitTarget(@NonNull float[] point) {
+        // FIXME - region uses int, not enought resolution in some cases
+        if (region == null) {
+            region = new Region();
+            Region clip = new Region((int)getLocalBoundsLeft(), (int)getLocalBoundsTop(), (int)getLocalBoundsRight(), (int)getLocalBoundsBottom());
+            region.setPath(path,clip);
+        }
+        boolean isInside = region.contains((int)point[0], (int)point[1]);
+        if (isInside) {
+            Log.d(TAG,"is inside !!!: " + point[0] + "," + point[1]+" : "+this);
+        } else {
+            Log.d(TAG,"is outside: " + point[0] + "," + point[1]+" : "+this);
+        }
+        return isInside;
+
     }
 
     // FIXME path should not be exposed

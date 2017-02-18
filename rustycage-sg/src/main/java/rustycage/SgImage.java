@@ -41,6 +41,7 @@ public final class SgImage extends SgNode {
     }
 
 
+
     public static class Builder extends SgNode.Builder<SgImage.Builder, SgImage> {
         private Builder(@Nullable Bitmap bitmap) {
             super(new SgImage(bitmap));

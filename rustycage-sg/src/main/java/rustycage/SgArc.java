@@ -32,6 +32,11 @@ public final class SgArc extends SgShape {
     }
 
 
+    @Override
+    boolean isPointInHitTarget(@NonNull float[] point) {
+        // FIXME - need to compute if the point is within arc
+        return true;
+    }
 
     public float getLeft() {
         return left;
