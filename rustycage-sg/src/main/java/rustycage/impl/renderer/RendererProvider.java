@@ -3,6 +3,7 @@ package rustycage.impl.renderer;
 import android.support.annotation.NonNull;
 
 import rustycage.SgArc;
+import rustycage.SgCustomNode;
 import rustycage.SgNode;
 import rustycage.SgEllipse;
 import rustycage.SgGroup;
@@ -33,6 +34,7 @@ public class RendererProvider {
         registerRenderer(SgArc.class, new ArcCanvasRenderer());
         registerRenderer(SgPath.class, new PathCanvasRenderer());
         registerRenderer(SgText.class, new TextCanvasRenderer());
+        registerRenderer(SgCustomNode.class, new CustomNodeRenderer());
     }
 
     private static class Holder {
@@ -57,6 +59,8 @@ public class RendererProvider {
         AbstractCanvasRenderer<?> renderer = rendererRegistry.get(nodeClass);
         if (renderer != null) {
             return (AbstractCanvasRenderer<T>)renderer;
+        } else if (node instanceof SgCustomNode) {
+            return (AbstractCanvasRenderer<T>)rendererRegistry.get(SgCustomNode.class);
         } else {
             throw new IllegalArgumentException("No renderer for node class: "+nodeClass);
         }

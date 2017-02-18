@@ -4,6 +4,8 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import rustycage.util.PaintBuilder;
+
 /**
  * Created by breh on 9/9/16.
  */
@@ -44,6 +46,11 @@ public abstract class SgShape extends SgNode {
 
         public B paint(@NonNull Paint paint) {
             getNode().setPaint(paint);
+            return getBuilder();
+        }
+
+        public B paint(@NonNull PaintBuilder paintBuilder) {
+            getNode().setPaint(paintBuilder.build());
             return getBuilder();
         }
 

@@ -305,16 +305,16 @@ public abstract class SgNode {
      * @return
      */
     final boolean findHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
-        //Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedBoundsLeft()+", "+getTransformedBoundsRight()
-        //        +"; "+getTransformedBoundsTop()+", "+getTransformedBoundsBottom()+"], lbounds: ["+getLocalBoundsLeft()+", "+getLocalBoundsRight()
-        //        +"; "+getLocalBoundsTop()+", "+getLocalBoundsBottom()+"]");
+        Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedBoundsLeft()+", "+getTransformedBoundsRight()
+                +"; "+getTransformedBoundsTop()+", "+getTransformedBoundsBottom()+"], lbounds: ["+getLocalBoundsLeft()+", "+getLocalBoundsRight()
+                +"; "+getLocalBoundsTop()+", "+getLocalBoundsBottom()+"]");
         if (isWithinBounds(touchPoint)) {
             // succeeded hit test, adding to hit path
             if (transformationSupport != null) {
                 // need to transform to local coordinates
                 getOrCreateTransformationSupport().getInverseMatrix(this).mapPoints(touchPoint);
             }
-        //    Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
+            Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
             nodeHitPath.pushNode(this, touchPoint[0], touchPoint[1]);
             searchForHitPath(nodeHitPath, touchPoint);
             return true;

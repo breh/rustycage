@@ -17,7 +17,7 @@ public final class SgText extends SgNode {
     private static final TextPaint DEFAULT_TEXT_PAINT = new TextPaint();
 
     private float x,y;
-    private TextPaint textPaint = DEFAULT_TEXT_PAINT;
+    private Paint textPaint = DEFAULT_TEXT_PAINT;
     private CharSequence text;
 
     private SgText(@Nullable CharSequence text, float x, float y) {
@@ -26,12 +26,12 @@ public final class SgText extends SgNode {
         this.y = y;
     }
 
-    public void setTextPaint(@Nullable TextPaint textPaint) {
+    public void setTextPaint(@Nullable Paint textPaint) {
         this.textPaint = textPaint;
         markLocalBoundsDirty();
     }
 
-    public TextPaint getTextPaint() {
+    public Paint getTextPaint() {
         if (textPaint != DEFAULT_TEXT_PAINT) {
             return textPaint;
         } else {
@@ -114,7 +114,7 @@ public final class SgText extends SgNode {
             super(new SgText(text, x, y));
         }
 
-        public Builder textPaint(@NonNull TextPaint paint) {
+        public Builder textPaint(@NonNull Paint paint) {
             getNode().setTextPaint(paint);
             return getBuilder();
         }

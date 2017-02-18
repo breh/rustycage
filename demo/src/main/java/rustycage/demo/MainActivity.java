@@ -33,6 +33,7 @@ import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
 import rustycage.event.TouchEventListener;
+import rustycage.util.PaintBuilder;
 import rustycage.util.Walker;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,32 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public SgNode createTest1Node() {
-        Paint redPaint = new Paint();
-        redPaint.setARGB(255,255,0,0);
-        redPaint.setStrokeWidth(3);
-        redPaint.setStyle(Paint.Style.STROKE);
-
-        Paint greenPaint = new Paint();
-        greenPaint.setARGB(255,0,255,0);
-
-
-        Paint bluePaint = new Paint();
-        bluePaint.setARGB(200,0,0,255);
-        bluePaint.setStrokeWidth(20);
-        bluePaint.setStyle(Paint.Style.FILL_AND_STROKE);
-
-        TextPaint textPaint = new TextPaint();
-        textPaint.set(greenPaint);
-        textPaint.setAlpha(100);
-        textPaint.setTextSize(50);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-
-        Paint circularGradient = new Paint();
-        circularGradient.setColor(Color.BLACK);
-        circularGradient.setStrokeWidth(1);
-        circularGradient.setStyle(Paint.Style.FILL_AND_STROKE);
-        circularGradient.setShader(new RadialGradient(400, 400, 200,
-                Color.argb(255,200,200,200), Color.BLACK, Shader.TileMode.MIRROR));
+        Paint redPaint = PaintBuilder.create().argb(255,255,0,0).strokeWidth(3).style(Paint.Style.STROKE).build();
+        Paint greenPaint = PaintBuilder.create().argb(255,0,255,0).build();
+        Paint bluePaint = PaintBuilder.create().argb(200,0,0,255).strokeWidth(20).style(Paint.Style.FILL_AND_STROKE).build();
+        Paint textPaint = PaintBuilder.createText().from(greenPaint).alpha(100).textSize(50).textAlign(Paint.Align.CENTER).build();
+        Paint circularGradient = PaintBuilder.create().color(Color.BLACK).strokeWidth(1).style(Paint.Style.FILL_AND_STROKE)
+                .shader(new RadialGradient(400, 400, 200, Color.argb(255,200,200,200), Color.BLACK, Shader.TileMode.MIRROR))
+                .build();
 
 
         SgGroup gn2 = SgGroup.create().build();
@@ -111,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 }, true))
-
+                .add(CustomNodeTest.create().txy(600, 1350))
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
                 .build();
