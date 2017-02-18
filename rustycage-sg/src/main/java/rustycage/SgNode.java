@@ -154,23 +154,19 @@ public abstract class SgNode {
     }
 
     public final float getLocalBoundsLeft() {
-        refreshLocalBoundsIfNeeded();
-        return localBounds[0];
+        return getLocalBoundsArray()[0];
     }
 
     public final float getLocalBoundsRight() {
-        refreshLocalBoundsIfNeeded();
-        return localBounds[2];
+        return getLocalBoundsArray()[2];
     }
 
     public final float getLocalBoundsTop() {
-        refreshLocalBoundsIfNeeded();
-        return localBounds[1];
+        return getLocalBoundsArray()[1];
     }
 
     public final float getLocalBoundsBottom() {
-        refreshLocalBoundsIfNeeded();
-        return localBounds[3];
+        return getLocalBoundsArray()[3];
     }
 
     public final @NonNull Bounds getLocalBounds() {
@@ -182,9 +178,13 @@ public abstract class SgNode {
         if (bounds == null) {
             bounds = new Bounds();
         }
-        refreshLocalBoundsIfNeeded();
-        bounds.set(localBounds);
+        bounds.set(getLocalBoundsArray());
         return bounds;
+    }
+
+    private final float[] getLocalBoundsArray() {
+        refreshLocalBoundsIfNeeded();
+        return localBounds;
     }
 
 
@@ -229,11 +229,11 @@ public abstract class SgNode {
         return transformationSupport != null ? transformationSupport.getTransformedBounds(this, null) : getLocalBounds();
     }
 
-    void computeTransformedBounds(@NonNull float[] bounds) {
+    void computeTransformedBounds(@NonNull float[] transformedBounds) {
         if (transformationSupport != null) {
-            NodeTransformationSupport.computeTransformedBounds(localBounds, transformationSupport.getMatrix(this), bounds);
+            NodeTransformationSupport.computeTransformedBounds(getLocalBoundsArray(), transformationSupport.getMatrix(this), transformedBounds);
         } else {
-            computeLocalBounds(bounds);
+            computeLocalBounds(transformedBounds);
         }
     }
 
@@ -255,7 +255,7 @@ public abstract class SgNode {
     private NodeTransformationSupport transformationSupport;
     private NodeTransformationSupport getOrCreateTransformationSupport() {
         if (transformationSupport == null) {
-            transformationSupport = new NodeTransformationSupport(localBounds);
+            transformationSupport = new NodeTransformationSupport(getLocalBoundsArray());
         }
         return transformationSupport;
     }
@@ -314,7 +314,7 @@ public abstract class SgNode {
                 // need to transform to local coordinates
                 getOrCreateTransformationSupport().getInverseMatrix(this).mapPoints(touchPoint);
             }
-            //Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
+        //    Log.d(TAG,"within bounds: "+this+", localX: "+touchPoint[0]+", localY: "+touchPoint[1]);
             nodeHitPath.pushNode(this, touchPoint[0], touchPoint[1]);
             searchForHitPath(nodeHitPath, touchPoint);
             return true;
@@ -378,8 +378,18 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        public final B pivot(float px, float py) {
+            getNode().setPivot(px, py);
+            return getBuilder();
+        }
+
         public final B opacity(float opacity) {
             getNode().setOpacity(opacity);
+            return getBuilder();
+        }
+
+        public final B onTouchListener(@Nullable TouchEventListener listener, boolean capturePhase) {
+            getNode().setOnTouchEventListener(listener, capturePhase);
             return getBuilder();
         }
 
@@ -543,13 +553,13 @@ public abstract class SgNode {
 
         private void refreshTransformedBoundsIfNeeded(@NonNull SgNode node) {
             if (transformedBoundsDirty) {
-                computeTransformedBounds(node.localBounds, getMatrix(node), transformedBounds);
+                computeTransformedBounds(node.getLocalBoundsArray(), getMatrix(node), transformedBounds);
                 transformedBoundsDirty = false;
             }
         }
 
 
-        static void computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
+        private static void computeTransformedBounds(@NonNull float[] localBounds, @NonNull Matrix matrix, @Nullable float[] transformedBounds) {
             if (! matrix.isIdentity()) {
                 matrix.mapPoints(transformedBounds, localBounds);
             } else {

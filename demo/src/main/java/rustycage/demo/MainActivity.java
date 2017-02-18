@@ -9,23 +9,23 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import rustycage.PaintAttribute;
+import rustycage.RustyCageView;
 import rustycage.SgArc;
-import rustycage.SgNode;
 import rustycage.SgEllipse;
 import rustycage.SgGroup;
 import rustycage.SgImage;
 import rustycage.SgLine;
-import rustycage.PaintAttribute;
+import rustycage.SgNode;
 import rustycage.SgPath;
 import rustycage.SgRectangle;
-import rustycage.RustyCageView;
 import rustycage.SgText;
 import rustycage.animation.FadeTransition;
 import rustycage.animation.GroupTransition;
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         SgGroup gn2 = SgGroup.create().build();
+
         for (int i=0; i < 100; i++) {
             gn2.addNode(SgLine.createWithPoints(300+i*5,500,300+i*5,600).build());
         }
@@ -82,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
 
         Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
 
-        SgPath sgPath = SgPath.create().arcTo(-250,-250,100,100,180,90)/*.rLineTo(0,40)*/
-                .arcTo(-150,-150,0,0,270,-90).close().txy(800,300).s(1)
-                        .paint(greenPaint).build();
+        final SgPath sgPath = SgPath.create().arcTo(-250,-250,250,250,180,90)/*.rLineTo(0,40)*/
+                .arcTo(-150,-150,150,150,270,-90).close().txy(800,300).s(1)
+                        .paint(greenPaint).pivot(0,0).build();
 
         SgGroup gn = SgGroup.create()
                 .add(SgGroup.create()
@@ -100,7 +101,16 @@ public class MainActivity extends AppCompatActivity {
                 .add(SgEllipse.createEllipse(200,100,300,800))
                 .add(textNode = SgText.create("XXXX").textPaint(textPaint).xy(300,300).build())
                 .add(sgPath)
-                .add(SgEllipse.createCircle(30).txy(800,300))
+                .add(SgEllipse.createCircle(100).txy(800,300).onTouchListener(new TouchEventListener() {
+                    @Override
+                    public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
+                        Log.d(TAG,"onTouchEvent: "+touchEvent);
+                        if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                            RotationTransition.create(sgPath).by(360).duration(1000).start();
+                        }
+                        return true;
+                    }
+                }, true))
 
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
@@ -138,7 +148,10 @@ public class MainActivity extends AppCompatActivity {
         buttonAnimator.start();
 
 
+        //RotationTransition.create(sgPath).by(360).duration(1000).delay(2000).start();
+
         SgGroup groot = SgGroup.create().add(gn, button).build();
+
 
         ObjectAnimator oa = new ObjectAnimator();
         oa.setTarget(line1);
@@ -166,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         opacityAnim.start();
 
 
+        /*
         Walker.forEachLeaf(groot, new Walker.Action() {
             @Override
             public void onNode(final @NonNull SgNode node) {
@@ -192,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }, false);
             }
-        });
+        });*/
 
         return groot;
     }
