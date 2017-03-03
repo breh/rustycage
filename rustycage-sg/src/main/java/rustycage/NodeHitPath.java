@@ -73,8 +73,8 @@ final class NodeHitPath {
                 int coordinatesIndex = i*2;
                 float localX = hitCoordinates[coordinatesIndex];
                 float localY = hitCoordinates[coordinatesIndex+1];
-                TouchEvent deliverEvent = node.getEventSupport().deliverEvent(originalEvent, localX, localY, true);
-                if (deliverEvent != null && deliverEvent.isConsumed()) {
+                boolean consumed = node.getEventSupport().deliverEvent(originalEvent, localX, localY, true);
+                if (consumed) {
                     // we are done
                     return;
                 }
@@ -87,8 +87,8 @@ final class NodeHitPath {
                 int coordinatesIndex = i*2;
                 float localX = hitCoordinates[coordinatesIndex];
                 float localY = hitCoordinates[coordinatesIndex+1];
-                TouchEvent deliverEvent = node.getEventSupport().deliverEvent(originalEvent, localX, localY, false);
-                if (deliverEvent != null && deliverEvent.isConsumed()) {
+                boolean consumed = node.getEventSupport().deliverEvent(originalEvent, localX, localY, false);
+                if (consumed) {
                     // we are done
                     return;
                 }

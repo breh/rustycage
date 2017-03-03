@@ -45,23 +45,22 @@ public class CustomNodeTest extends SgCustomNode {
         innerStrip.addOnTouchListener(new TouchEventListener() {
 
             @Override
-            public void onTouchEvent(@NonNull TouchEvent touchEvent) {
+            public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
                 Log.d(TAG,"inner strip touched: "+touchEvent);
                 TouchEvent.TouchType touchType = touchEvent.getTouchType();
                 if (touchType == TouchEvent.TouchType.DOWN) {
                     FadeTransition.create(middleStrip).to(1f).duration(300).start();
-                    touchEvent.consume();
                 } else if (touchType == TouchEvent.TouchType.UP) {
                     FadeTransition.create(middleStrip).to(0.5f).duration(300).start();
-                    touchEvent.consume();
                 }
+                return true;
             }
         }, null, true);
 
         middleStrip.addOnTouchListener(new TouchEventListener() {
 
             @Override
-            public void onTouchEvent(@NonNull TouchEvent touchEvent) {
+            public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
                 Log.d(TAG,"inner strip touched: "+touchEvent);
                 TouchEvent.TouchType touchType = touchEvent.getTouchType();
                 if (touchType == TouchEvent.TouchType.DOWN) {
@@ -69,14 +68,13 @@ public class CustomNodeTest extends SgCustomNode {
                             .add(FadeTransition.create(outerStrip).to(1f))
                             .add(RotationTransition.create(outerStrip).from(-90f).to(0f))
                             .start();
-                    touchEvent.consume();
                 } else if (touchType == TouchEvent.TouchType.UP) {
                     GroupTransition.createParallel(outerStrip).duration(1000)
                             .add(FadeTransition.create(outerStrip).to(0f))
                             .add(RotationTransition.create(outerStrip).by(270))
                             .start();
-                    touchEvent.consume();
                 }
+                return true;
             }
         }, null, true);
 

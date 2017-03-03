@@ -86,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
                 .add(sgPath)
                 .add(SgEllipse.createCircle(100).txy(800,300).onTouch(new TouchEventListener() {
                     @Override
-                    public void onTouchEvent(@NonNull TouchEvent touchEvent) {
+                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
                         Log.d(TAG,"onTouchEvent: "+touchEvent);
                         RotationTransition.create(sgPath).by(360).duration(1000).start();
-                        touchEvent.consume();;
+                        return true;
                     }
 
                 }, TouchEvent.TouchType.DOWN, true))
@@ -249,16 +249,17 @@ public class MainActivity extends AppCompatActivity {
 
         gauge.addOnTouchListener(new TouchEventListener() {
             @Override
-            public void onTouchEvent(TouchEvent touchEvent) {
+            public boolean onTouchEvent(TouchEvent touchEvent) {
                 ScaleTransition.create(gauge).to(1.5f).duration(300).start();
-                touchEvent.consume();
+                return true;
             }
         }, TouchEvent.TouchType.DOWN, false);
 
         gauge.addOnTouchListener(new TouchEventListener() {
             @Override
-            public void onTouchEvent(TouchEvent touchEvent) {
+            public boolean onTouchEvent(TouchEvent touchEvent) {
                 ScaleTransition.create(gauge).to(1f).duration(300).start();
+                return true;
             }
         }, TouchEvent.TouchType.UP, false);
 

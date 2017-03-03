@@ -450,6 +450,31 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        public final B onTouchDown(@NonNull TouchEventListener listener, boolean capturePhase) {
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, capturePhase);
+            return getBuilder();
+        }
+
+        public final B onTouchUp(@NonNull TouchEventListener listener, boolean capturePhase) {
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, capturePhase);
+            return getBuilder();
+        }
+
+        public final B onTouchMove(@NonNull TouchEventListener listener, boolean capturePhase) {
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.MOVE, capturePhase);
+            return getBuilder();
+        }
+
+        public final B onTouchEnter(@NonNull TouchEventListener listener, boolean capturePhase) {
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.ENTER, capturePhase);
+            return getBuilder();
+        }
+
+        public final B onTouchExit(@NonNull TouchEventListener listener, boolean capturePhase) {
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.EXIT, capturePhase);
+            return getBuilder();
+        }
+
 
         public N build() {
             return node;
@@ -747,19 +772,22 @@ public abstract class SgNode {
         }
 
 
-        public TouchEvent deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY, boolean isCapture) {
-            TouchEvent touchEvent = null;
+        public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY, boolean isCapture) {
+            boolean consumed = false;
             if (eventListeners.hasListeners()) {
-                touchEvent = new TouchEvent(localX, localY, isCapture, motionEvent);
-                eventListeners.fireEvent(new Fireable<TouchEventListenerWrapper, TouchEvent>() {
+                TouchEvent touchEvent = new TouchEvent(localX, localY, isCapture, motionEvent);
+                consumed = eventListeners.fireEvent(new Fireable<TouchEventListenerWrapper, TouchEvent>() {
                     @Override
                     public boolean fireEvent(@NonNull TouchEventListenerWrapper listener, @NonNull TouchEvent event) {
-                        listener.listener.onTouchEvent(event);
-                        return event.isConsumed();
+                        boolean eventConsumed = listener.listener.onTouchEvent(event);
+                        if (eventConsumed) {
+                            event.consume();
+                        }
+                        return eventConsumed;
                     }
                 }, touchEvent);
             }
-            return touchEvent;
+            return consumed;
         }
     }
 

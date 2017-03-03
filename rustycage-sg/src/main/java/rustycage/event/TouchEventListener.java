@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 public interface TouchEventListener {
 
-    void onTouchEvent(@NonNull TouchEvent touchEvent);
+    boolean onTouchEvent(@NonNull TouchEvent touchEvent);
 
 }
 

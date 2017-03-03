@@ -67,14 +67,14 @@ public final class ListenerHelper<T,E> {
 
 
 
-    public void fireEvent(@NonNull Fireable<T,E> fireable, @NonNull E event) {
+    public boolean fireEvent(@NonNull Fireable<T,E> fireable, @NonNull E event) {
         Preconditions.assertNotNull(fireable, "fireable");
         Preconditions.assertNotNull(event, "event");
         // single listener first
         if (listener != null) {
             boolean isConsumed = fireable.fireEvent(listener, event);
             if (isConsumed) {
-                return; // we are done
+                return true; // we are done
             }
         }
         // multiple listeners next
@@ -83,10 +83,11 @@ public final class ListenerHelper<T,E> {
             for (int i=0; i < size; i++) {
                 boolean isConsumed  = fireable.fireEvent(listeners.get(i), event);
                 if (isConsumed) {
-                    return;
+                    return true;
                 }
             }
-        }
+        } // else not consumed
+        return false;
     }
 
 }
