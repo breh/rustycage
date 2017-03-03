@@ -32,6 +32,7 @@ import rustycage.animation.GroupTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
+import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
 import rustycage.util.Walker;
@@ -83,16 +84,15 @@ public class MainActivity extends AppCompatActivity {
                 .add(SgEllipse.createEllipse(200,100,300,800))
                 .add(textNode = SgText.create("XXXX").textPaint(textPaint).xy(300,300).build())
                 .add(sgPath)
-                .add(SgEllipse.createCircle(100).txy(800,300).onTouchListener(new TouchEventListener() {
+                .add(SgEllipse.createCircle(100).txy(800,300).onTouch(new TouchEventListener() {
                     @Override
-                    public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
+                    public void onTouchEvent(@NonNull TouchEvent touchEvent) {
                         Log.d(TAG,"onTouchEvent: "+touchEvent);
-                        if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            RotationTransition.create(sgPath).by(360).duration(1000).start();
-                        }
-                        return true;
+                        RotationTransition.create(sgPath).by(360).duration(1000).start();
+                        touchEvent.consume();;
                     }
-                }, true))
+
+                }, TouchEvent.TouchType.DOWN, true))
                 .add(CustomNodeTest.create().txy(600, 1350))
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
@@ -247,19 +247,20 @@ public class MainActivity extends AppCompatActivity {
                 .delay(1000)
                 .start();
 
-        gauge.setOnTouchEventListener(new TouchEventListener() {
+        gauge.addOnTouchListener(new TouchEventListener() {
             @Override
-            public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
-                Log.d(TAG,"onTouchEvent gauge: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
-                if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    // scale the gauge
-                    ScaleTransition.create(gauge).to(1.5f).duration(300).start();
-                } else if (touchEvent.getAction() == MotionEvent.ACTION_UP) {
-                    ScaleTransition.create(gauge).to(1f).duration(300).start();
-                }
-                return false;
+            public void onTouchEvent(TouchEvent touchEvent) {
+                ScaleTransition.create(gauge).to(1.5f).duration(300).start();
+                touchEvent.consume();
             }
-        }, false);
+        }, TouchEvent.TouchType.DOWN, false);
+
+        gauge.addOnTouchListener(new TouchEventListener() {
+            @Override
+            public void onTouchEvent(TouchEvent touchEvent) {
+                ScaleTransition.create(gauge).to(1f).duration(300).start();
+            }
+        }, TouchEvent.TouchType.UP, false);
 
         return root;
     }

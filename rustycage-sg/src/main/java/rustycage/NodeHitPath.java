@@ -6,6 +6,8 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import rustycage.event.TouchEvent;
+
 /**
  * Created by breh on 2/10/17.
  */
@@ -71,8 +73,8 @@ final class NodeHitPath {
                 int coordinatesIndex = i*2;
                 float localX = hitCoordinates[coordinatesIndex];
                 float localY = hitCoordinates[coordinatesIndex+1];
-                boolean consumed = node.getEventSupport().deliverEvent(originalEvent, localX, localY, true);
-                if (consumed) {
+                TouchEvent deliverEvent = node.getEventSupport().deliverEvent(originalEvent, localX, localY, true);
+                if (deliverEvent != null && deliverEvent.isConsumed()) {
                     // we are done
                     return;
                 }
@@ -85,8 +87,8 @@ final class NodeHitPath {
                 int coordinatesIndex = i*2;
                 float localX = hitCoordinates[coordinatesIndex];
                 float localY = hitCoordinates[coordinatesIndex+1];
-                boolean consumed = node.getEventSupport().deliverEvent(originalEvent, localX, localY, false);
-                if (consumed) {
+                TouchEvent deliverEvent = node.getEventSupport().deliverEvent(originalEvent, localX, localY, false);
+                if (deliverEvent != null && deliverEvent.isConsumed()) {
                     // we are done
                     return;
                 }
