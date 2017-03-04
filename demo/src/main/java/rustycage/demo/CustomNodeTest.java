@@ -38,45 +38,20 @@ public class CustomNodeTest extends SgCustomNode {
     @NonNull
     @Override
     protected SgNode createNode() {
-        final SgNode outerStrip = createStrip(580,400).paint(PaintBuilder.create().color(Color.RED)).opacity(0f).r(-90).id("outer").build();
-        final SgNode middleStrip = createStrip(380, 200).paint(PaintBuilder.create().color(Color.BLUE)).opacity(0.5f).id("middle").build();
-        final SgNode innerStrip = createStrip(180,0).paint(PaintBuilder.create().color(Color.GREEN)).id("inner").build();
-
-        innerStrip.addOnTouchListener(new TouchEventListener() {
-
-            @Override
-            public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
-                Log.d(TAG,"inner strip touched: "+touchEvent);
-                TouchEvent.TouchType touchType = touchEvent.getTouchType();
-                if (touchType == TouchEvent.TouchType.DOWN) {
-                    FadeTransition.create(middleStrip).to(1f).duration(300).start();
-                } else if (touchType == TouchEvent.TouchType.UP) {
-                    FadeTransition.create(middleStrip).to(0.5f).duration(300).start();
-                }
-                return true;
-            }
-        }, null, true);
-
-        middleStrip.addOnTouchListener(new TouchEventListener() {
-
-            @Override
-            public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
-                Log.d(TAG,"inner strip touched: "+touchEvent);
-                TouchEvent.TouchType touchType = touchEvent.getTouchType();
-                if (touchType == TouchEvent.TouchType.DOWN) {
-                    GroupTransition.createParallel(outerStrip).duration(500)
-                            .add(FadeTransition.create(outerStrip).to(1f))
-                            .add(RotationTransition.create(outerStrip).from(-90f).to(0f))
-                            .start();
-                } else if (touchType == TouchEvent.TouchType.UP) {
-                    GroupTransition.createParallel(outerStrip).duration(1000)
-                            .add(FadeTransition.create(outerStrip).to(0f))
-                            .add(RotationTransition.create(outerStrip).by(270))
-                            .start();
-                }
-                return true;
-            }
-        }, null, true);
+        SgNode outerStrip = createStrip(580,400).paint(PaintBuilder.create().color(Color.RED)).opacity(0f).r(-90).id("outer").build();
+        SgNode middleStrip = createStrip(380, 200).paint(PaintBuilder.create().color(Color.BLUE)).opacity(0.5f).id("middle")
+                .onTouchDownTransition(GroupTransition.createParallel(outerStrip)
+                        .add(FadeTransition.create(outerStrip).duration(1000).to(1f))
+                        .add(RotationTransition.create(outerStrip).duration(500).from(-90f).to(0f)))
+                .onTouchUpTransition(GroupTransition.createParallel(outerStrip).duration(1000)
+                        .add(FadeTransition.create(outerStrip).to(0f))
+                        .add(RotationTransition.create(outerStrip).by(270))
+                )
+                .build();
+        SgNode innerStrip = createStrip(180,0).paint(PaintBuilder.create().color(Color.GREEN)).id("inner")
+                .onTouchDownTransition(FadeTransition.create(middleStrip).to(1f).duration(300))
+                .onTouchUpTransition(FadeTransition.create(middleStrip).to(0.5f).duration(300))
+                .build();
 
         return SgGroup.create().add(outerStrip, middleStrip, innerStrip).build();
 

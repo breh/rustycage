@@ -45,11 +45,12 @@ public final class SgPath extends SgShape {
             region.setPath(path,clip);
         }
         boolean isInside = region.contains((int)point[0], (int)point[1]);
+        /*
         if (isInside) {
             Log.d(TAG,"is inside !!!: " + point[0] + "," + point[1]+" : "+this);
         } else {
             Log.d(TAG,"is outside: " + point[0] + "," + point[1]+" : "+this);
-        }
+        }*/
         return isInside;
 
     }

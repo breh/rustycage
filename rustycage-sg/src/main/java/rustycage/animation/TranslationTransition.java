@@ -12,7 +12,7 @@ import rustycage.util.Preconditions;
  * Created by breh on 2/3/17.
  */
 
-public final class TranslationTransition extends AbstractTransition<TranslationTransition, Animator> {
+public final class TranslationTransition extends AbstractTransition<TranslationTransition, AnimatorSet> {
 
     private float fromX = Float.NaN;
     private float fromY = Float.NaN;
@@ -28,64 +28,79 @@ public final class TranslationTransition extends AbstractTransition<TranslationT
         super(targetNode);
     }
 
+    @NonNull
     public static TranslationTransition create(@NonNull SgNode targetNode) {
         Preconditions.assertNotNull(targetNode,"targetNode");
         return new TranslationTransition(targetNode);
     }
 
+    @NonNull
     public TranslationTransition fromXY(float x, float y) {
         this.fromX = x;
         this.fromY = y;
         return getThisTransition();
     }
 
-
+    @NonNull
     public TranslationTransition fromX(float x) {
         this.fromX = x;
         return getThisTransition();
     }
 
+    @NonNull
     public TranslationTransition fromY(float y) {
         this.fromY = y;
         return getThisTransition();
     }
 
+    @NonNull
     public TranslationTransition toXY(float x, float y) {
         this.toX = x;
         this.toY = y;
         return getThisTransition();
     }
 
+    @NonNull
     public TranslationTransition toX(float x) {
         this.toX = x;
         return getThisTransition();
     }
 
+    @NonNull
     public TranslationTransition toY(float y) {
         this.toY = y;
         return getThisTransition();
     }
 
-
+    @NonNull
     public TranslationTransition byXY(float x, float y) {
         this.byX = x;
         this.byY = y;
         return getThisTransition();
     }
 
+    @NonNull
     public TranslationTransition byX(float x) {
         this.byX = x;
         return getThisTransition();
     }
 
+    @NonNull
     public TranslationTransition byY(float y) {
         this.byY = y;
         return getThisTransition();
     }
 
 
+    @NonNull
     @Override
-    protected Animator build() {
+    protected AnimatorSet createAnimator() {
+        return new AnimatorSet();
+    }
+
+    @NonNull
+    @Override
+    protected void updateValues(@NonNull AnimatorSet animator) {
         boolean hasFromX = !Float.isNaN(fromX);
         boolean hasToX = !Float.isNaN(toX);
         boolean hasFromY = !Float.isNaN(fromY);
@@ -114,20 +129,15 @@ public final class TranslationTransition extends AbstractTransition<TranslationT
             }
             yAnimator.setFloatValues(fy, ty);
         }
-        Animator animator = null;
         if (xAnimator != null && yAnimator != null) {
-            AnimatorSet animatorSet  = new AnimatorSet();
-            animatorSet.playTogether(xAnimator, yAnimator);
-            animator = animatorSet;
+            animator.playTogether(xAnimator, yAnimator);
         } else if (xAnimator != null) {
-            animator = xAnimator;
+            animator.play(xAnimator);
         } else if (yAnimator != null) {
-            animator = yAnimator;
+            animator.play(yAnimator);
         } else {
             throw new IllegalStateException();
         }
-        fill(animator);
-        return animator;
     }
 
 }

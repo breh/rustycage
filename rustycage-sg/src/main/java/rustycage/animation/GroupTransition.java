@@ -16,45 +16,52 @@ import java.util.List;
 
 public final class GroupTransition extends AbstractTransition<GroupTransition,AnimatorSet> {
 
-    private List<Animator> animators = new ArrayList<>();
+    private List<AbstractTransition<?,?>> children = new ArrayList<>();
     private final boolean parallel;
+    private boolean needAddingChildren = true;
 
     protected GroupTransition(@Nullable SgNode node, boolean parallel) {
         super(node);
         this.parallel = parallel;
     }
 
-    public GroupTransition add(Animator... anims) {
-        if (anims != null) {
-            for (int i=0; i < anims.length; i++) {
-                animators.add(anims[i]);
-            }
-        }
-        return getThisTransition();
-    }
-
-
     public GroupTransition add(@NonNull AbstractTransition<?,?>... transitions) {
         if (transitions != null) {
             for (int i=0; i < transitions.length; i++) {
-                Animator animator = transitions[i].build();
-                animators.add(animator);
+                children.add(transitions[i]);
             }
         }
         return getThisTransition();
     }
 
+
     @NonNull
     @Override
-    protected AnimatorSet build() {
-        AnimatorSet animatorSet = new AnimatorSet();
-        if (parallel) {
-            animatorSet.playTogether(animators);
+    protected AnimatorSet createAnimator() {
+        return new AnimatorSet();
+    }
+
+    @Override
+    protected void updateValues(@NonNull AnimatorSet animatorSet) {
+        int size = children.size();
+        if (needAddingChildren) {
+            List<Animator> animators = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                animators.add(children.get(i).build());
+            }
+            if (parallel) {
+                animatorSet.playTogether(animators);
+            } else {
+                animatorSet.playSequentially(animators);
+            }
+            needAddingChildren = false;
         } else {
-            animatorSet.playSequentially(animators);
+            // just rebuild the children
+            for (int i = 0; i < size; i++) {
+                children.get(i).build();
+            }
+
         }
-        fill(animatorSet);
-        return animatorSet;
     }
 
 

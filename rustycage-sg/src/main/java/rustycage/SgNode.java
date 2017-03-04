@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import rustycage.animation.AbstractTransition;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.impl.Bounds;
@@ -38,9 +39,8 @@ public abstract class SgNode {
     SgNode() {
     }
 
-    public
     @Nullable
-    String getId() {
+    public String getId() {
         return id;
     }
 
@@ -279,11 +279,11 @@ public abstract class SgNode {
     }
 
 
-    private EventSupport eventSupport;
+    private SgNodeEventSupport eventSupport;
 
-    EventSupport getEventSupport() {
+    SgNodeEventSupport getEventSupport() {
         if (eventSupport == null) {
-            eventSupport = new EventSupport();
+            eventSupport = new SgNodeEventSupport();
         }
         return eventSupport;
     }
@@ -293,7 +293,7 @@ public abstract class SgNode {
     }
 
     boolean hasBubbleListener() {
-        return eventSupport != null && !eventSupport.hasBubbleListeners();
+        return eventSupport != null && eventSupport.hasBubbleListeners();
     }
 
     public void addOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
@@ -410,68 +410,113 @@ public abstract class SgNode {
             return node;
         }
 
+        @NonNull
         @SuppressWarnings("unchecked")
         protected final B getBuilder() {
             return (B) this;
         }
 
+        @NonNull
         public final B txy(float x, float y) {
             getNode().setTranslation(x, y);
             return getBuilder();
         }
 
+        @NonNull
         public final B r(float r) {
             getNode().setRotation(r);
             return getBuilder();
         }
 
+        @NonNull
         public final B s(float s) {
             getNode().setScale(s);
             return getBuilder();
         }
 
+        @NonNull
         public final B id(@NonNull String id) {
             getNode().setId(id);
             return getBuilder();
         }
 
+        @NonNull
         public final B pivot(float px, float py) {
             getNode().setPivot(px, py);
             return getBuilder();
         }
 
+        @NonNull
         public final B opacity(float opacity) {
             getNode().setOpacity(opacity);
             return getBuilder();
         }
 
+        @NonNull
         public final B onTouch(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType,  boolean capturePhase) {
+            Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(listener, touchType, capturePhase);
             return getBuilder();
         }
 
+        @NonNull
         public final B onTouchDown(@NonNull TouchEventListener listener, boolean capturePhase) {
+            Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, capturePhase);
             return getBuilder();
         }
 
+        @NonNull
         public final B onTouchUp(@NonNull TouchEventListener listener, boolean capturePhase) {
+            Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, capturePhase);
             return getBuilder();
         }
 
+        @NonNull
         public final B onTouchMove(@NonNull TouchEventListener listener, boolean capturePhase) {
+            Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(listener, TouchEvent.TouchType.MOVE, capturePhase);
             return getBuilder();
         }
 
+        @NonNull
         public final B onTouchEnter(@NonNull TouchEventListener listener, boolean capturePhase) {
+            Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(listener, TouchEvent.TouchType.ENTER, capturePhase);
             return getBuilder();
         }
 
+        @NonNull
         public final B onTouchExit(@NonNull TouchEventListener listener, boolean capturePhase) {
+            Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(listener, TouchEvent.TouchType.EXIT, capturePhase);
+            return getBuilder();
+        }
+
+        @NonNull
+        public final B onTouchDownTransition(final @NonNull AbstractTransition<?,?>  transition) {
+            Preconditions.assertNotNull(transition, "transition");
+            onTouchDown(new TouchEventListener() {
+                @Override
+                public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                    transition.start();
+                    return false;
+                }
+            }, false);
+            return getBuilder();
+        }
+
+        @NonNull
+        public final B onTouchUpTransition(final @NonNull AbstractTransition<?,?>  transition) {
+            Preconditions.assertNotNull(transition, "transition");
+            onTouchUp(new TouchEventListener() {
+                @Override
+                public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                    transition.start();
+                    return false;
+                }
+            }, false);
             return getBuilder();
         }
 
@@ -619,9 +664,8 @@ public abstract class SgNode {
             transformedBoundsDirty = true;
         }
 
-        public final
         @NonNull
-        Bounds getTransformedBounds(@NonNull SgNode node, @Nullable Bounds bounds) {
+        public final Bounds getTransformedBounds(@NonNull SgNode node, @Nullable Bounds bounds) {
             if (bounds == null) {
                 bounds = new Bounds();
             }
@@ -659,6 +703,7 @@ public abstract class SgNode {
             return matrix == null;
         }
 
+        @NonNull
         private Matrix computeMatrix(@NonNull SgNode node) {
             if (tx == 0f && ty == 0f && r == 0f && sx == 1f && sy == 1f) {
                 return IDENTITY_MATRIX;
@@ -676,18 +721,16 @@ public abstract class SgNode {
             return m;
         }
 
-        public final
         @NonNull
-        Matrix getMatrix(@NonNull SgNode node) {
+        public final Matrix getMatrix(@NonNull SgNode node) {
             if (matrix == null) {
                 matrix = computeMatrix(node);
             }
             return matrix;
         }
 
-        public final
         @Nullable
-        Matrix getInverseMatrix(@NonNull SgNode node) {
+        public final Matrix getInverseMatrix(@NonNull SgNode node) {
             if (inverseMatrix == null) {
                 Matrix inverse = new Matrix();
                 boolean inverted = getMatrix(node).invert(inverse);
@@ -701,95 +744,6 @@ public abstract class SgNode {
         }
     }
 
-
-    private static final class TouchEventListenerWrapper {
-
-        @Nullable
-        final TouchEvent.TouchType touchType;
-        @NonNull
-        final TouchEventListener listener;
-        final boolean isCapturePhase;
-
-        TouchEventListenerWrapper(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener,
-                                  boolean isCapturePhase) {
-            this.touchType = touchType;
-            this.listener = listener;
-            this.isCapturePhase = isCapturePhase;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj instanceof TouchEventListenerWrapper) {
-                TouchEventListenerWrapper that = (TouchEventListenerWrapper) obj;
-                return this.listener.equals(that.listener) && this.touchType == that.touchType
-                        && this.isCapturePhase == that.isCapturePhase;
-            } // else
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return listener.hashCode()
-                    + (touchType != null ? touchType.hashCode() : 0)
-                    + (isCapturePhase ? 1234 : 0);
-        }
-    }
-
-
-    // node event support
-    static class EventSupport {
-
-        private int captureListenersCount;
-        private final ListenerHelper<TouchEventListenerWrapper, TouchEvent> eventListeners = new ListenerHelper<>();
-
-        public boolean hasCaptureListeners() {
-            return captureListenersCount > 0;
-        }
-
-
-        public boolean hasBubbleListeners() {
-            return (eventListeners.size() - captureListenersCount) > 0;
-        }
-
-
-        public void addOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
-            Preconditions.assertNotNull(listener, "listener");
-            TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
-            eventListeners.addListener(wrapper);
-            if (capturePhase) {
-                captureListenersCount++;
-            }
-        }
-
-        public boolean removeOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
-            TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
-            boolean result = eventListeners.removeListener(wrapper);
-            if (result && capturePhase) {
-                captureListenersCount--;
-            }
-            return result;
-        }
-
-
-        public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY, boolean isCapture) {
-            boolean consumed = false;
-            if (eventListeners.hasListeners()) {
-                TouchEvent touchEvent = new TouchEvent(localX, localY, isCapture, motionEvent);
-                consumed = eventListeners.fireEvent(new Fireable<TouchEventListenerWrapper, TouchEvent>() {
-                    @Override
-                    public boolean fireEvent(@NonNull TouchEventListenerWrapper listener, @NonNull TouchEvent event) {
-                        boolean eventConsumed = listener.listener.onTouchEvent(event);
-                        if (eventConsumed) {
-                            event.consume();
-                        }
-                        return eventConsumed;
-                    }
-                }, touchEvent);
-            }
-            return consumed;
-        }
-    }
 
 }
 
