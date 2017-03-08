@@ -19,21 +19,21 @@ public abstract class SgCustomNode extends SgNode {
                 throw new IllegalStateException("createNode did not return a valid node");
             }
             node.setParent(this);
-            markDirty();
+            invalidate();
         }
         return node;
     }
 
     @Override
-    void onMarkedDirty() {
-        markLocalBoundsDirty();
+    void onInvalidated() {
+        invalidateLocalBounds();
     }
 
     @Override
-    void clearDirty() {
-        super.clearDirty();
+    void clearInvalidated() {
+        super.clearInvalidated();
         if (node != null) {
-            node.clearDirty();
+            node.clearInvalidated();
         }
     }
 

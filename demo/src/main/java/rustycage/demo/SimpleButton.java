@@ -1,5 +1,7 @@
 package rustycage.demo;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
@@ -39,6 +41,7 @@ public class SimpleButton extends SgCustomNode {
     private Paint textPaint;
 
     private SgText textNode;
+    private SgNode outlineNode;
 
 
     private SimpleButton(@Nullable String text, float width, float height) {
@@ -47,6 +50,21 @@ public class SimpleButton extends SgCustomNode {
         this.height = height;
     }
 
+
+    private static void animatePaint(final @NonNull SgNode node, @NonNull Paint paint, int toColor, int duration) {
+        ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(paint, "color", paint.getColor(), toColor);
+        colorAnimator.setDuration(duration);
+        colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                // TODO Auto-generated method stub
+                node.invalidate();
+            }
+        });
+
+        colorAnimator.start();
+    }
 
     @NonNull
     @Override
@@ -62,7 +80,7 @@ public class SimpleButton extends SgCustomNode {
         float textY = height/2f + fm.descent;
         return SgGroup.create()
                 .add(SgRectangle.createWithSize(0,0,width,height,10, 10).paint(bgPaint))
-                .add(SgRectangle.createWithSize(0,0,width,height,10, 10).paint(outlinePaint))
+                .add(outlineNode = SgRectangle.createWithSize(0,0,width,height,10, 10).paint(outlinePaint).build())
                 .add(textNode = SgText.create(text,width/2, textY).textPaint(textPaint).build())
                 .onTouchDown(new TouchEventListener() {
                     @Override
@@ -79,12 +97,22 @@ public class SimpleButton extends SgCustomNode {
                                 //.add(ScaleTransition.create(textNode).to(1.5f))
                                 .add(FloatPropertyTransition.create(textNode,"scale").to(1.5f))
                                 .start();
+
+                        animatePaint(outlineNode, outlinePaint, Color.RED, 300);
+
                         return true;
                     }
                 })
                 .onTouchUpTransition(GroupTransition.createParallel().duration(300)
                         .add(TranslationTransition.create(textNode).toX(0))
                         .add(ScaleTransition.create(textNode).to(1)))
+                .onTouchUp(new TouchEventListener() {
+                    @Override
+                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                        animatePaint(outlineNode, outlinePaint, Color.GRAY, 300);
+                        return false;
+                    }
+                })
                 .build();
     }
 

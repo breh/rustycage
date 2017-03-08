@@ -15,7 +15,7 @@ public abstract class SgShape extends SgNode {
 
     public void setPaint(@Nullable Paint paint) {
         this.paint = paint;
-        markDirty();
+        invalidate();
     }
 
     public Paint getPaint() {

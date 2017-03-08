@@ -4,7 +4,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 /**
  * Created by breh on 2/16/17.
@@ -22,7 +21,7 @@ public final class SgPath extends SgShape {
     }
 
     @Override
-    void onMarkedDirty() {
+    void onInvalidated() {
         region = null;
     }
 
@@ -129,7 +128,7 @@ public final class SgPath extends SgShape {
 
         @Override
         public SgPath build() {
-            getNode().markDirty();
+            getNode().invalidate();
             return super.build();
         }
     }

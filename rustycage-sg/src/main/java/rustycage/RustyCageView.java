@@ -95,7 +95,7 @@ public class RustyCageView extends View {
 
             AbstractCanvasRenderer<SgScene> renderer = RendererProvider.getInstance().getRendererForNode(sceneNode);
             renderer.render(canvas, sceneNode, opacityStack, attributesStack, displayMetrics);
-            sceneNode.clearDirty();
+            sceneNode.clearInvalidated();
         }
     }
 
@@ -152,16 +152,16 @@ public class RustyCageView extends View {
         }
 
         @Override
-        protected void onMarkedDirty() {
+        protected void onInvalidated() {
             RustyCageView.this.invalidate();
         }
 
         @Override
-        void clearDirty() {
-            //if (isDirty()) {
-                super.clearDirty();
-                if (sceneDelegate.isDirty()) {
-                    sceneDelegate.clearDirty();
+        void clearInvalidated() {
+            //if (isInvalidated()) {
+                super.clearInvalidated();
+                if (sceneDelegate.isInvalidated()) {
+                    sceneDelegate.clearInvalidated();
                 }
             //}
         }

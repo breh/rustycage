@@ -44,7 +44,7 @@ public final class SgArc extends SgShape {
 
     public void setLeft(float left) {
         this.left = left;
-        markDirty();
+        invalidate();
     }
 
 
@@ -54,7 +54,7 @@ public final class SgArc extends SgShape {
 
     public void setTop(float top) {
         this.top = top;
-        markDirty();
+        invalidate();
     }
 
 
@@ -64,7 +64,7 @@ public final class SgArc extends SgShape {
 
     public void setRight(float right) {
         this.right = right;
-        markDirty();
+        invalidate();
     }
 
 
@@ -74,7 +74,7 @@ public final class SgArc extends SgShape {
 
     public void setBottom(float bottom) {
         this.bottom = bottom;
-        markDirty();
+        invalidate();
     }
 
     public float getStartAngle() {
@@ -83,7 +83,7 @@ public final class SgArc extends SgShape {
 
     public void setStartAngle(float startAngle) {
         this.startAngle = startAngle;
-        markDirty();
+        invalidate();
     }
 
     public float getSweepAngle() {
@@ -92,7 +92,7 @@ public final class SgArc extends SgShape {
 
     public void setSweepAngle(float sweepAngle) {
         this.sweepAngle = sweepAngle;
-        markDirty();
+        invalidate();
     }
 
     public boolean isUseCenter() {
@@ -101,7 +101,7 @@ public final class SgArc extends SgShape {
 
     public void setUseCenter(boolean useCenter) {
         this.useCenter = useCenter;
-        markDirty();
+        invalidate();
     }
 
     public static Builder create(float left, float top, float right, float bottom, float startAngle, float sweepAngle) {

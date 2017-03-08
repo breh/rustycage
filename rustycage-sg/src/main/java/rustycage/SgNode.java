@@ -42,12 +42,12 @@ public abstract class SgNode {
 
     public final void setTranslationX(float tx) {
         getOrCreateTransformationSupport().setTx(tx);
-        markDirty();
+        invalidate();
     }
 
     public final void setTranslationY(float ty) {
         getOrCreateTransformationSupport().setTy(ty);
-        markDirty();
+        invalidate();
     }
 
 
@@ -55,7 +55,7 @@ public abstract class SgNode {
         NodeTransformationSupport support = getOrCreateTransformationSupport();
         support.setTx(tx);
         support.setTy(ty);
-        markDirty();
+        invalidate();
     }
 
     public final void setScale(float s) {
@@ -66,22 +66,22 @@ public abstract class SgNode {
         NodeTransformationSupport support = getOrCreateTransformationSupport();
         support.setScaleX(sx);
         support.setScaleY(sy);
-        markDirty();
+        invalidate();
     }
 
     public final void setRotation(float r) {
         getOrCreateTransformationSupport().setRotation(r);
-        markDirty();
+        invalidate();
     }
 
     public void setPivot(float px, float py) {
         getOrCreateTransformationSupport().setPivot(px, py);
-        markDirty();
+        invalidate();
     }
 
     public void resetPivot() {
         getOrCreateTransformationSupport().resetPivot();
-        markDirty();
+        invalidate();
     }
 
     public float getPivotX() {
@@ -126,37 +126,37 @@ public abstract class SgNode {
         if (opacity > 1f) opacity = 1f;
         if (opacity < 0f) opacity = 0f;
         this.opacity = opacity;
-        markDirty();
+        invalidate();
     }
 
 
     /**
-     * Marks item dirty. Typically not used by a library user, only when things like SgShape paint
+     * Invalidates the node. Typically not used by a library user, only when things like SgShape paint
      * object is updated / animated (there is no listener which would allow to listen on
      * changes to the paint object)
      */
-    public final void markDirty() {
+    public final void invalidate() {
         if (!dirty) {
             dirty = true;
             if (parent != null) {
-                parent.markDirty();
+                parent.invalidate();
             }
-            onMarkedDirty();
+            onInvalidated();
         }
     }
 
-    void onMarkedDirty() {
+    void onInvalidated() {
     }
 
 
-    void clearDirty() {
+    void clearInvalidated() {
         if (dirty) {
             dirty = false;
         }
     }
 
 
-    protected final boolean isDirty() {
+    protected final boolean isInvalidated() {
         return dirty;
     }
 
@@ -199,12 +199,12 @@ public abstract class SgNode {
     }
 
 
-    protected final void markLocalBoundsDirty() {
+    protected final void invalidateLocalBounds() {
         localBoundsDirty = true;
         if (transformationSupport != null) {
-            transformationSupport.markTransformedBoundsDirty();
+            transformationSupport.invalidateTransformedBounds();
         }
-        markDirty();
+        invalidate();
     }
 
 
@@ -591,41 +591,41 @@ public abstract class SgNode {
 
         public final void setTx(float tx) {
             this.tx = tx;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
         public final void setTy(float ty) {
             this.ty = ty;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
 
         public final void setScaleX(float sx) {
             this.sx = sx;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
         public final void setScaleY(float sy) {
             this.sy = sy;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
 
         public final void setRotation(float r) {
             this.r = r;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
         public void setPivot(float px, float py) {
             this.px = px;
             this.py = py;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
         public void resetPivot() {
             this.px = Float.NaN;
             this.py = Float.NaN;
-            markTransformedBoundsDirty();
+            invalidateTransformedBounds();
         }
 
         public float getPivotX() {
@@ -695,7 +695,7 @@ public abstract class SgNode {
         }
 
 
-        protected final void markTransformedBoundsDirty() {
+        protected final void invalidateTransformedBounds() {
             matrix = null;
             transformedBoundsDirty = true;
         }
@@ -735,7 +735,7 @@ public abstract class SgNode {
         }
 
 
-        protected final boolean isMatrixDirty() {
+        protected final boolean isMatrixValid() {
             return matrix == null;
         }
 

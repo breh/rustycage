@@ -19,7 +19,7 @@ public final class SgImage extends SgNode {
 
     public final void setBitmap(@Nullable Bitmap bitmap) {
         this.bitmap = bitmap;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     @Override

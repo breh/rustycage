@@ -26,24 +26,24 @@ public final class SgRectangle extends SgShape {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
 
     public void setInnerRadii(float rx, float ry) {
         this.rx = rx;
         this.ry = ry;
-        markDirty();
+        invalidate();
     }
 
     public void setX1(float x1) {
         this.x1 = x1;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public void setY1(float y1) {
         this.y1 = y1;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
 
@@ -74,12 +74,12 @@ public final class SgRectangle extends SgShape {
 
     public void setWidth(float width) {
         this.x2 = x1 + width;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public void setHeight(float height) {
         this.y2 = x2 + height;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     @Override

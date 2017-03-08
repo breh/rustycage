@@ -57,7 +57,7 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         }
         node.setParent(this);
         nodes.add(node);
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public final boolean removeNode(@NonNull SgNode node) {
@@ -66,7 +66,7 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         if (removed) {
             node.setParent(null);
         }
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
         return removed;
     }
 
@@ -74,7 +74,7 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         Preconditions.assertNotNull(node,"node");
         node.setParent(this);
         nodes.add(index,node);
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public final void moveToFront(@NonNull SgNode node) {
@@ -84,7 +84,7 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
             nodes.remove(index);
             nodes.add(node);
         }
-        markDirty();
+        invalidate();
     }
 
     public final @Nullable <T> Attribute<T> setAttribute(@NonNull Attribute<T> attribute) {
@@ -100,13 +100,13 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
                 Attribute<?> existingAttribute = attributes.get(i);
                 if (existingAttribute.getClass().equals(atributeClazz)) {
                     attributes.set(i,attribute);
-                    markDirty();
+                    invalidate();
                     return (Attribute<T>)existingAttribute;
                 }
             } // else just add the attribute at the end
             attributes.add(attribute);
         }
-        markDirty();
+        invalidate();
         return null;
     }
 
@@ -117,12 +117,12 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
             for (int i=0; i < size; i++) {
                 if (attributes.get(i).equals(attribute)) {
                     attributes.remove(i);
-                    markDirty();
+                    invalidate();
                     return true;
                 }
             }
         } // else
-        markDirty();
+        invalidate();
         return false;
     }
 
@@ -132,13 +132,13 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
             int size = attributes.size();
             for (int i=0; i < size; i++) {
                 if (attributes.get(i).getAttributeClass().equals(attributeClazz)) {
-                    markDirty();
+                    invalidate();
                     attributes.remove(i);
                     return true;
                 }
             }
         } // else
-        markDirty();
+        invalidate();
         return false;
     }
 
@@ -199,8 +199,8 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
     // bounds
 
     @Override
-    protected void onMarkedDirty() {
-        markLocalBoundsDirty();
+    protected void onInvalidated() {
+        invalidateLocalBounds();
     }
 
     @Override
@@ -237,13 +237,13 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
 
 
     @Override
-    void clearDirty() {
-        if (isDirty()) {
-            super.clearDirty();
+    void clearInvalidated() {
+        if (isInvalidated()) {
+            super.clearInvalidated();
             int size = nodes.size();
             for (int i=0; i < size; i++) {
                 SgNode n = nodes.get(i);
-                n.clearDirty();
+                n.clearInvalidated();
             }
         }
     }

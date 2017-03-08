@@ -30,7 +30,7 @@ public final class SgText extends SgNode {
 
     public void setTextPaint(@Nullable Paint textPaint) {
         this.textPaint = textPaint;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public Paint getTextPaint() {
@@ -47,7 +47,7 @@ public final class SgText extends SgNode {
 
     public void setText(CharSequence text) {
         this.text = text;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public float getX() {
@@ -56,7 +56,7 @@ public final class SgText extends SgNode {
 
     public void setX(float x) {
         this.x = x;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     public float getY() {
@@ -65,7 +65,7 @@ public final class SgText extends SgNode {
 
     public void setY(float y) {
         this.y = y;
-        markLocalBoundsDirty();
+        invalidateLocalBounds();
     }
 
     @Override
