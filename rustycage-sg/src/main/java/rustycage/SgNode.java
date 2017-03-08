@@ -101,6 +101,10 @@ public abstract class SgNode {
         return transformationSupport != null ? transformationSupport.getTy() : 0f;
     }
 
+    public final float getScale() {
+        return getScaleX();
+    }
+
     public final float getScaleX() {
         return transformationSupport != null ? transformationSupport.getSx() : 1f;
     }

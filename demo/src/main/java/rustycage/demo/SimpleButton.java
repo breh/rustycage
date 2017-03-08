@@ -11,8 +11,7 @@ import rustycage.SgGroup;
 import rustycage.SgNode;
 import rustycage.SgRectangle;
 import rustycage.SgText;
-import rustycage.animation.AbstractTransition;
-import rustycage.animation.FadeTransition;
+import rustycage.animation.FloatPropertyTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
@@ -77,7 +76,8 @@ public class SimpleButton extends SgCustomNode {
                         }
                         GroupTransition.createParallel().duration(300)
                                 .add(TranslationTransition.create(textNode).toX(targetX))
-                                .add(ScaleTransition.create(textNode).to(1.5f))
+                                //.add(ScaleTransition.create(textNode).to(1.5f))
+                                .add(FloatPropertyTransition.create(textNode,"scale").to(1.5f))
                                 .start();
                         return true;
                     }

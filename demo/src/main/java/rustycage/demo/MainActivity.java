@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextPaint;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import rustycage.PaintAttribute;
 import rustycage.RustyCageView;
@@ -27,7 +26,6 @@ import rustycage.SgNode;
 import rustycage.SgPath;
 import rustycage.SgRectangle;
 import rustycage.SgText;
-import rustycage.animation.FadeTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
@@ -35,7 +33,6 @@ import rustycage.animation.TranslationTransition;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
-import rustycage.util.Walker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -194,13 +191,13 @@ public class MainActivity extends AppCompatActivity {
                         if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             // scale the gauge
                             ScaleTransition.create(node).to(1.5f).duration(300).start();
-                            FadeTransition.create(node).to(0.5f).duration(300).start();
+                            OpacityTransition.create(node).to(0.5f).duration(300).start();
                             lastX = localX;
                             lastY = localY;
                             node.getParent().moveToFront(node);
                         } else if (touchEvent.getAction() == MotionEvent.ACTION_UP) {
                             ScaleTransition.create(node).to(1f).duration(300).start();
-                            FadeTransition.create(node).to(1f).duration(300).start();
+                            OpacityTransition.create(node).to(1f).duration(300).start();
                         } else if (touchEvent.getAction() == MotionEvent.ACTION_MOVE) {
                             node.setTranslation(localX - lastX, localY - lastY);
                         }
