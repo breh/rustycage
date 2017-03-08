@@ -42,6 +42,27 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+
+
+    private String[] buttonNames = new String[] {
+            "One", "Two", "Three"
+    };
+
+
+    public SgNode createMainMenu() {
+        float yOffset = 0;
+        final float buttonWidth = 800;
+        final float buttonHeight = 200;
+        final float space = 20;
+        SgGroup.Builder groupBuilder = SgGroup.create();
+        for (String buttonName : buttonNames) {
+            groupBuilder.add(SimpleButton.create(buttonName, buttonWidth, buttonHeight).ty(yOffset));
+            yOffset += buttonHeight + space;
+        }
+        return groupBuilder.build();
+    }
+
+
     public SgNode createTest1Node() {
         Paint redPaint = PaintBuilder.create().argb(255,255,0,0).strokeWidth(3).style(Paint.Style.STROKE).build();
         Paint greenPaint = PaintBuilder.create().argb(255,0,255,0).build();
@@ -74,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 .add(SgGroup.create()
                         .add(line1)
                         .add(SgLine.createWithSize(700,400,400,100).paint(redPaint))
-                        .add(SgRectangle.createWithSize(30,530,500,300))
+                        .add(SgRectangle.createWithSize(30,530,500,300, 30, 30))
                         .add(SgRectangle.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
                         .add(SgImage.createWithBitmap(bitmap1))
                         .add(SgArc.create(100,100,300,300,220,30))
@@ -273,8 +294,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
-        SgNode root = createTest1Node();
+        //SgNode root = createTest1Node();
         //SgNode root = createGauge();
+        SgNode root = createMainMenu();
         rcView.setRootNode(root);
 
 

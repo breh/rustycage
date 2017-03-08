@@ -25,6 +25,8 @@ public class RectangleCanvasRenderer extends ShapeCanvasRenderer<SgRectangle> {
         float y1 = node.getY1();
         float x2 = node.getX2();
         float y2 = node.getY2();
+        float rx = node.getRx();
+        float ry = node.getRy();
 
         if (resolutionUnit != ResolutionUnit.PX) {
             final int typedValue = resolutionUnit.getTypedValue();
@@ -32,9 +34,16 @@ public class RectangleCanvasRenderer extends ShapeCanvasRenderer<SgRectangle> {
             y1 = TypedValue.applyDimension(typedValue, y1, displayMetrics);
             x2 = TypedValue.applyDimension(typedValue, x2, displayMetrics);
             y2 = TypedValue.applyDimension(typedValue, y2, displayMetrics);
+            rx = TypedValue.applyDimension(typedValue, rx, displayMetrics);
+            ry = TypedValue.applyDimension(typedValue, ry, displayMetrics);
         }
 
         //Log.d(TAG,"rendering rectangle: "+node+" xy1:["+x1+","+y1+"], xy2:["+x2+","+y2+"], paint: "+paint);
-        canvas.drawRect(x1,y1,x2,y2,paint);
+        if (rx != 0 || ry != 0) {
+            canvas.drawRoundRect(x1, y1, x2, y2, rx, ry, paint);
+        } else {
+            // regular rect
+            canvas.drawRect(x1, y1, x2, y2, paint);
+        }
     }
 }

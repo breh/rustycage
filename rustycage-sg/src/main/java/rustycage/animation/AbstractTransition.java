@@ -55,8 +55,9 @@ public abstract class AbstractTransition<T extends AbstractTransition<T, A>, A e
         return (T)this;
     }
 
-    public final void start() {
+    public final T start() {
         build().start();
+        return getThisTransition();
     }
 
 

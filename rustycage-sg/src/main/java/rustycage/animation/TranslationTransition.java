@@ -117,6 +117,7 @@ public final class TranslationTransition extends AbstractTransition<TranslationT
                 tx = fx + byX;
             }
             xAnimator.setFloatValues(fx, tx);
+            xAnimator.setTarget(getTargetNode());
         }
         ObjectAnimator yAnimator = null;
         if (hasFromY || hasToY || hasByY) {
@@ -128,6 +129,7 @@ public final class TranslationTransition extends AbstractTransition<TranslationT
                 ty = fy + byY;
             }
             yAnimator.setFloatValues(fy, ty);
+            yAnimator.setTarget(getTargetNode());
         }
         if (xAnimator != null && yAnimator != null) {
             animator.playTogether(xAnimator, yAnimator);

@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -38,7 +37,7 @@ public class RustyCageView extends View {
     private int height;
 
     private SgScene sceneNode;
-    private NodeHitPath nodeHitPath;
+    private SgNodeHitPath nodeHitPath;
     private float[] touchPoint = new float[2];
 
 
@@ -82,12 +81,20 @@ public class RustyCageView extends View {
         }
 
         if (sceneNode != null) {
-            SgNode rootNode = sceneNode.getSceneDelegate();
+
+            float canvasWidth = canvas.getWidth();
+            float canvasHeight = canvas.getHeight();
+            // center the scene node;
+            float offsetX = (canvasWidth - sceneNode.getWidth()) / 2f;
+            float offsetY = (canvasHeight - sceneNode.getHeight()) / 2f;
+            sceneNode.setTranslation(offsetX, offsetY);
+
+            //SgNode rootNode = sceneNode.getSceneDelegate();
 
             getDisplay().getMetrics(displayMetrics);
 
-            AbstractCanvasRenderer<SgNode> renderer = RendererProvider.getInstance().getRendererForNode(rootNode);
-            renderer.render(canvas, rootNode, opacityStack, attributesStack, displayMetrics);
+            AbstractCanvasRenderer<SgScene> renderer = RendererProvider.getInstance().getRendererForNode(sceneNode);
+            renderer.render(canvas, sceneNode, opacityStack, attributesStack, displayMetrics);
             sceneNode.clearDirty();
         }
     }
@@ -120,7 +127,7 @@ public class RustyCageView extends View {
     public void setRootNode(@Nullable SgNode rootNode) {
         if (rootNode != null) {
             sceneNode = new SgScene(rootNode);
-            nodeHitPath = new NodeHitPath();
+            nodeHitPath = new SgNodeHitPath();
         } else {
             sceneNode = null;
             nodeHitPath = null;
@@ -136,7 +143,7 @@ public class RustyCageView extends View {
 
         public SgScene(@NonNull SgNode sceneDelegate) {
             this.sceneDelegate = sceneDelegate;
-            this.sceneDelegate.setParent(this);
+            this.addNode(sceneDelegate);
         }
 
         public @NonNull
@@ -160,7 +167,7 @@ public class RustyCageView extends View {
         }
 
         @Override
-        void searchForHitPath(@NonNull NodeHitPath nodeHitPath, final float[] touchPoint) {
+        void searchForHitPath(@NonNull SgNodeHitPath nodeHitPath, final float[] touchPoint) {
             //Log.d(TAG,"delegate.searchForHitPath touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"]");
             sceneDelegate.findHitPath(nodeHitPath, touchPoint);
         }

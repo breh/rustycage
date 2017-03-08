@@ -12,7 +12,7 @@ import rustycage.event.TouchEvent;
  * Created by breh on 2/10/17.
  */
 
-final class NodeHitPath {
+final class SgNodeHitPath {
 
     private static final int INITIAL_SIZE = 50; // depth of 50
 
@@ -53,7 +53,7 @@ final class NodeHitPath {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("NodeHitPath: { depth:").append(path.size()).append(", ");
+        StringBuilder sb = new StringBuilder("SgNodeHitPath: { depth:").append(path.size()).append(", ");
         for (int i=0; i < path.size(); i++) {
             sb.append("node: ").append(getNodeAt(i))
                     .append(", localXY: [").append(getLocalX(i)).append(", ")

@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 
+import rustycage.util.PaintBuilder;
+
 /**
  * Created by breh on 1/23/17.
  */
@@ -116,6 +118,11 @@ public final class SgText extends SgNode {
 
         public Builder textPaint(@NonNull Paint paint) {
             getNode().setTextPaint(paint);
+            return getBuilder();
+        }
+
+        public Builder textPaint(@NonNull PaintBuilder paintBuilder) {
+            getNode().setTextPaint(paintBuilder.build());
             return getBuilder();
         }
 

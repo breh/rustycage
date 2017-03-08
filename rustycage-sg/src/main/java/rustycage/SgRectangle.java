@@ -9,12 +9,15 @@ public final class SgRectangle extends SgShape {
 
 
     private float x1, y1, x2, y2;
+    private float rx, ry;
 
-    private SgRectangle(float x1, float y1, float x2, float y2) {
+    private SgRectangle(float x1, float y1, float x2, float y2, float rx, float ry) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
+        this.rx = rx;
+        this.ry = ry;
     }
 
 
@@ -24,6 +27,13 @@ public final class SgRectangle extends SgShape {
         this.x2 = x2;
         this.y2 = y2;
         markLocalBoundsDirty();
+    }
+
+
+    public void setInnerRadii(float rx, float ry) {
+        this.rx = rx;
+        this.ry = ry;
+        markDirty();
     }
 
     public void setX1(float x1) {
@@ -53,6 +63,14 @@ public final class SgRectangle extends SgShape {
         return y2;
     }
 
+    public float getRx() {
+        return rx;
+    }
+
+    public float getRy() {
+        return ry;
+    }
+
 
     public void setWidth(float width) {
         this.x2 = x1 + width;
@@ -75,21 +93,30 @@ public final class SgRectangle extends SgShape {
     // builders
 
     public static Builder createWithPoints(float x1, float y1, float x2, float y2) {
-        return new Builder(x1,y1,x2,y2);
+        return new Builder(x1, y1, x2, y2, 0, 0);
+    }
+
+    public static Builder createWithPoints(float x1, float y1, float x2, float y2, float rx, float ry) {
+        return new Builder(x1, y1, x2, y2, rx, ry);
     }
 
     public static Builder createWithSize(float x1, float y1, float width, float height) {
-        return new Builder(x1,y1,x1+width,y1+height);
+        return createWithSize(x1, y1, width, height, 0, 0);
     }
 
+    public static Builder createWithSize(float x1, float y1, float width, float height, float rx, float ry) {
+        return new Builder(x1, y1, x1+width, y1+height, rx, ry);
+    }
+
+
     public static Builder createWithSize(float width, float height) {
-        return new Builder(0,0,width,height);
+        return new Builder(0, 0, width, height, 0, 0);
     }
 
 
     public static class Builder extends SgShape.Builder<Builder, SgRectangle> {
-        private Builder(float x1, float y1, float x2, float y2) {
-            super(new SgRectangle(x1,y1,x2,y2));
+        private Builder(float x1, float y1, float x2, float y2, float rx, float ry) {
+            super(new SgRectangle(x1,y1,x2,y2, rx, ry));
         }
     }
 

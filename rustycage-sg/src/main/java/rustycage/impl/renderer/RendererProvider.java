@@ -2,6 +2,7 @@ package rustycage.impl.renderer;
 
 import android.support.annotation.NonNull;
 
+import rustycage.RustyCageView;
 import rustycage.SgArc;
 import rustycage.SgCustomNode;
 import rustycage.SgNode;
@@ -61,6 +62,8 @@ public class RendererProvider {
             return (AbstractCanvasRenderer<T>)renderer;
         } else if (node instanceof SgCustomNode) {
             return (AbstractCanvasRenderer<T>)rendererRegistry.get(SgCustomNode.class);
+        } else if (node instanceof SgGroup) {
+            return (AbstractCanvasRenderer<T>)rendererRegistry.get(SgGroup.class);
         } else {
             throw new IllegalArgumentException("No renderer for node class: "+nodeClass);
         }

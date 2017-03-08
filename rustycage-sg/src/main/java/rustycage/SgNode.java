@@ -3,20 +3,12 @@ package rustycage;
 import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.method.Touch;
 import android.util.Log;
-import android.util.Size;
-import android.view.MotionEvent;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import rustycage.animation.AbstractTransition;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.impl.Bounds;
-import rustycage.impl.event.Fireable;
-import rustycage.impl.event.ListenerHelper;
 import rustycage.util.Preconditions;
 
 /**
@@ -341,7 +333,7 @@ public abstract class SgNode {
      * @param touchPoint
      * @return
      */
-    final boolean findHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
+    final boolean findHitPath(@NonNull SgNodeHitPath nodeHitPath, float[] touchPoint) {
         //Log.d(TAG,"findHitPath: "+this+": touchPoint: ["+touchPoint[0]+", "+touchPoint[1]+"], tbounds: ["+getTransformedBoundsLeft()+", "+getTransformedBoundsRight()
         //        +"; "+getTransformedBoundsTop()+", "+getTransformedBoundsBottom()+"], lbounds: ["+getLocalBoundsLeft()+", "+getLocalBoundsRight()
         //        +"; "+getLocalBoundsTop()+", "+getLocalBoundsBottom()+"]");
@@ -373,7 +365,7 @@ public abstract class SgNode {
     }
 
     // looks for children nodes
-    void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
+    void searchForHitPath(@NonNull SgNodeHitPath nodeHitPath, float[] touchPoint) {
     }
 
     private SgNode parent;
@@ -423,6 +415,18 @@ public abstract class SgNode {
         }
 
         @NonNull
+        public final B tx(float x) {
+            getNode().setTranslationX(x);
+            return getBuilder();
+        }
+
+        @NonNull
+        public final B ty(float y) {
+            getNode().setTranslationY(y);
+            return getBuilder();
+        }
+
+        @NonNull
         public final B r(float r) {
             getNode().setRotation(r);
             return getBuilder();
@@ -460,37 +464,53 @@ public abstract class SgNode {
         }
 
         @NonNull
-        public final B onTouchDown(@NonNull TouchEventListener listener, boolean capturePhase) {
+        public final B onTouchDown(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, capturePhase);
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, false);
+            return getBuilder();
+        }
+
+
+        @NonNull
+        public final B onCaptureTouchDown(@NonNull TouchEventListener listener) {
+            Preconditions.assertNotNull(listener, "listener");
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, true);
+            return getBuilder();
+        }
+
+
+        @NonNull
+        public final B onTouchUp(@NonNull TouchEventListener listener) {
+            Preconditions.assertNotNull(listener, "listener");
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, false);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchUp(@NonNull TouchEventListener listener, boolean capturePhase) {
+        public final B onCaptureTouchUp(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, capturePhase);
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, true);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchMove(@NonNull TouchEventListener listener, boolean capturePhase) {
+        public final B onTouchMove(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.MOVE, capturePhase);
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.MOVE, false);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchEnter(@NonNull TouchEventListener listener, boolean capturePhase) {
+        public final B onTouchEnter(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.ENTER, capturePhase);
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.ENTER, false);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchExit(@NonNull TouchEventListener listener, boolean capturePhase) {
+        public final B onTouchExit(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.EXIT, capturePhase);
+            getNode().addOnTouchListener(listener, TouchEvent.TouchType.EXIT, false);
             return getBuilder();
         }
 
@@ -503,7 +523,7 @@ public abstract class SgNode {
                     transition.start();
                     return false;
                 }
-            }, false);
+            });
             return getBuilder();
         }
 
@@ -516,7 +536,7 @@ public abstract class SgNode {
                     transition.start();
                     return false;
                 }
-            }, false);
+            });
             return getBuilder();
         }
 

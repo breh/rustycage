@@ -1,7 +1,6 @@
 package rustycage;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 /**
  * Created by breh on 2/17/17.
@@ -44,7 +43,7 @@ public abstract class SgCustomNode extends SgNode {
     }
 
     @Override
-    final void searchForHitPath(@NonNull NodeHitPath nodeHitPath, final float[] touchPoint) {
+    final void searchForHitPath(@NonNull SgNodeHitPath nodeHitPath, final float[] touchPoint) {
         getBuiltNode().findHitPath(nodeHitPath, touchPoint);
     }
 }

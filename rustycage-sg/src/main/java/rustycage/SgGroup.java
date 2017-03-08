@@ -251,7 +251,7 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
 
 
 
-    void searchForHitPath(@NonNull NodeHitPath nodeHitPath, float[] touchPoint) {
+    void searchForHitPath(@NonNull SgNodeHitPath nodeHitPath, float[] touchPoint) {
         for (int i= nodes.size() - 1 ; i >= 0; i--) {
             SgNode node = nodes.get(i);
             boolean foundHitPath = node.findHitPath(nodeHitPath, touchPoint);

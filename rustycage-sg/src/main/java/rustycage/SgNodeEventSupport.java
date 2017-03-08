@@ -17,7 +17,7 @@ import rustycage.util.Preconditions;
 
 
 
-class SgNodeEventSupport {
+final class SgNodeEventSupport {
 
 
     private static final class TouchEventListenerWrapper {
@@ -57,6 +57,12 @@ class SgNodeEventSupport {
 
     private int captureListenersCount;
     private final ListenerHelper<TouchEventListenerWrapper, TouchEvent> eventListeners = new ListenerHelper<>();
+    private int enterExitListenersCount;
+    private boolean readyForEnterEvent = true;
+
+    public boolean hasEnterExitListeners() {
+        return enterExitListenersCount > 0;
+    }
 
     public boolean hasCaptureListeners() {
         return captureListenersCount > 0;
@@ -67,6 +73,14 @@ class SgNodeEventSupport {
         return (eventListeners.size() - captureListenersCount) > 0;
     }
 
+    public boolean isReadyForEnterEvent() {
+        return readyForEnterEvent;
+    }
+
+    public boolean isReadyForExitEvent() {
+        return !readyForEnterEvent;
+    }
+
 
     public void addOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
         Preconditions.assertNotNull(listener, "listener");
@@ -75,13 +89,23 @@ class SgNodeEventSupport {
         if (capturePhase) {
             captureListenersCount++;
         }
+        if (touchType == null || touchType == TouchEvent.TouchType.ENTER
+                || touchType == TouchEvent.TouchType.EXIT) {
+            enterExitListenersCount++;
+        }
     }
 
     public boolean removeOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
         TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
         boolean result = eventListeners.removeListener(wrapper);
-        if (result && capturePhase) {
-            captureListenersCount--;
+        if (result) {
+            if (capturePhase) {
+                captureListenersCount--;
+            }
+            if (touchType == null || touchType == TouchEvent.TouchType.ENTER
+                    || touchType == TouchEvent.TouchType.EXIT) {
+                enterExitListenersCount--;
+            }
         }
         return result;
     }
@@ -90,7 +114,18 @@ class SgNodeEventSupport {
     public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY, final boolean isCapture) {
         boolean consumed = false;
         if (eventListeners.hasListeners()) {
-            TouchEvent touchEvent = new TouchEvent(localX, localY, isCapture, motionEvent);
+            TouchEvent touchEvent = null;
+            // detect enter / exit
+            if (isReadyForEnterEvent()) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                    // we have our enter event
+                    readyForEnterEvent = false;
+                    touchEvent = new TouchEvent(localX, localY, TouchEvent.TouchType.ENTER, isCapture, motionEvent);
+                }
+            }
+            if (touchEvent == null) {
+                touchEvent = new TouchEvent(localX, localY, isCapture, motionEvent);
+            }
             consumed = eventListeners.fireEvent(new Fireable<TouchEventListenerWrapper, TouchEvent>() {
                 @Override
                 public boolean fireEvent(@NonNull TouchEventListenerWrapper listener, @NonNull TouchEvent event) {
