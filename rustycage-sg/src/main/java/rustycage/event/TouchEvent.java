@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 
+import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
@@ -41,24 +42,24 @@ public final class TouchEvent {
     private boolean isCapturePhase;
     private final MotionEvent motionEvent;
     private boolean isConsumed;
+    private SgNode currentNode;
+    private SgNode hitNode;
 
 
     public TouchEvent(float localX, float localY, boolean isCapturePhase,
-                      @NonNull MotionEvent motionEvent) {
-        this.motionEvent = Preconditions.assertNotNull(motionEvent, "motionEvent");
-        this.localX = localX;
-        this.localY = localY;
-        this.isCapturePhase = isCapturePhase;
-        this.touchType = TouchType.getTouchTypeFromMotionEvent(motionEvent);
+                      @NonNull SgNode currentNode, @NonNull SgNode hitNode, @NonNull MotionEvent motionEvent) {
+        this(localX, localY, null, isCapturePhase, currentNode, hitNode, motionEvent);
     }
 
 
     public TouchEvent(float localX, float localY, @Nullable TouchType touchType, boolean isCapturePhase,
-                      @NonNull MotionEvent motionEvent) {
+                      @NonNull SgNode currentNode, @NonNull SgNode hitNode, @NonNull MotionEvent motionEvent) {
         this.motionEvent = Preconditions.assertNotNull(motionEvent, "motionEvent");
         this.localX = localX;
         this.localY = localY;
         this.isCapturePhase = isCapturePhase;
+        this.currentNode = Preconditions.assertNotNull(currentNode,"currentNode");
+        this.hitNode = Preconditions.assertNotNull(hitNode, "hitNode");
         this.touchType = touchType != null ? touchType : TouchType.getTouchTypeFromMotionEvent(motionEvent);
     }
 
@@ -74,6 +75,14 @@ public final class TouchEvent {
 
     public float getLocalY() {
         return localY;
+    }
+
+    public SgNode getCurrentNode() {
+        return currentNode;
+    }
+
+    public SgNode getHitNode() {
+        return hitNode;
     }
 
     // FIXME should not be public - use accessor or make it package private

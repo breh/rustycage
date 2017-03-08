@@ -288,14 +288,19 @@ public abstract class SgNode {
         return eventSupport != null && eventSupport.hasBubbleListeners();
     }
 
-    public void addOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
+    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
         Preconditions.assertNotNull(listener,"listener");
-        getEventSupport().addOnTouchListener(listener, touchType, capturePhase);
+        getEventSupport().addOnTouchListener(touchType, false, listener);
     }
 
-    public void removeOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
+    public void addOnTouchCaptureListener(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
         Preconditions.assertNotNull(listener,"listener");
-        getEventSupport().removeOnTouchListener(listener, touchType, capturePhase);
+        getEventSupport().addOnTouchListener(touchType, true, listener);
+    }
+
+    public void removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull TouchEventListener listener) {
+        Preconditions.assertNotNull(listener,"listener");
+        getEventSupport().removeOnTouchListener(touchType, capturePhase, listener);
     }
 
 
@@ -457,16 +462,23 @@ public abstract class SgNode {
         }
 
         @NonNull
-        public final B onTouch(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType,  boolean capturePhase) {
+        public final B onTouch(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, touchType, capturePhase);
+            getNode().addOnTouchListener(touchType, listener);
+            return getBuilder();
+        }
+
+        @NonNull
+        public final B onTouchCapture(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
+            Preconditions.assertNotNull(listener, "listener");
+            getNode().addOnTouchCaptureListener(touchType, listener);
             return getBuilder();
         }
 
         @NonNull
         public final B onTouchDown(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, false);
+            getNode().addOnTouchListener(TouchEvent.TouchType.DOWN, listener);
             return getBuilder();
         }
 
@@ -474,7 +486,7 @@ public abstract class SgNode {
         @NonNull
         public final B onCaptureTouchDown(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.DOWN, true);
+            getNode().addOnTouchCaptureListener(TouchEvent.TouchType.DOWN, listener);
             return getBuilder();
         }
 
@@ -482,35 +494,35 @@ public abstract class SgNode {
         @NonNull
         public final B onTouchUp(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, false);
+            getNode().addOnTouchListener(TouchEvent.TouchType.UP, listener);
             return getBuilder();
         }
 
         @NonNull
         public final B onCaptureTouchUp(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.UP, true);
+            getNode().addOnTouchCaptureListener(TouchEvent.TouchType.UP, listener);
             return getBuilder();
         }
 
         @NonNull
         public final B onTouchMove(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.MOVE, false);
+            getNode().addOnTouchListener(TouchEvent.TouchType.MOVE, listener);
             return getBuilder();
         }
 
         @NonNull
         public final B onTouchEnter(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.ENTER, false);
+            getNode().addOnTouchListener(TouchEvent.TouchType.ENTER, listener);
             return getBuilder();
         }
 
         @NonNull
         public final B onTouchExit(@NonNull TouchEventListener listener) {
             Preconditions.assertNotNull(listener, "listener");
-            getNode().addOnTouchListener(listener, TouchEvent.TouchType.EXIT, false);
+            getNode().addOnTouchListener(TouchEvent.TouchType.EXIT, listener);
             return getBuilder();
         }
 

@@ -82,7 +82,7 @@ final class SgNodeEventSupport {
     }
 
 
-    public void addOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
+    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull TouchEventListener listener) {
         Preconditions.assertNotNull(listener, "listener");
         TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
         eventListeners.addListener(wrapper);
@@ -95,7 +95,7 @@ final class SgNodeEventSupport {
         }
     }
 
-    public boolean removeOnTouchListener(@NonNull TouchEventListener listener, @Nullable TouchEvent.TouchType touchType, boolean capturePhase) {
+    public boolean removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull TouchEventListener listener) {
         TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
         boolean result = eventListeners.removeListener(wrapper);
         if (result) {
@@ -111,7 +111,8 @@ final class SgNodeEventSupport {
     }
 
 
-    public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY, final boolean isCapture) {
+    public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY,
+                                @NonNull SgNode currentNode, @NonNull SgNode hitNode, final boolean isCapture) {
         boolean consumed = false;
         if (eventListeners.hasListeners()) {
             TouchEvent touchEvent = null;
@@ -120,11 +121,13 @@ final class SgNodeEventSupport {
                 if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                     // we have our enter event
                     readyForEnterEvent = false;
-                    touchEvent = new TouchEvent(localX, localY, TouchEvent.TouchType.ENTER, isCapture, motionEvent);
+                    touchEvent = new TouchEvent(localX, localY, TouchEvent.TouchType.ENTER, isCapture,
+                            currentNode, hitNode, motionEvent);
                 }
             }
             if (touchEvent == null) {
-                touchEvent = new TouchEvent(localX, localY, isCapture, motionEvent);
+                touchEvent = new TouchEvent(localX, localY, isCapture,
+                        currentNode, hitNode, motionEvent);
             }
             consumed = eventListeners.fireEvent(new Fireable<TouchEventListenerWrapper, TouchEvent>() {
                 @Override

@@ -105,15 +105,14 @@ public class MainActivity extends AppCompatActivity {
                 .add(SgEllipse.createEllipse(200,100,300,800))
                 .add(textNode = SgText.create("XXXX").textPaint(textPaint).xy(300,300).build())
                 .add(sgPath)
-                .add(SgEllipse.createCircle(100).txy(800,300).onTouch(new TouchEventListener() {
+                .add(SgEllipse.createCircle(100).txy(800,300).onTouchDown(new TouchEventListener() {
                     @Override
                     public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
                         Log.d(TAG,"onTouchEvent: "+touchEvent);
                         RotationTransition.create(sgPath).by(360).duration(1000).start();
                         return true;
                     }
-
-                }, TouchEvent.TouchType.DOWN, true))
+                }))
                 .add(CustomNodeTest.create().txy(600, 1350))
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
@@ -268,21 +267,21 @@ public class MainActivity extends AppCompatActivity {
                 .delay(1000)
                 .start();
 
-        gauge.addOnTouchListener(new TouchEventListener() {
+        gauge.addOnTouchListener(TouchEvent.TouchType.DOWN, new TouchEventListener() {
             @Override
             public boolean onTouchEvent(TouchEvent touchEvent) {
                 ScaleTransition.create(gauge).to(1.5f).duration(300).start();
                 return true;
             }
-        }, TouchEvent.TouchType.DOWN, false);
+        });
 
-        gauge.addOnTouchListener(new TouchEventListener() {
+        gauge.addOnTouchListener(TouchEvent.TouchType.UP, new TouchEventListener() {
             @Override
             public boolean onTouchEvent(TouchEvent touchEvent) {
                 ScaleTransition.create(gauge).to(1f).duration(300).start();
                 return true;
             }
-        }, TouchEvent.TouchType.UP, false);
+        });
 
         return root;
     }
