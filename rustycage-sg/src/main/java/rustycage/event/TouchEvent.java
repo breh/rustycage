@@ -105,6 +105,13 @@ public final class TouchEvent {
         return isConsumed;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder("TouchEvent:[ localXY: ").append(localX).append(',').append(localY)
+                .append(", touchType: ").append(touchType).append(", isCapture: ").append(isCapturePhase)
+                .append(", currentNode: ").append(currentNode)
+                .append(", hitNode: ").append(hitNode)
+                .append(']').toString();
 
-
+    }
 }

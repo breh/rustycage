@@ -1,8 +1,12 @@
 package rustycage;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import rustycage.util.Preconditions;
 
 /**
  * Created by breh on 9/9/16.
@@ -37,6 +41,12 @@ public final class SgImage extends SgNode {
     // Builders
 
     public static Builder createWithBitmap(@NonNull Bitmap bitmap) {
+        return new Builder(bitmap);
+    }
+
+    public static Builder createWithResource(@NonNull Resources resources, int id) {
+        Preconditions.assertNotNull(resources,"resources");
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, id);
         return new Builder(bitmap);
     }
 

@@ -27,6 +27,7 @@ import rustycage.SgPath;
 import rustycage.SgRectangle;
 import rustycage.SgText;
 import rustycage.animation.GroupTransition;
+import rustycage.animation.OpacityTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
@@ -82,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
 
         SgText textNode = null;
 
-        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
-
         final SgPath sgPath = SgPath.create().arcTo(-250,-250,250,250,180,90)/*.rLineTo(0,40)*/
                 .arcTo(-150,-150,150,150,270,-90).close().txy(800,300).s(1)
                         .paint(greenPaint).pivot(0,0).build();
+
+        SgImage imageNode;
 
         SgGroup gn = SgGroup.create()
                 .add(SgGroup.create()
@@ -94,7 +95,37 @@ public class MainActivity extends AppCompatActivity {
                         .add(SgLine.createWithSize(700,400,400,100).paint(redPaint))
                         .add(SgRectangle.createWithSize(30,530,500,300, 30, 30))
                         .add(SgRectangle.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
-                        .add(SgImage.createWithBitmap(bitmap1))
+                        .add(SgImage.createWithResource(getResources(), R.mipmap.ic_launcher)
+                                .onTouch(null, new TouchEventListener() {
+                                    private float lastX, lastY;
+                                    @Override
+                                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                                        Log.d(TAG,"bitmap touchevent: "+touchEvent);
+                                        SgNode node = touchEvent.getCurrentNode();
+                                        float localX = touchEvent.getLocalX();
+                                        float localY = touchEvent.getLocalY();
+                                        if (touchEvent.getTouchType() == TouchEvent.TouchType.DOWN) {
+                                            // scale the gauge
+                                            ScaleTransition.create(node).to(1.5f).duration(300).start();
+                                            OpacityTransition.create(node).to(0.5f).duration(300).start();
+                                            lastX = localX;
+                                            lastY = localY;
+                                            ((SgGroup)node.getParent()).moveToFront(node);
+                                        } else if (touchEvent.getTouchType() == TouchEvent.TouchType.UP) {
+                                            ScaleTransition.create(node).to(1f).duration(300).start();
+                                            OpacityTransition.create(node).to(1f).duration(300).start();
+                                        } else if (touchEvent.getTouchType() == TouchEvent.TouchType.MOVE) {
+                                            float newX = localX - lastX;
+                                            float newY = localY - lastY;
+                                            Log.d(TAG," lastXY: "+lastX+", "+lastY+", newXY: "+newX+", "+newY);
+                                            //lastX = newX;
+                                            //lastY = newY;
+                                            node.setTranslation(newX, newY);
+                                        }
+                                        return false;
+                                    }
+                                })
+                        )
                         .add(SgArc.create(100,100,300,300,220,30))
                 )
                 .add(gn2)
@@ -291,8 +322,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
         //SgNode root = createTest1Node();
-        //SgNode root = createGauge();
-        SgNode root = createMainMenu();
+        SgNode root = createGauge();
+        //SgNode root = createMainMenu();
         rcView.setRootNode(root);
 
 

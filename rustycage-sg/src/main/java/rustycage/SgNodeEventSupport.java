@@ -133,7 +133,8 @@ final class SgNodeEventSupport {
                 @Override
                 public boolean fireEvent(@NonNull TouchEventListenerWrapper listener, @NonNull TouchEvent event) {
                     boolean eventConsumed = false;
-                    if (listener.touchType != null && listener.touchType.equals(event.getTouchType()) && isCapture == listener.isCapturePhase) {
+                    if ( (listener.touchType == null || listener.touchType != null && listener.touchType.equals(event.getTouchType()))
+                            && isCapture == listener.isCapturePhase) {
                         eventConsumed = listener.listener.onTouchEvent(event);
                         if (eventConsumed) {
                             event.consume();
