@@ -7,10 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import rustycage.impl.AttributesStack;
+import rustycage.impl.Bounds;
 import rustycage.impl.FloatStack;
 import rustycage.impl.renderer.AbstractCanvasRenderer;
 import rustycage.impl.renderer.RendererProvider;
@@ -85,9 +87,11 @@ public class RustyCageView extends View {
             float canvasWidth = canvas.getWidth();
             float canvasHeight = canvas.getHeight();
             // center the scene node;
-            float offsetX = (canvasWidth - sceneNode.getWidth()) / 2f;
-            float offsetY = (canvasHeight - sceneNode.getHeight()) / 2f;
+
+            float offsetX = (canvasWidth - sceneNode.getWidth()) / 2f - sceneNode.getLocalBoundsLeft();
+            float offsetY = (canvasHeight - sceneNode.getHeight()) / 2f - sceneNode.getLocalBoundsTop();
             sceneNode.setTranslation(offsetX, offsetY);
+            //Log.d(TAG,"offsetX/Y: "+offsetX+", "+offsetY);
 
             //SgNode rootNode = sceneNode.getSceneDelegate();
 

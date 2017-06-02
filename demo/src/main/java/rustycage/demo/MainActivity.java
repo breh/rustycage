@@ -242,79 +242,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static final float GAUGE_SIZE = 350;
-
-    public SgNode createGauge() {
-
-        Paint circularGradient = new Paint();
-        circularGradient.setColor(Color.BLACK);
-        circularGradient.setStrokeWidth(1);
-        circularGradient.setStyle(Paint.Style.FILL_AND_STROKE);
-        circularGradient.setShader(new RadialGradient(0, 0, GAUGE_SIZE,
-                Color.argb(255,150,150,150), Color.BLACK, Shader.TileMode.MIRROR));
-
-
-        TextPaint whitePaint = new TextPaint();
-        whitePaint.setColor(Color.WHITE);
-        whitePaint.setTextSize(50);
-        whitePaint.setTypeface(Typeface.DEFAULT_BOLD);
-        whitePaint.setTextAlign(Paint.Align.CENTER);
-
-
-        final SgGroup gauge = SgGroup.create()
-                .add(SgEllipse.createCircle(GAUGE_SIZE).paint(circularGradient))
-                .build();
-
-
-        double size = GAUGE_SIZE * 0.85;
-        for (int i=0; i < 17; i++) {
-            String text = Integer.toString(i*10);
-            // compute position
-            double angle = i / 3.0 - Math.toRadians(270);
-            float x = (float)(size * Math.cos(angle));
-            float y = (float)(size * Math.sin(angle) + 10);
-            gauge.addNode(SgText.create(text,x,y).r(i*15).build());
-        }
-
-        gauge.setAttribute(new PaintAttribute(whitePaint));
-
-        Log.w(TAG," gauge local bounds: "+gauge.getLocalBounds());
-        Log.w(TAG," gauge transformed bounds: "+gauge.getTransformedBounds());
-
-        SgGroup root = SgGroup.create().add(gauge).build();
-
-        Log.w(TAG," root local bounds: "+root.getLocalBounds());
-
-        root.setRotation(-20);
-
-        GroupTransition.createParallel()
-                .add(TranslationTransition.create(root).byX(300).toY(500))
-                .add(RotationTransition.create(root).to(720))
-                .add(ScaleTransition.create(root).from(0.5f).to(1f))
-                .duration(2000)
-                .delay(1000)
-                .start();
-
-        gauge.addOnTouchListener(TouchEvent.TouchType.DOWN, new TouchEventListener() {
-            @Override
-            public boolean onTouchEvent(TouchEvent touchEvent) {
-                ScaleTransition.create(gauge).to(1.5f).duration(300).start();
-                return true;
-            }
-        });
-
-        gauge.addOnTouchListener(TouchEvent.TouchType.UP, new TouchEventListener() {
-            @Override
-            public boolean onTouchEvent(TouchEvent touchEvent) {
-                ScaleTransition.create(gauge).to(1f).duration(300).start();
-                return true;
-            }
-        });
-
-        return root;
-    }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -322,7 +249,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
         //SgNode root = createTest1Node();
-        SgNode root = createGauge();
+
+        TouchEventListener gaugeListener = new TouchEventListener() {
+            @Override
+            public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                float lx = touchEvent.getLocalX()*1.2f;
+                Log.d(TAG,"local X: "+lx);
+                SgNode currentNode = touchEvent.getCurrentNode();
+                float gaugeWidth = currentNode.getWidth();
+                float normalizedX =  (gaugeWidth / 2 + lx) / gaugeWidth;
+                Log.d(TAG,"normalized X: "+normalizedX);
+                float value = 200*normalizedX;
+                Log.d(TAG,"value X: "+value);
+                ((Gauge)currentNode).setValue(value);
+                return true;
+            }
+        };
+        final Gauge gauge1 = new Gauge(0,200, 10, 270, 135);
+        gauge1.setSize(500);
+        gauge1.addOnTouchListener(TouchEvent.TouchType.DOWN, gaugeListener);
+
+        final Gauge gauge2 = new Gauge(0,200, 10, 270, 135);
+        gauge2.setSize(500);
+        gauge2.addOnTouchListener(TouchEvent.TouchType.DOWN, gaugeListener);
+        gauge2.setTranslationY(600);
+
+
+        SgGroup root = SgGroup.create().add(gauge1).add(gauge2).build();
         //SgNode root = createMainMenu();
         rcView.setRootNode(root);
 
