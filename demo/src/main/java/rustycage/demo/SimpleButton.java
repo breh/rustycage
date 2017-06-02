@@ -17,6 +17,7 @@ import rustycage.animation.FloatPropertyTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
+import rustycage.event.SgEventListener;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
@@ -84,7 +85,7 @@ public class SimpleButton extends SgCustomNode {
                 .add(textNode = SgText.create(text,width/2, textY).textPaint(textPaint).build())
                 .onTouchDown(new TouchEventListener() {
                     @Override
-                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
                         Log.d(TAG,"button touched!!!: "+text+" lx: "+touchEvent.getLocalX());
                         float targetX = 0f;
                         if (touchEvent.getLocalX() < width / 2) {
@@ -108,7 +109,7 @@ public class SimpleButton extends SgCustomNode {
                         .add(ScaleTransition.create(textNode).to(1)))
                 .onTouchUp(new TouchEventListener() {
                     @Override
-                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
                         animatePaint(outlineNode, outlinePaint, Color.GRAY, 300);
                         return false;
                     }

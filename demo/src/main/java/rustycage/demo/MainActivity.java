@@ -2,17 +2,13 @@ package rustycage.demo;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextPaint;
 import android.util.Log;
 
 import rustycage.PaintAttribute;
@@ -26,11 +22,10 @@ import rustycage.SgNode;
 import rustycage.SgPath;
 import rustycage.SgRectangle;
 import rustycage.SgText;
-import rustycage.animation.GroupTransition;
 import rustycage.animation.OpacityTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
-import rustycage.animation.TranslationTransition;
+import rustycage.event.SgEventListener;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
@@ -99,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                                 .onTouch(null, new TouchEventListener() {
                                     private float lastX, lastY;
                                     @Override
-                                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
                                         Log.d(TAG,"bitmap touchevent: "+touchEvent);
                                         SgNode node = touchEvent.getCurrentNode();
                                         float localX = touchEvent.getLocalX();
@@ -135,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
                 .add(sgPath)
                 .add(SgEllipse.createCircle(100).txy(800,300).onTouchDown(new TouchEventListener() {
                     @Override
-                    public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
-                        Log.d(TAG,"onTouchEvent: "+touchEvent);
+                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
+                        Log.d(TAG,"onEvent: "+touchEvent);
                         RotationTransition.create(sgPath).by(360).duration(1000).start();
                         return true;
                     }
@@ -213,12 +208,12 @@ public class MainActivity extends AppCompatActivity {
         Walker.forEachLeaf(groot, new Walker.Action() {
             @Override
             public void onNode(final @NonNull SgNode node) {
-                node.setOnTouchEventListener(new TouchEventListener() {
+                node.setOnTouchEventListener(new SgEventListener() {
                     private float lastX, lastY;
 
                     @Override
-                    public boolean onTouchEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
-                        Log.d(TAG,"onTouchEvent node: "+node+",: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
+                    public boolean onEvent(@NonNull MotionEvent touchEvent, float localX, float localY, boolean isCapturePhase) {
+                        Log.d(TAG,"onEvent node: "+node+",: "+touchEvent+" localXY:"+localX+", "+localY+", isCapturePhase:"+isCapturePhase);
                         if (touchEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             // scale the gauge
                             ScaleTransition.create(node).to(1.5f).duration(300).start();
@@ -252,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
         TouchEventListener gaugeListener = new TouchEventListener() {
             @Override
-            public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+            public boolean onEvent(@NonNull TouchEvent touchEvent) {
                 float lx = touchEvent.getLocalX()*1.2f;
                 Log.d(TAG,"local X: "+lx);
                 SgNode currentNode = touchEvent.getCurrentNode();

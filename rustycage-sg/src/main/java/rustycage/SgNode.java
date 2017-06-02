@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import rustycage.animation.AbstractTransition;
+import rustycage.event.SgEventListener;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.impl.Bounds;
@@ -292,17 +293,17 @@ public abstract class SgNode {
         return eventSupport != null && eventSupport.hasBubbleListeners();
     }
 
-    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
+    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener<TouchEvent> listener) {
         Preconditions.assertNotNull(listener,"listener");
         getEventSupport().addOnTouchListener(touchType, false, listener);
     }
 
-    public void addOnTouchCaptureListener(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
+    public void addOnTouchCaptureListener(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener<TouchEvent> listener) {
         Preconditions.assertNotNull(listener,"listener");
         getEventSupport().addOnTouchListener(touchType, true, listener);
     }
 
-    public void removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull TouchEventListener listener) {
+    public void removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull SgEventListener<TouchEvent> listener) {
         Preconditions.assertNotNull(listener,"listener");
         getEventSupport().removeOnTouchListener(touchType, capturePhase, listener);
     }
@@ -466,21 +467,21 @@ public abstract class SgNode {
         }
 
         @NonNull
-        public final B onTouch(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
+        public final B onTouch(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(touchType, listener);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchCapture(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener) {
+        public final B onTouchCapture(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchCaptureListener(touchType, listener);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchDown(@NonNull TouchEventListener listener) {
+        public final B onTouchDown(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(TouchEvent.TouchType.DOWN, listener);
             return getBuilder();
@@ -488,7 +489,7 @@ public abstract class SgNode {
 
 
         @NonNull
-        public final B onCaptureTouchDown(@NonNull TouchEventListener listener) {
+        public final B onCaptureTouchDown(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchCaptureListener(TouchEvent.TouchType.DOWN, listener);
             return getBuilder();
@@ -496,35 +497,35 @@ public abstract class SgNode {
 
 
         @NonNull
-        public final B onTouchUp(@NonNull TouchEventListener listener) {
+        public final B onTouchUp(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(TouchEvent.TouchType.UP, listener);
             return getBuilder();
         }
 
         @NonNull
-        public final B onCaptureTouchUp(@NonNull TouchEventListener listener) {
+        public final B onCaptureTouchUp(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchCaptureListener(TouchEvent.TouchType.UP, listener);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchMove(@NonNull TouchEventListener listener) {
+        public final B onTouchMove(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(TouchEvent.TouchType.MOVE, listener);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchEnter(@NonNull TouchEventListener listener) {
+        public final B onTouchEnter(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(TouchEvent.TouchType.ENTER, listener);
             return getBuilder();
         }
 
         @NonNull
-        public final B onTouchExit(@NonNull TouchEventListener listener) {
+        public final B onTouchExit(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
             getNode().addOnTouchListener(TouchEvent.TouchType.EXIT, listener);
             return getBuilder();
@@ -535,7 +536,7 @@ public abstract class SgNode {
             Preconditions.assertNotNull(transition, "transition");
             onTouchDown(new TouchEventListener() {
                 @Override
-                public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                public boolean onEvent(@NonNull TouchEvent touchEvent) {
                     transition.start();
                     return false;
                 }
@@ -548,7 +549,7 @@ public abstract class SgNode {
             Preconditions.assertNotNull(transition, "transition");
             onTouchUp(new TouchEventListener() {
                 @Override
-                public boolean onTouchEvent(@NonNull TouchEvent touchEvent) {
+                public boolean onEvent(@NonNull TouchEvent touchEvent) {
                     transition.start();
                     return false;
                 }

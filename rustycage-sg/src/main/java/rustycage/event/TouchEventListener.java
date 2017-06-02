@@ -1,14 +1,8 @@
 package rustycage.event;
 
-import android.support.annotation.NonNull;
-
 /**
- * Created by breh on 2/8/17.
+ * Created by breh on 6/1/17.
  */
 
-public interface TouchEventListener {
-
-    boolean onTouchEvent(@NonNull TouchEvent touchEvent);
-
+public interface TouchEventListener extends SgEventListener<TouchEvent> {
 }
-

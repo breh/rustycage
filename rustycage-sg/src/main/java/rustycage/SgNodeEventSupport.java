@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 
+import rustycage.event.SgEventListener;
 import rustycage.event.TouchEvent;
-import rustycage.event.TouchEventListener;
 import rustycage.impl.event.Fireable;
 import rustycage.impl.event.ListenerHelper;
 import rustycage.util.Preconditions;
@@ -13,10 +13,6 @@ import rustycage.util.Preconditions;
 /**
  * Created by breh on 3/3/17.
  */
-
-
-
-
 final class SgNodeEventSupport {
 
 
@@ -25,10 +21,10 @@ final class SgNodeEventSupport {
         @Nullable
         final TouchEvent.TouchType touchType;
         @NonNull
-        final TouchEventListener listener;
+        final SgEventListener listener;
         final boolean isCapturePhase;
 
-        TouchEventListenerWrapper(@Nullable TouchEvent.TouchType touchType, @NonNull TouchEventListener listener,
+        TouchEventListenerWrapper(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener listener,
                                   boolean isCapturePhase) {
             this.touchType = touchType;
             this.listener = listener;
@@ -82,7 +78,7 @@ final class SgNodeEventSupport {
     }
 
 
-    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull TouchEventListener listener) {
+    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull SgEventListener listener) {
         Preconditions.assertNotNull(listener, "listener");
         TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
         eventListeners.addListener(wrapper);
@@ -95,7 +91,7 @@ final class SgNodeEventSupport {
         }
     }
 
-    public boolean removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull TouchEventListener listener) {
+    public boolean removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull SgEventListener listener) {
         TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
         boolean result = eventListeners.removeListener(wrapper);
         if (result) {
@@ -135,7 +131,7 @@ final class SgNodeEventSupport {
                     boolean eventConsumed = false;
                     if ( (listener.touchType == null || listener.touchType != null && listener.touchType.equals(event.getTouchType()))
                             && isCapture == listener.isCapturePhase) {
-                        eventConsumed = listener.listener.onTouchEvent(event);
+                        eventConsumed = listener.listener.onEvent(event);
                         if (eventConsumed) {
                             event.consume();
                         }

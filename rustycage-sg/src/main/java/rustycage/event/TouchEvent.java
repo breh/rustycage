@@ -11,7 +11,7 @@ import rustycage.util.Preconditions;
  * Created by breh on 3/2/17.
  */
 
-public final class TouchEvent {
+public final class TouchEvent extends SgEvent {
 
     public enum TouchType {
         DOWN,
@@ -39,11 +39,8 @@ public final class TouchEvent {
     private final TouchType touchType;
     private float localX;
     private float localY;
-    private boolean isCapturePhase;
+
     private final MotionEvent motionEvent;
-    private boolean isConsumed;
-    private SgNode currentNode;
-    private SgNode hitNode;
 
 
     public TouchEvent(float localX, float localY, boolean isCapturePhase,
@@ -54,12 +51,10 @@ public final class TouchEvent {
 
     public TouchEvent(float localX, float localY, @Nullable TouchType touchType, boolean isCapturePhase,
                       @NonNull SgNode currentNode, @NonNull SgNode hitNode, @NonNull MotionEvent motionEvent) {
+        super(isCapturePhase, currentNode, hitNode);
         this.motionEvent = Preconditions.assertNotNull(motionEvent, "motionEvent");
         this.localX = localX;
         this.localY = localY;
-        this.isCapturePhase = isCapturePhase;
-        this.currentNode = Preconditions.assertNotNull(currentNode,"currentNode");
-        this.hitNode = Preconditions.assertNotNull(hitNode, "hitNode");
         this.touchType = touchType != null ? touchType : TouchType.getTouchTypeFromMotionEvent(motionEvent);
     }
 
@@ -77,40 +72,13 @@ public final class TouchEvent {
         return localY;
     }
 
-    public SgNode getCurrentNode() {
-        return currentNode;
-    }
-
-    public SgNode getHitNode() {
-        return hitNode;
-    }
-
-    // FIXME should not be public - use accessor or make it package private
-    private void updateEvent(float localX, float localY, boolean isCapturePhase) {
-        this.localX = localX;
-        this.localY = localY;
-        this.isCapturePhase = isCapturePhase;
-    }
-
-    public boolean isCapturePhase() {
-        return isCapturePhase;
-    }
-
-
-    public void consume() {
-        isConsumed = true;
-    }
-
-    public boolean isConsumed() {
-        return isConsumed;
-    }
 
     @Override
     public String toString() {
         return new StringBuilder("TouchEvent:[ localXY: ").append(localX).append(',').append(localY)
-                .append(", touchType: ").append(touchType).append(", isCapture: ").append(isCapturePhase)
-                .append(", currentNode: ").append(currentNode)
-                .append(", hitNode: ").append(hitNode)
+                .append(", touchType: ").append(touchType).append(", isCapture: ").append(isCapturePhase())
+                .append(", currentNode: ").append(getCurrentNode())
+                .append(", hitNode: ").append(getHitNode())
                 .append(']').toString();
 
     }

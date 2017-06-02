@@ -113,7 +113,7 @@ public class RustyCageView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         // capture and bubble through scenegraph
         if (sceneNode != null) {
-            //Log.d(TAG,"onTouchEvent: localXY["+event.getX()+", "+event.getY()
+            //Log.d(TAG,"onEvent: localXY["+event.getX()+", "+event.getY()
             //        +"], raw:["+event.getRawX()+", "+event.getRawY()+"]");
             touchPoint[0] = event.getX();
             touchPoint[1] = event.getY();
