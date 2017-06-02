@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
         gauge1.setSize(500);
         gauge1.addOnTouchListener(TouchEvent.TouchType.DOWN, gaugeListener);
 
-        final Gauge gauge2 = new Gauge(0,200, 10, 270, 135);
+        final Gauge gauge2 = new Gauge(0,200, 10, 300, 90);
         gauge2.setSize(500);
         gauge2.addOnTouchListener(TouchEvent.TouchType.DOWN, gaugeListener);
         gauge2.setTranslationY(600);
