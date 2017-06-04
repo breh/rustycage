@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
+import android.graphics.Region;
 import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,9 +23,11 @@ import rustycage.SgNode;
 import rustycage.SgPath;
 import rustycage.SgRectangle;
 import rustycage.SgText;
+import rustycage.animation.GroupTransition;
 import rustycage.animation.OpacityTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
+import rustycage.animation.TranslationTransition;
 import rustycage.demo.components.Gauge;
 import rustycage.demo.components.RadialSelector;
 import rustycage.demo.components.SimpleButton;
@@ -46,14 +49,28 @@ public class MainActivity extends AppCompatActivity {
 
     public SgNode createMainMenu() {
         float yOffset = 0;
+        int transitionDelay = 500;
         final float buttonWidth = 800;
         final float buttonHeight = 200;
         final float space = 20;
         SgGroup.Builder groupBuilder = SgGroup.create();
+        GroupTransition groupTransition = GroupTransition.createParallel();
         for (String buttonName : buttonNames) {
-            groupBuilder.add(SimpleButton.create(buttonName, buttonWidth, buttonHeight).ty(yOffset));
+            SimpleButton button = SimpleButton.create(buttonName, buttonWidth, buttonHeight).ty(yOffset).build();
+            groupBuilder.add(button);
+            button.setOpacity(0f);
+
+            groupTransition.add(TranslationTransition.create(button).fromX(-100).toX(0).delay(transitionDelay));
+            groupTransition.add(OpacityTransition.create(button).from(0).to(1).duration(1000).delay(transitionDelay));
+
+
+            transitionDelay += 300;
+
             yOffset += buttonHeight + space;
         }
+
+        groupTransition.delay(500).start();
+
         return groupBuilder.build();
     }
 
@@ -272,9 +289,10 @@ public class MainActivity extends AppCompatActivity {
         gauge2.setTranslationY(600);
 
 
-        SgGroup root = SgGroup.create().add(gauge1).add(gauge2).build();
-        //SgNode root = createMainMenu();
+        //SgGroup root = SgGroup.create().add(gauge1).add(gauge2).build();
+        SgNode root = createMainMenu();
         rcView.setRootNode(root);
+        rcView.setBackgroundColor(Color.BLACK);
 
 
     }

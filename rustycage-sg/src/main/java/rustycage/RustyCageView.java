@@ -24,7 +24,6 @@ public class RustyCageView extends View {
 
     private static final String TAG = "RustyCageView";
 
-    private static boolean DRAW_OUTLINE_FRAME = true;
     private static Paint OUTLINE_PAINT = new Paint();
     static {
         OUTLINE_PAINT.setARGB(255,100,100,100);
@@ -67,11 +66,23 @@ public class RustyCageView extends View {
     }
 
 
+    private boolean outlineVisible = false;
+
+    public void setOutlineVisible(boolean outlineVisible) {
+        this.outlineVisible = outlineVisible;
+        invalidate();
+    }
+
+    public final boolean isOutlineVisible() {
+        return outlineVisible;
+    }
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (DRAW_OUTLINE_FRAME) {
+        if (outlineVisible) {
             int lx = 0;
             int rx = width -1;
             int ty = 0;
