@@ -9,11 +9,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 
+import rustycage.Attribute;
+import rustycage.PaintAttribute;
+
 /**
  * Created by breh on 2/17/17.
  */
 
-public final class PaintBuilder {
+public final class PaintBuilder implements Attribute.AttributeBuilder<PaintAttribute> {
 
     private Paint paint;
 
@@ -129,6 +132,10 @@ public final class PaintBuilder {
 
     public Paint build() {
         return paint;
+    }
+
+    public PaintAttribute buildAttribute() {
+        return new PaintAttribute(build());
     }
 
 }

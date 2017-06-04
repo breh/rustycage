@@ -1,4 +1,4 @@
-package rustycage.demo;
+package rustycage.demo.components;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -16,11 +16,11 @@ import rustycage.util.PaintBuilder;
  * Created by breh on 2/17/17.
  */
 
-public class CustomNodeTest extends SgCustomNode {
+public class RadialSelector extends SgCustomNode {
 
-    private static final String TAG = "CustomNodeTest";
+    private static final String TAG = "RadialSelector";
 
-    private CustomNodeTest() {}
+    private RadialSelector() {}
 
     private SgPath.Builder createStrip(float r1, float r2) {
         return SgPath.create().arcTo(-r1,-r1,r1,r1,180,90)/*.rLineTo(0,40)*/
@@ -54,9 +54,9 @@ public class CustomNodeTest extends SgCustomNode {
         return new Builder();
     }
 
-    public static class Builder extends SgNode.Builder<Builder, CustomNodeTest> {
+    public static class Builder extends SgNode.Builder<Builder, RadialSelector> {
         private Builder() {
-            super(new CustomNodeTest());
+            super(new RadialSelector());
         }
     }
 

@@ -20,4 +20,11 @@ public abstract class Attribute<T> {
 
     public abstract Class<T> getAttributeClass();
 
+
+    public interface AttributeBuilder<T extends Attribute<?>> {
+
+        public T buildAttribute();
+
+    }
+
 }

@@ -1,4 +1,4 @@
-package rustycage.demo;
+package rustycage.demo.components;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -17,7 +17,6 @@ import rustycage.animation.FloatPropertyTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
-import rustycage.event.SgEventListener;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;

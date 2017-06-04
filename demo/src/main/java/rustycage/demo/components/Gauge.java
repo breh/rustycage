@@ -1,4 +1,4 @@
-package rustycage.demo;
+package rustycage.demo.components;
 
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -6,15 +6,12 @@ import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
-import android.text.TextPaint;
 
-import rustycage.PaintAttribute;
 import rustycage.SgCustomNode;
 import rustycage.SgEllipse;
 import rustycage.SgGroup;
 import rustycage.SgLine;
 import rustycage.SgNode;
-import rustycage.SgRectangle;
 import rustycage.SgText;
 import rustycage.animation.RotationTransition;
 import rustycage.util.PaintBuilder;
@@ -110,20 +107,18 @@ public class Gauge extends SgCustomNode {
     @Override
     protected SgNode createNode() {
 
-        Paint circularGradient = PaintBuilder.create().color(Color.BLACK).strokeWidth(1)
-                                    .style(Paint.Style.FILL_AND_STROKE)
-                                    .shader(new RadialGradient(0, 0, DEFAULT_GAUGE_SIZE/2f, Color.argb(255,150,150,150),
-                                                Color.BLACK, Shader.TileMode.MIRROR)).build();
-
-        Paint whitePaint = PaintBuilder.createText().color(Color.WHITE).textSize(50)
-                .typeface(Typeface.DEFAULT_BOLD).textAlign(Paint.Align.CENTER).build();
-
-
         final SgGroup gauge = SgGroup.create()
-                .add(SgEllipse.createCircle(DEFAULT_GAUGE_SIZE/2f).paint(circularGradient))
+                .add(SgEllipse.createCircle(DEFAULT_GAUGE_SIZE/2f)
+                        .paint(PaintBuilder.create().color(Color.BLACK).strokeWidth(1)
+                                .style(Paint.Style.FILL_AND_STROKE)
+                                .shader(new RadialGradient(0, 0, DEFAULT_GAUGE_SIZE/2f, Color.argb(255,150,150,150),
+                                        Color.BLACK, Shader.TileMode.MIRROR)
+                                )
+                        )
+                )
+                .attribute(PaintBuilder.createText().color(Color.WHITE).textSize(50)
+                        .typeface(Typeface.DEFAULT_BOLD).textAlign(Paint.Align.CENTER))
                 .build();
-
-        gauge.setAttribute(new PaintAttribute(whitePaint));
 
         double innerLabelCircleSize = DEFAULT_GAUGE_SIZE * 0.425;
         double coveredAngleInRadians = Math.toRadians(coveredAngle);
@@ -141,15 +136,11 @@ public class Gauge extends SgCustomNode {
             gauge.addNode(SgText.create(text,x,y).build());
         }
 
-
-        Paint needlePaint = PaintBuilder.create().color( 0xFFA00000).strokeWidth(10).build();
-
         float needleSize = DEFAULT_GAUGE_SIZE*0.5f;
         float needleOffset = - DEFAULT_GAUGE_SIZE * 0.1f;
-        //float pivotPoint = -needleOffset / needleSize;
 
         needle = SgGroup.create()
-                .attribute(new PaintAttribute(needlePaint))
+                .attribute(PaintBuilder.create().color( 0xFFA00000).strokeWidth(10))
                 .add(SgLine.createWithSize(needleOffset,0,needleSize,0))
                 .add(SgEllipse.createCircle(DEFAULT_GAUGE_SIZE * 0.03f))
                 .pivot(0,0)

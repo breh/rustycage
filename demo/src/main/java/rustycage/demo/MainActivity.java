@@ -25,7 +25,9 @@ import rustycage.SgText;
 import rustycage.animation.OpacityTransition;
 import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
-import rustycage.event.SgEventListener;
+import rustycage.demo.components.Gauge;
+import rustycage.demo.components.RadialSelector;
+import rustycage.demo.components.SimpleButton;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 }))
-                .add(CustomNodeTest.create().txy(600, 1350))
+                .add(RadialSelector.create().txy(600, 1350))
                 .attribute(new PaintAttribute(bluePaint))
                 .opacity(0f)
                 .build();

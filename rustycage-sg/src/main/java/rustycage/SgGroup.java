@@ -304,6 +304,11 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
             return getBuilder();
         }
 
+        public Builder attribute(@NonNull Attribute.AttributeBuilder<?> attributeBuilder) {
+            getNode().setAttribute(attributeBuilder.buildAttribute());
+            return getBuilder();
+        }
+
     }
 
 }
