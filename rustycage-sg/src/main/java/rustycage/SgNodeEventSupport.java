@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 
+import java.util.List;
+
+import rustycage.event.SgEvent;
 import rustycage.event.SgEventListener;
 import rustycage.event.TouchEvent;
 import rustycage.impl.event.Fireable;
@@ -16,17 +19,13 @@ import rustycage.util.Preconditions;
 final class SgNodeEventSupport {
 
 
-    private static final class TouchEventListenerWrapper {
 
-        @Nullable
-        final TouchEvent.TouchType touchType;
+    private static class SgEventListenerWrapper<T extends SgEvent> {
         @NonNull
         final SgEventListener listener;
         final boolean isCapturePhase;
 
-        TouchEventListenerWrapper(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener listener,
-                                  boolean isCapturePhase) {
-            this.touchType = touchType;
+        SgEventListenerWrapper(@NonNull SgEventListener listener, boolean isCapturePhase) {
             this.listener = listener;
             this.isCapturePhase = isCapturePhase;
         }
@@ -34,25 +33,50 @@ final class SgNodeEventSupport {
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-            if (obj instanceof TouchEventListenerWrapper) {
-                TouchEventListenerWrapper that = (TouchEventListenerWrapper) obj;
-                return this.listener.equals(that.listener) && this.touchType == that.touchType
-                        && this.isCapturePhase == that.isCapturePhase;
+            if (obj instanceof SgEventListenerWrapper) {
+                SgEventListenerWrapper that = (SgEventListenerWrapper) obj;
+                return this.listener.equals(that.listener) && this.isCapturePhase == that.isCapturePhase;
             } // else
             return false;
         }
 
         @Override
         public int hashCode() {
-            return listener.hashCode()
-                    + (touchType != null ? touchType.hashCode() : 0)
-                    + (isCapturePhase ? 1234 : 0);
+            return listener.hashCode() + (isCapturePhase ? 1234 : 0);
+        }
+
+    }
+
+    private static final class TouchEventListenerWrapper extends SgEventListenerWrapper<TouchEvent> {
+
+        @Nullable
+        final TouchEvent.TouchType touchType;
+
+        TouchEventListenerWrapper(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener listener,
+                                  boolean isCapturePhase) {
+            super(listener, isCapturePhase);
+            this.touchType = touchType;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj instanceof TouchEventListenerWrapper) {
+                TouchEventListenerWrapper that = (TouchEventListenerWrapper) obj;
+                return super.equals(obj) && this.touchType == that.touchType;
+            } // else
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode() + (touchType != null ? touchType.hashCode() : 0);
         }
     }
 
 
     private int captureListenersCount;
-    private final ListenerHelper<TouchEventListenerWrapper, TouchEvent> eventListeners = new ListenerHelper<>();
+    //private final ListenerHelper<TouchEventListenerWrapper, TouchEvent> eventListeners = new ListenerHelper<>();
     private int enterExitListenersCount;
     private boolean readyForEnterEvent = true;
 
@@ -60,14 +84,6 @@ final class SgNodeEventSupport {
         return enterExitListenersCount > 0;
     }
 
-    public boolean hasCaptureListeners() {
-        return captureListenersCount > 0;
-    }
-
-
-    public boolean hasBubbleListeners() {
-        return (eventListeners.size() - captureListenersCount) > 0;
-    }
 
     public boolean isReadyForEnterEvent() {
         return readyForEnterEvent;
@@ -78,36 +94,10 @@ final class SgNodeEventSupport {
     }
 
 
-    public void addOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull SgEventListener listener) {
-        Preconditions.assertNotNull(listener, "listener");
-        TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
-        eventListeners.addListener(wrapper);
-        if (capturePhase) {
-            captureListenersCount++;
-        }
-        if (touchType == null || touchType == TouchEvent.TouchType.ENTER
-                || touchType == TouchEvent.TouchType.EXIT) {
-            enterExitListenersCount++;
-        }
-    }
 
-    public boolean removeOnTouchListener(@Nullable TouchEvent.TouchType touchType, boolean capturePhase, @NonNull SgEventListener listener) {
-        TouchEventListenerWrapper wrapper = new TouchEventListenerWrapper(touchType, listener, capturePhase);
-        boolean result = eventListeners.removeListener(wrapper);
-        if (result) {
-            if (capturePhase) {
-                captureListenersCount--;
-            }
-            if (touchType == null || touchType == TouchEvent.TouchType.ENTER
-                    || touchType == TouchEvent.TouchType.EXIT) {
-                enterExitListenersCount--;
-            }
-        }
-        return result;
-    }
+    /*
 
-
-    public boolean deliverEvent(@NonNull MotionEvent motionEvent, float localX, float localY,
+    public boolean deliverTouchEvent(@NonNull MotionEvent motionEvent, float localX, float localY,
                                 @NonNull SgNode currentNode, @NonNull SgNode hitNode, final boolean isCapture) {
         boolean consumed = false;
         if (eventListeners.hasListeners()) {
@@ -117,13 +107,12 @@ final class SgNodeEventSupport {
                 if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                     // we have our enter event
                     readyForEnterEvent = false;
-                    touchEvent = new TouchEvent(localX, localY, TouchEvent.TouchType.ENTER, isCapture,
-                            currentNode, hitNode, motionEvent);
+                    touchEvent = TouchEvent.createTouchEventFromMotionEvent(localX, localY, hitNode, motionEvent);
                 }
             }
             if (touchEvent == null) {
-                touchEvent = new TouchEvent(localX, localY, isCapture,
-                        currentNode, hitNode, motionEvent);
+                //TouchEvent = new TouchEvent(localX, localY, isCapture,
+                //        currentNode, hitNode, motionEvent);
             }
             consumed = eventListeners.fireEvent(new Fireable<TouchEventListenerWrapper, TouchEvent>() {
                 @Override
@@ -131,7 +120,7 @@ final class SgNodeEventSupport {
                     boolean eventConsumed = false;
                     if ( (listener.touchType == null || listener.touchType != null && listener.touchType.equals(event.getTouchType()))
                             && isCapture == listener.isCapturePhase) {
-                        eventConsumed = listener.listener.onEvent(event);
+                        //eventConsumed = listener.listener.onEvent(event);
                         if (eventConsumed) {
                             event.consume();
                         }
@@ -141,5 +130,7 @@ final class SgNodeEventSupport {
             }, touchEvent);
         }
         return consumed;
-    }
+    }*/
+
+
 }

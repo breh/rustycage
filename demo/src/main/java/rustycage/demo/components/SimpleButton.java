@@ -17,6 +17,7 @@ import rustycage.animation.FloatPropertyTransition;
 import rustycage.animation.GroupTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
+import rustycage.event.SgEvent;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
@@ -25,7 +26,7 @@ import rustycage.util.PaintBuilder;
  * Created by breh on 3/7/17.
  */
 
-public class SimpleButton extends SgCustomNode {
+public final class SimpleButton extends SgCustomNode {
 
     private static final String TAG = "SimpleButton";
 
@@ -50,6 +51,10 @@ public class SimpleButton extends SgCustomNode {
         this.height = height;
     }
 
+
+    public String getText() {
+        return text;
+    }
 
     private static void animatePaint(final @NonNull SgNode node, @NonNull Paint paint, int toColor, int duration) {
         ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(paint, "color", paint.getColor(), toColor);
@@ -84,7 +89,7 @@ public class SimpleButton extends SgCustomNode {
                 .add(textNode = SgText.create(text,width/2, textY).textPaint(textPaint).build())
                 .onTouchDown(new TouchEventListener() {
                     @Override
-                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
+                    public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {
                         Log.d(TAG,"button touched!!!: "+text+" lx: "+touchEvent.getLocalX());
                         float targetX = 0f;
                         if (touchEvent.getLocalX() < width / 2) {
@@ -100,17 +105,19 @@ public class SimpleButton extends SgCustomNode {
 
                         animatePaint(outlineNode, outlinePaint, Color.RED, 300);
 
-                        return true;
+                        touchEvent.consume();
+
+                        // now dispatch button clicked event
+                        SimpleButton.this.dispatchEvent(new SimpleButtonClickedEvent(SimpleButton.this));
+
                     }
                 })
                 .onTouchUpTransition(GroupTransition.createParallel().duration(300)
                         .add(TranslationTransition.create(textNode).toX(0))
                         .add(ScaleTransition.create(textNode).to(1)))
                 .onTouchUp(new TouchEventListener() {
-                    @Override
-                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
+                    public void onEvent(@NonNull TouchEvent event, @NonNull SgNode currentNode, boolean isCapturePhase) {
                         animatePaint(outlineNode, outlinePaint, Color.GRAY, 300);
-                        return false;
                     }
                 })
                 .build();
@@ -140,5 +147,21 @@ public class SimpleButton extends SgCustomNode {
             getNode().textColor = color;
             return getBuilder();
         }
+    }
+
+
+    public static class SimpleButtonClickedEvent extends SgEvent {
+
+        private final SimpleButton button;
+
+        private SimpleButtonClickedEvent(SimpleButton button) {
+            super(button);
+            this.button = button;
+        }
+
+        public SimpleButton getButton() {
+            return button;
+        }
+
     }
 }

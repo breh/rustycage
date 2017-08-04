@@ -131,7 +131,7 @@ public class RustyCageView extends View {
             boolean foundHitPath = sceneNode.findHitPath(nodeHitPath, touchPoint);
             //Log.d(TAG,"found: "+foundHitPath+", hitPath: "+nodeHitPath);
             if (foundHitPath) {
-                nodeHitPath.deliverEvent(event);
+                SgNodeEventDeliverySupport.deliverTouchEvent(event, nodeHitPath);
                 nodeHitPath.clear();
             }
         }

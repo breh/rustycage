@@ -6,13 +6,16 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import rustycage.SgNode;
+import rustycage.event.SgEvent;
+import rustycage.event.SgEventListener;
 import rustycage.util.Preconditions;
 
 /**
  * Created by breh on 3/2/17.
  */
 
-public final class ListenerHelper<T,E> {
+public final class ListenerHelper<T extends SgEventListener<? super E>,E extends SgEvent> {
 
     private @Nullable T listener;
     private @Nullable List<T> listeners;
@@ -63,6 +66,27 @@ public final class ListenerHelper<T,E> {
             listeners = null;
         }
         return result;
+    }
+
+
+    public boolean fireSgEvent(@NonNull E event, @NonNull SgNode node, boolean icCapturePhase) {
+        Preconditions.assertNotNull(event, "event");
+        Preconditions.assertNotNull(node, "node");
+        // single listener first
+        if (listener != null) {
+            listener.onEvent(event, node, icCapturePhase);
+        }
+        // multiple listeners next
+        if (listeners != null) {
+            int size = listeners.size();
+            for (int i=0; i < size; i++) {
+                listeners.get(i).onEvent(event, node, icCapturePhase);
+                if (event.isConsumed()) {
+                    return true; // we are done
+                }
+            }
+        } // else not consumed
+        return false;
     }
 
 

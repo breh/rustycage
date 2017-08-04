@@ -31,7 +31,7 @@ final class SgNodeHitPath {
     }
 
 
-    public int getDepth() {
+    public int getSize() {
         return path.size();
     }
 
@@ -72,44 +72,6 @@ final class SgNodeHitPath {
             return path.get(size - 1);
         } else {
             throw new IllegalStateException("No hit node");
-        }
-    }
-
-
-    public void deliverEvent(@NonNull MotionEvent originalEvent) {
-        // capture
-        int size = path.size();
-        if (size  > 0) {
-            final SgNode hitNode = getHitNode();
-            for (int i = 0; i < size; i++) {
-                SgNode node = path.get(i);
-                if (node.hasCaptureListener()) {
-                    int coordinatesIndex = i * 2;
-                    float localX = hitCoordinates[coordinatesIndex];
-                    float localY = hitCoordinates[coordinatesIndex + 1];
-                    boolean consumed = node.getEventSupport().deliverEvent(originalEvent, localX, localY,
-                            node, hitNode, true);
-                    if (consumed) {
-                        // we are done
-                        return;
-                    }
-                }
-            }
-            // bubble
-            for (int i = size - 1; i >= 0; i--) {
-                SgNode node = path.get(i);
-                if (node.hasBubbleListener()) {
-                    int coordinatesIndex = i * 2;
-                    float localX = hitCoordinates[coordinatesIndex];
-                    float localY = hitCoordinates[coordinatesIndex + 1];
-                    boolean consumed = node.getEventSupport().deliverEvent(originalEvent, localX, localY,
-                            node, hitNode, false);
-                    if (consumed) {
-                        // we are done
-                        return;
-                    }
-                }
-            }
         }
     }
 

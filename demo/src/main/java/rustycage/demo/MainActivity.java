@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
-import android.graphics.Region;
 import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,6 +30,8 @@ import rustycage.animation.TranslationTransition;
 import rustycage.demo.components.Gauge;
 import rustycage.demo.components.RadialSelector;
 import rustycage.demo.components.SimpleButton;
+import rustycage.event.SgEventListener;
+import rustycage.event.TouchDownEvent;
 import rustycage.event.TouchEvent;
 import rustycage.event.TouchEventListener;
 import rustycage.util.PaintBuilder;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String[] buttonNames = new String[] {
-            "One", "Two", "Three"
+            "Gauges", "Random", "Done"
     };
 
 
@@ -110,12 +111,13 @@ public class MainActivity extends AppCompatActivity {
                         .add(SgRectangle.createWithSize(30,530,500,300, 30, 30))
                         .add(SgRectangle.createWithSize(530,930,500,300).paint(greenPaint).opacity(0.5f))
                         .add(SgImage.createWithResource(getResources(), R.mipmap.ic_launcher)
-                                .onTouch(null, new TouchEventListener() {
+                                .onTouch(new TouchEventListener() {
                                     private float lastX, lastY;
+
                                     @Override
-                                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
+                                    public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {
                                         Log.d(TAG,"bitmap touchevent: "+touchEvent);
-                                        SgNode node = touchEvent.getCurrentNode();
+                                        SgNode node = currentNode;
                                         float localX = touchEvent.getLocalX();
                                         float localY = touchEvent.getLocalY();
                                         if (touchEvent.getTouchType() == TouchEvent.TouchType.DOWN) {
@@ -136,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                                             //lastY = newY;
                                             node.setTranslation(newX, newY);
                                         }
-                                        return false;
                                     }
                                 })
                         )
@@ -149,10 +150,10 @@ public class MainActivity extends AppCompatActivity {
                 .add(sgPath)
                 .add(SgEllipse.createCircle(100).txy(800,300).onTouchDown(new TouchEventListener() {
                     @Override
-                    public boolean onEvent(@NonNull TouchEvent touchEvent) {
+                    public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {
                         Log.d(TAG,"onEvent: "+touchEvent);
                         RotationTransition.create(sgPath).by(360).duration(1000).start();
-                        return true;
+                        touchEvent.consume();
                     }
                 }))
                 .add(RadialSelector.create().txy(600, 1350))
@@ -266,31 +267,36 @@ public class MainActivity extends AppCompatActivity {
 
         TouchEventListener gaugeListener = new TouchEventListener() {
             @Override
-            public boolean onEvent(@NonNull TouchEvent touchEvent) {
+            public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {
                 float lx = touchEvent.getLocalX()*1.2f;
                 Log.d(TAG,"local X: "+lx);
-                SgNode currentNode = touchEvent.getCurrentNode();
                 float gaugeWidth = currentNode.getWidth();
                 float normalizedX =  (gaugeWidth / 2 + lx) / gaugeWidth;
                 Log.d(TAG,"normalized X: "+normalizedX);
                 float value = 200*normalizedX;
                 Log.d(TAG,"value X: "+value);
                 ((Gauge)currentNode).setValue(value);
-                return true;
+                touchEvent.consume();
             }
         };
         final Gauge gauge1 = new Gauge(0,200, 10, 270, 135);
         gauge1.setSize(500);
-        gauge1.addOnTouchListener(TouchEvent.TouchType.DOWN, gaugeListener);
+        gauge1.addListener(TouchDownEvent.class, gaugeListener);
 
         final Gauge gauge2 = new Gauge(0,200, 10, 300, 90);
         gauge2.setSize(500);
-        gauge2.addOnTouchListener(TouchEvent.TouchType.DOWN, gaugeListener);
+        gauge1.addListener(TouchDownEvent.class, gaugeListener);
         gauge2.setTranslationY(600);
 
 
         //SgGroup root = SgGroup.create().add(gauge1).add(gauge2).build();
         SgNode root = createMainMenu();
+        root.addListener(SimpleButton.SimpleButtonClickedEvent.class, new SgEventListener<SimpleButton.SimpleButtonClickedEvent>() {
+            @Override
+            public void onEvent(@NonNull SimpleButton.SimpleButtonClickedEvent event, @NonNull SgNode currentNode, boolean isCapturePhase) {
+                Log.d(TAG,"Reeived event from simple button: "+event.getButton().getText());
+            }
+        });
         rcView.setRootNode(root);
         rcView.setBackgroundColor(Color.BLACK);
 
