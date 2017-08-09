@@ -28,6 +28,7 @@ import rustycage.animation.RotationTransition;
 import rustycage.animation.ScaleTransition;
 import rustycage.animation.TranslationTransition;
 import rustycage.demo.components.Gauge;
+import rustycage.demo.components.Page;
 import rustycage.demo.components.RadialSelector;
 import rustycage.demo.components.SimpleButton;
 import rustycage.event.SgEventListener;
@@ -42,13 +43,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
 
-
     private String[] buttonNames = new String[] {
-            "Gauges", "Random", "Done"
+            "Gauges", "Events", "Basic Test"
     };
 
 
-    public SgNode createMainMenu() {
+    private SgNode createMainMenu() {
         float yOffset = 0;
         int transitionDelay = 500;
         final float buttonWidth = 800;
@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         GroupTransition groupTransition = GroupTransition.createParallel();
         for (String buttonName : buttonNames) {
             SimpleButton button = SimpleButton.create(buttonName, buttonWidth, buttonHeight).ty(yOffset).build();
+            button.setId(buttonName);
             groupBuilder.add(button);
             button.setOpacity(0f);
 
@@ -75,8 +76,74 @@ public class MainActivity extends AppCompatActivity {
         return groupBuilder.build();
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        final RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
+        //SgNode root = createTest1Node();
 
-    public SgNode createTest1Node() {
+
+        SgNode menu = createMainMenu();
+        final Page page = new Page();
+        menu.addListener(SimpleButton.SimpleButtonClickedEvent.class, new SgEventListener<SimpleButton.SimpleButtonClickedEvent>() {
+            @Override
+            public void onEvent(@NonNull SimpleButton.SimpleButtonClickedEvent event, @NonNull SgNode currentNode, boolean isCapturePhase) {
+                Log.d(TAG,"Received event from simple button: "+event.getButton().getText());
+
+                switch (event.getButton().getId()) {
+                    case "Gauges" :
+                        switchToGauges(page);
+                        break;
+                    case "Events" :
+                        break;
+                    case "Basic Test" :
+                        switchToBasicTest(page);
+                        break;
+                }
+
+            }
+        });
+        page.switchToNode(menu);
+        rcView.setRootNode(page);
+        rcView.setBackgroundColor(Color.BLACK);
+
+
+    }
+
+
+    private void switchToGauges(Page page) {
+
+        TouchEventListener gaugeListener = new TouchEventListener() {
+            @Override
+            public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {
+                float lx = touchEvent.getLocalX()*1.2f;
+                Log.d(TAG,"local X: "+lx);
+                float gaugeWidth = currentNode.getWidth();
+                float normalizedX =  (gaugeWidth / 2 + lx) / gaugeWidth;
+                Log.d(TAG,"normalized X: "+normalizedX);
+                float value = 200*normalizedX;
+                Log.d(TAG,"value X: "+value);
+                ((Gauge)currentNode).setValue(value);
+                touchEvent.consume();
+            }
+        };
+
+        final Gauge gauge1 = new Gauge(0,200, 10, 270, 135);
+        gauge1.setSize(500);
+        gauge1.addListener(TouchDownEvent.class, gaugeListener);
+
+        final Gauge gauge2 = new Gauge(0,200, 10, 300, 90);
+        gauge2.setSize(500);
+        gauge1.addListener(TouchDownEvent.class, gaugeListener);
+        gauge2.setTranslationY(600);
+
+        SgGroup root = SgGroup.create().add(gauge1).add(gauge2).build();
+        page.switchToNode(root);
+    }
+
+
+    private void switchToBasicTest(Page page) {
         Paint redPaint = PaintBuilder.create().argb(255,255,0,0).strokeWidth(3).style(Paint.Style.STROKE).build();
         Paint greenPaint = PaintBuilder.create().argb(255,0,255,0).build();
         Paint bluePaint = PaintBuilder.create().argb(200,0,0,255).strokeWidth(20).style(Paint.Style.FILL_AND_STROKE).build();
@@ -100,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         final SgPath sgPath = SgPath.create().arcTo(-250,-250,250,250,180,90)/*.rLineTo(0,40)*/
                 .arcTo(-150,-150,150,150,270,-90).close().txy(800,300).s(1)
-                        .paint(greenPaint).pivot(0,0).build();
+                .paint(greenPaint).pivot(0,0).build();
 
         SgImage imageNode;
 
@@ -253,56 +320,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        return groot;
+        page.switchToNode(groot);
     }
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        RustyCageView rcView = (RustyCageView)findViewById(R.id.rcView);
-        //SgNode root = createTest1Node();
-
-        TouchEventListener gaugeListener = new TouchEventListener() {
-            @Override
-            public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {
-                float lx = touchEvent.getLocalX()*1.2f;
-                Log.d(TAG,"local X: "+lx);
-                float gaugeWidth = currentNode.getWidth();
-                float normalizedX =  (gaugeWidth / 2 + lx) / gaugeWidth;
-                Log.d(TAG,"normalized X: "+normalizedX);
-                float value = 200*normalizedX;
-                Log.d(TAG,"value X: "+value);
-                ((Gauge)currentNode).setValue(value);
-                touchEvent.consume();
-            }
-        };
-        final Gauge gauge1 = new Gauge(0,200, 10, 270, 135);
-        gauge1.setSize(500);
-        gauge1.addListener(TouchDownEvent.class, gaugeListener);
-
-        final Gauge gauge2 = new Gauge(0,200, 10, 300, 90);
-        gauge2.setSize(500);
-        gauge1.addListener(TouchDownEvent.class, gaugeListener);
-        gauge2.setTranslationY(600);
-
-
-        //SgGroup root = SgGroup.create().add(gauge1).add(gauge2).build();
-        SgNode root = createMainMenu();
-        root.addListener(SimpleButton.SimpleButtonClickedEvent.class, new SgEventListener<SimpleButton.SimpleButtonClickedEvent>() {
-            @Override
-            public void onEvent(@NonNull SimpleButton.SimpleButtonClickedEvent event, @NonNull SgNode currentNode, boolean isCapturePhase) {
-                Log.d(TAG,"Reeived event from simple button: "+event.getButton().getText());
-            }
-        });
-        rcView.setRootNode(root);
-        rcView.setBackgroundColor(Color.BLACK);
-
-
-    }
-
 
 
 }

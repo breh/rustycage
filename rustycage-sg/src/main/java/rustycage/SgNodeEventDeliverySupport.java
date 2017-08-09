@@ -10,7 +10,9 @@ import java.util.Map;
 
 import rustycage.event.SgEvent;
 import rustycage.event.SgEventListener;
+import rustycage.event.TouchEnterEvent;
 import rustycage.event.TouchEvent;
+import rustycage.event.TouchExitEvent;
 import rustycage.impl.event.ListenerHelper;
 import rustycage.util.Preconditions;
 
@@ -25,6 +27,9 @@ class SgNodeEventDeliverySupport {
     private Class<? extends SgEvent> oneListenerEventClass;
     private SgEventListener<?> oneListener;
     private  Map<Class<? extends SgEvent>, ListenerHelper<?,?>>listenerHelperMap;
+
+    private int enterExitListenersCount;
+    private boolean readyForEnterEvent = true;
 
 
     public static <T extends SgEvent> void deliverEvent(@NonNull T event, @NonNull SgNode targetNode) {
@@ -60,6 +65,25 @@ class SgNodeEventDeliverySupport {
         }
     }
 
+
+
+    public boolean hasEnterExitListeners() {
+        return enterExitListenersCount > 0;
+    }
+
+    private boolean isReadyForEnterEvent() {
+        return readyForEnterEvent;
+    }
+
+    private boolean isReadyForExitEvent() {
+        return !readyForEnterEvent;
+    }
+
+    private void setReadyForEnterEvent(boolean readyForEnterEvent) {
+        this.readyForEnterEvent = readyForEnterEvent;
+
+    }
+
     public static void deliverTouchEvent(@NonNull MotionEvent motionEvent, @NonNull SgNodeHitPath hitPath) {
         Preconditions.assertNotNull(motionEvent,"motionEvent");
         Preconditions.assertNotNull(hitPath,"hitPath");
@@ -72,6 +96,17 @@ class SgNodeEventDeliverySupport {
                 if (node.hasCaptureListener()) {
                     float localX = hitPath.getLocalX(i);
                     float localY = hitPath.getLocalY(i);
+                    // enter touch event
+                    SgNodeEventDeliverySupport eventDeliverySupport = node.getCaptureEventDeliverySupport();
+                    if (eventDeliverySupport.hasEnterExitListeners()) {
+                        if (eventDeliverySupport.isReadyForEnterEvent()) {
+                            // deliver enter event
+                            eventDeliverySupport.setReadyForEnterEvent(false);
+                            TouchEvent te = TouchEvent.createTouchEventFromMotionEvent(localX, localY, node, motionEvent);
+
+                        }
+                    }
+                    // regular move event
                     TouchEvent touchEvent = TouchEvent.createTouchEventFromMotionEvent(localX, localY, hitNode, motionEvent);
                     node.getEventDeliverySupport().fireEvent(touchEvent, node, true);
                     if (touchEvent.isConsumed()) {
@@ -84,7 +119,6 @@ class SgNodeEventDeliverySupport {
             for (int i = size - 1; i >= 0; i--) {
                 SgNode node = hitPath.getNodeAt(i);
                 if (node.hasBubbleListener()) {
-                    int coordinatesIndex = i * 2;
                     float localX = hitPath.getLocalX(i);
                     float localY = hitPath.getLocalY(i);
                     TouchEvent touchEvent = TouchEvent.createTouchEventFromMotionEvent(localX, localY, hitNode, motionEvent);
@@ -103,11 +137,18 @@ class SgNodeEventDeliverySupport {
         return oneListener != null || listenerHelperMap != null && listenerHelperMap.size() > 0;
     }
 
+    private static boolean isEnterExitEventListener(@NonNull Class<? extends SgEvent> eventClass) {
+        return TouchEnterEvent.class.isAssignableFrom(eventClass) || TouchExitEvent.class.isAssignableFrom(eventClass);
+    }
+
 
     //  generic event listener
     public <T extends SgEvent> void addEventListner(@NonNull Class<T> eventClass, @NonNull SgEventListener<? super T> listener) {
         Preconditions.assertNotNull(eventClass, "eventClass");
         Preconditions.assertNotNull(listener, "listener");
+        if (isEnterExitEventListener(eventClass)) {
+            enterExitListenersCount++;
+        }
         if (oneListener == null && listenerHelperMap == null) {
             // simplest case - just one listener
             oneListenerEventClass = eventClass;
@@ -137,6 +178,10 @@ class SgNodeEventDeliverySupport {
         if (oneListener == listener && eventClass.equals(oneListenerEventClass)) {
             oneListener = null;
             oneListenerEventClass = null;
+            if (isEnterExitEventListener(eventClass)) {
+                enterExitListenersCount--;
+            }
+
             return true;
         } // else
         if (listenerHelperMap != null) {
@@ -148,6 +193,11 @@ class SgNodeEventDeliverySupport {
                         // no listeners in helper, so we can remove this helper from the map
                         listenerHelperMap.remove(eventClass);
                         // FIXME should move to one listener in the case it is feasible ...
+                        // also remote enter/exit counter
+                        if (isEnterExitEventListener(eventClass)) {
+                            enterExitListenersCount--;
+                        }
+
                     }
                     return true;
                 }

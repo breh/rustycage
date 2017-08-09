@@ -78,7 +78,7 @@ public final class SimpleButton extends SgCustomNode {
         outlinePaint = PaintBuilder.create().color(outlineColor).style(Paint.Style.STROKE)
                 .strokeWidth(10f).strokeJoin(Paint.Join.ROUND).build();
         textPaint = PaintBuilder.create().color(textColor).textAlign(Paint.Align.CENTER)
-                .textSize(80f).build();
+                .textSize(70f).build();
         Paint.FontMetrics fm = textPaint.getFontMetrics();
         float textHeight = fm.descent - fm.ascent;
         //float textHeight = fm.bottom - fm.top + fm.leading;
@@ -107,8 +107,6 @@ public final class SimpleButton extends SgCustomNode {
 
                         touchEvent.consume();
 
-                        // now dispatch button clicked event
-                        SimpleButton.this.dispatchEvent(new SimpleButtonClickedEvent(SimpleButton.this));
 
                     }
                 })
@@ -118,6 +116,8 @@ public final class SimpleButton extends SgCustomNode {
                 .onTouchUp(new TouchEventListener() {
                     public void onEvent(@NonNull TouchEvent event, @NonNull SgNode currentNode, boolean isCapturePhase) {
                         animatePaint(outlineNode, outlinePaint, Color.GRAY, 300);
+                        // now dispatch button clicked event
+                        SimpleButton.this.dispatchEvent(new SimpleButtonClickedEvent(SimpleButton.this));
                     }
                 })
                 .build();
