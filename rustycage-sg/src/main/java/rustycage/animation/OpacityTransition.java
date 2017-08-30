@@ -7,9 +7,11 @@ import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
+ * A transition for animating the opacity of given node
+ *
+ *
  * Created by breh on 2/3/17.
  */
-
 public final class OpacityTransition extends AbstractTransition<OpacityTransition, ObjectAnimator> {
 
     private float from = Float.NaN;

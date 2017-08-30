@@ -8,6 +8,8 @@ import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
+ * A transition for scaling a given node
+ *
  * Created by breh on 2/3/17.
  */
 

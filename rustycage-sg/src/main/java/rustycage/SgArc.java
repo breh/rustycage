@@ -3,9 +3,11 @@ package rustycage;
 import android.support.annotation.NonNull;
 
 /**
+ *
+ * A node representing Arc shape
+ *
  * Created by breh on 2/10/17.
  */
-
 public final class SgArc extends SgShape {
 
 

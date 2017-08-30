@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import rustycage.util.Preconditions;
 
 /**
+ *
+ * A class representing bounds
+ *
  * Created by breh on 2/1/17.
  */
-
 public final class Bounds {
 
     private float left;

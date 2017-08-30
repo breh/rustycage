@@ -12,6 +12,8 @@ import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
 /**
+ * Rendrerer for {@link SgImage}
+ *
  * Created by breh on 9/26/16.
  */
 public class ImageCanvasRenderer extends AbstractCanvasRenderer<SgImage> {

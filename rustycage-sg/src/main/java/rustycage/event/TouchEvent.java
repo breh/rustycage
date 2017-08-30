@@ -9,9 +9,11 @@ import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
+ *
+ * An event representing a touch event
+ *
  * Created by breh on 3/2/17.
  */
-
 public class TouchEvent extends SgEvent {
 
     public enum TouchType {

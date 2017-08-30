@@ -3,6 +3,9 @@ package rustycage;
 import android.support.annotation.NonNull;
 
 /**
+ *
+ * A node representing a rectangle
+ *
  * Created by breh on 9/9/16.
  */
 public final class SgRectangle extends SgShape {

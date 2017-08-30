@@ -12,6 +12,10 @@ import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
 /**
+ * Abstract renderer for the scene graph nodes. This render uses
+ * {@link Canvas} to paint the scene graph. It should be possible to switch
+ * to other rendering environments if desired in the future
+ *
  * Created by breh on 9/26/16.
  */
 public abstract class AbstractCanvasRenderer<T extends SgNode>  {
@@ -45,10 +49,24 @@ public abstract class AbstractCanvasRenderer<T extends SgNode>  {
         }
     }
 
+    /**
+     * Abstract method used to render a node
+     * @param canvas - canvas where to render
+     * @param node - which node to render
+     * @param opacityStack - opacity stack for current opacity values
+     * @param attributeStack - attribute stack for othe attributes
+     * @param displayMetrics - display matrics
+     */
     protected abstract void renderNode(@NonNull Canvas canvas, @NonNull T node, @NonNull FloatStack opacityStack,
-                                       @NonNull AttributesStack attributes, @NonNull DisplayMetrics displayMetrics);
+                                       @NonNull AttributesStack attributeStack, @NonNull DisplayMetrics displayMetrics);
 
 
+    /**
+     * Helper for applying specified opacity to given paint as alpha
+     * @param existingPaint
+     * @param opacity
+     * @return
+     */
     protected static final @NonNull Paint applyOpacityToPaint(@Nullable Paint existingPaint, float opacity) {
         int actualAlpha = getActualAlpha(existingPaint, opacity);
         if (existingPaint == null) {
@@ -58,6 +76,12 @@ public abstract class AbstractCanvasRenderer<T extends SgNode>  {
         return existingPaint;
     }
 
+    /**
+     * Gets the alpha value based on current paint and given opacity
+     * @param existingPaint
+     * @param opacity
+     * @return
+     */
     protected static final int getActualAlpha(@Nullable Paint existingPaint, float opacity) {
         int actualAlpha = 255;
         if (existingPaint != null) {

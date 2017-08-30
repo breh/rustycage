@@ -18,6 +18,10 @@ import rustycage.impl.renderer.AbstractCanvasRenderer;
 import rustycage.impl.renderer.RendererProvider;
 
 /**
+ * A view representing the scene graph. This view allows integration between the SG nodes and the
+ * actual UI on Android.
+ *
+ *
  * Created by breh on 9/12/16.
  */
 public class RustyCageView extends View {
@@ -68,11 +72,19 @@ public class RustyCageView extends View {
 
     private boolean outlineVisible = false;
 
+    /**
+     * Sets visible outline (used for debugging)
+     * @param outlineVisible
+     */
     public void setOutlineVisible(boolean outlineVisible) {
         this.outlineVisible = outlineVisible;
         invalidate();
     }
 
+    /**
+     * Returns true of the outline is visible
+     * @return
+     */
     public final boolean isOutlineVisible() {
         return outlineVisible;
     }
@@ -139,6 +151,10 @@ public class RustyCageView extends View {
         return true;
     }
 
+    /**
+     * Sets a specified node as a root. Can be null (nothing will get rendered in such a case)
+     * @param rootNode
+     */
     public void setRootNode(@Nullable SgNode rootNode) {
         if (rootNode != null) {
             sceneNode = new SgScene(rootNode);

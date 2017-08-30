@@ -6,9 +6,11 @@ import android.graphics.Region;
 import android.support.annotation.NonNull;
 
 /**
+ *
+ * A node representing a path
+ *
  * Created by breh on 2/16/17.
  */
-
 public final class SgPath extends SgShape {
 
     private static final String TAG = "SgPath";

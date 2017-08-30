@@ -6,9 +6,10 @@ import android.view.MotionEvent;
 import rustycage.SgNode;
 
 /**
+ * TouchUp event
+ *
  * Created by breh on 8/3/17.
  */
-
 public final class TouchUpEvent extends TouchEvent {
 
 

@@ -11,6 +11,7 @@ import rustycage.SgArc;
 import rustycage.ResolutionUnit;
 
 /**
+ * Renderer for {@link SgArc} node
  * Created by breh on 10/14/16.
  */
 public class ArcCanvasRenderer extends ShapeCanvasRenderer<SgArc> {

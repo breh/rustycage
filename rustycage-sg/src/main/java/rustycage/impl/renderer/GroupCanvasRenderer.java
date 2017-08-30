@@ -10,6 +10,8 @@ import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
 /**
+ * Renderer for {@link SgGroup}
+ *
  * Created by breh on 9/26/16.
  */
 public class GroupCanvasRenderer extends AbstractCanvasRenderer<SgGroup> {

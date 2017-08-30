@@ -10,6 +10,7 @@ import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
 /**
+ * Renderer for {@link SgCustomNode}
  * Created by breh on 2/17/17.
  */
 

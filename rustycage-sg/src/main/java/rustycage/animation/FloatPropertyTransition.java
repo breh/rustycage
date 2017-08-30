@@ -8,9 +8,12 @@ import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
+ *
+ * A transition for animating any "float" property of given node
+ *
+ *
  * Created by breh on 3/7/17.
  */
-
 public class FloatPropertyTransition<T extends SgNode> extends AbstractTransition<FloatPropertyTransition<T>, ObjectAnimator> {
 
 

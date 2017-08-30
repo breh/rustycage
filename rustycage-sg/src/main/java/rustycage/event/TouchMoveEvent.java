@@ -6,9 +6,10 @@ import android.view.MotionEvent;
 import rustycage.SgNode;
 
 /**
+ * TouchMove - when a touch point moves within the node
+ *
  * Created by breh on 8/3/17.
  */
-
 public final class TouchMoveEvent extends TouchEvent {
 
 

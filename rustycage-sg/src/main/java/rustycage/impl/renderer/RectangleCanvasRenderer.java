@@ -11,6 +11,8 @@ import rustycage.SgRectangle;
 import rustycage.ResolutionUnit;
 
 /**
+ * Renrer for {@link SgRectangle}
+ *
  * Created by breh on 10/14/16.
  */
 public class RectangleCanvasRenderer extends ShapeCanvasRenderer<SgRectangle> {

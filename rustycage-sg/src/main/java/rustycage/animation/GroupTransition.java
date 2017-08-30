@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A transitino representing a group of transitions - running either sequentially or in parallel
+ *
  * Created by breh on 2/4/17.
  */
-
 public final class GroupTransition extends AbstractTransition<GroupTransition,AnimatorSet> {
 
     private List<AbstractTransition<?,?>> children = new ArrayList<>();
@@ -25,6 +26,11 @@ public final class GroupTransition extends AbstractTransition<GroupTransition,An
         this.parallel = parallel;
     }
 
+    /**
+     * Adds a transition to this group
+     * @param transitions
+     * @return
+     */
     public GroupTransition add(@NonNull AbstractTransition<?,?>... transitions) {
         if (transitions != null) {
             for (int i=0; i < transitions.length; i++) {
@@ -65,18 +71,36 @@ public final class GroupTransition extends AbstractTransition<GroupTransition,An
     }
 
 
+    /**
+     * Creates a parallel transition for given node
+     * @param sgNode
+     * @return
+     */
     public static GroupTransition createParallel(@Nullable SgNode sgNode) {
         return new GroupTransition(sgNode, true);
     }
 
+    /**
+     * Creates a parallel transition
+     * @return
+     */
     public static GroupTransition createParallel() {
         return new GroupTransition(null, true);
     }
 
+    /**
+     * Creates a sequential transition for given node
+     * @param sgNode
+     * @return
+     */
     public static GroupTransition createSequential(@Nullable SgNode sgNode) {
         return new GroupTransition(sgNode, false);
     }
 
+    /**
+     * Creates a sequential transition
+     * @return
+     */
     public static GroupTransition createSequential() {
         return new GroupTransition(null, false);
     }

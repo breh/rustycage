@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
+ * AttributeStack represents a facility for storing attribute values as we traverse
+ * the scene graph tree
+ *
+ *
  * Created by breh on 10/17/16.
  */
-
 public final class AttributesStack {
 
     private final Map<Class<?>,Stack<?>> mapOfStacks = new HashMap<>();

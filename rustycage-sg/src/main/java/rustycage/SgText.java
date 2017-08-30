@@ -9,9 +9,10 @@ import android.text.TextPaint;
 import rustycage.util.PaintBuilder;
 
 /**
+ * A node representing a single line of text
+ *
  * Created by breh on 1/23/17.
  */
-
 public final class SgText extends SgNode {
 
     private static final String TAG = "SgText";

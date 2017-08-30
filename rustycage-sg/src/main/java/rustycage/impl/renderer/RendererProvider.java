@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * A factory providing a link between a scenegraph node class and the actual renderer instance
+ *
  * Created by breh on 9/26/16.
  */
 public class RendererProvider {
@@ -47,12 +49,18 @@ public class RendererProvider {
     }
 
 
-    <T extends SgNode> void registerRenderer(@NonNull Class<T> nodeClass, @NonNull AbstractCanvasRenderer<T> renderer) {
+    private <T extends SgNode> void registerRenderer(@NonNull Class<T> nodeClass, @NonNull AbstractCanvasRenderer<T> renderer) {
         Preconditions.assertNotNull(nodeClass,"nodeClass");
         Preconditions.assertNotNull(renderer,"renderer");
         rendererRegistry.put(nodeClass,renderer);
     }
 
+    /**
+     * Gets a renderer for given node instance
+     * @param node
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public @NonNull <T extends SgNode> AbstractCanvasRenderer<T> getRendererForNode(@NonNull T node) {
         Preconditions.assertNotNull(node,"node");

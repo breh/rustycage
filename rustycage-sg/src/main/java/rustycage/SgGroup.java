@@ -12,6 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ *
+ * A node representing a set of nodes. Nodes are painted in the same order as they
+ * are inserted in a group - i.e. the subsequent nodes are painted on tof of the
+ * previously painted nodes.
+ *
  * Created by breh on 9/9/16.
  */
 public class SgGroup extends SgNode implements Iterable<SgNode> {
@@ -25,6 +30,13 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
     }
 
 
+    /**
+     * Finds element by given id in this group (and its subgroups). If there are multiple nodes
+     * with the same id, the first found node is returned. The method used depth first search approach.
+     * @param id - id of an node - cannot be null
+     * @param nodeClass - a desired node class - cannot be null
+     * @return found node or null if not found or if the node is not of correct type
+     */
     public final @Nullable <T extends SgNode> T findById(@NonNull String id, @NonNull Class<T> nodeClass) {
         Preconditions.assertNotNull(id, "id");
         Preconditions.assertNotNull(nodeClass, "nodeClass");
@@ -50,6 +62,10 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
     }
 
 
+    /**
+     * Adds a new node at the end of this group (so it gets painted on top of the nodes in the group)
+     * @param node node to be added - cannot be null
+     */
     public final void addNode(@NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         if (node.getParent() != null) {
@@ -60,6 +76,11 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         invalidateLocalBounds();
     }
 
+    /**
+     * Removes a specified node from the group.
+     * @param node node to be removed - cannot be null
+     * @return true of node has been removed, false if not found
+     */
     public final boolean removeNode(@NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         boolean removed = nodes.remove(node);
@@ -70,6 +91,11 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         return removed;
     }
 
+    /**
+     * Adds a new node at a specified index.
+     * @param index where the node should be added
+     * @param node node to be added - cannot be null
+     */
     public final void addNode(int index, @NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         node.setParent(this);
@@ -77,6 +103,10 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         invalidateLocalBounds();
     }
 
+    /**
+     * Moves a specified node to the front (e.g. to the last position in the group)
+     * @param node node to be moved - cannot be null
+     */
     public final void moveToFront(@NonNull SgNode node) {
         Preconditions.assertNotNull(node,"node");
         int index = nodes.indexOf(node);
@@ -87,6 +117,14 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         invalidate();
     }
 
+
+    /**
+     * Attaches an attribute to this node. Attributes are properties shared by this group
+     * and applied to all its children recursively.
+     * @param attribute attribute to be added - cannot be null.
+     * @param <T>
+     * @return a previous value of the attribute of null if not any.
+     */
     public final @Nullable <T> Attribute<T> setAttribute(@NonNull Attribute<T> attribute) {
         Preconditions.assertGenericTypeNotNull(attribute, "attribute");
         if (attributes == null) {
@@ -110,6 +148,11 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         return null;
     }
 
+    /**
+     * Removes a specific attribute from the node.
+     * @param attribute attribute to be removed - cannot be null
+     * @return true if the attribute was removed, false if not found
+     */
     public final boolean removeAttribute(@NonNull Attribute<?> attribute) {
         Preconditions.assertGenericTypeNotNull(attribute, "attribute");
         if (attributes != null) {
@@ -126,6 +169,11 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         return false;
     }
 
+    /**
+     * Removes attribute of given class from this node.
+     * @param attributeClazz - a class of attribute to be removed - cannot be null
+     * @return true if removed, false if not found
+     */
     public final boolean removeAttribute(Class<?> attributeClazz) {
         Preconditions.assertNotNull(attributeClazz, "attributeClazz");
         if (attributes != null) {
@@ -165,15 +213,31 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
     }
 
 
+    /**
+     * Returns a size of this group
+     * @return
+     */
     public final int size() {
         return nodes.size();
     }
 
+    /**
+     * Gets node at a given index.
+     * @param index - index. If out of bounds, throws {@link ArrayIndexOutOfBoundsException}
+     * @return a node at given index
+     */
     public final @NonNull
     SgNode get(int index) {
         return nodes.get(index);
     }
 
+    /**
+     * Gets a node at a given index with desired class
+     * @param index - index. If out of bounds, throws {@link ArrayIndexOutOfBoundsException}
+     * @param nodeClass - a desired class of a node - cannot be null
+     * @param <T>
+     * @return a found node, or null if the node is not of the desired class
+     */
     public final @Nullable <T extends SgNode> T get(int index, @NonNull Class<T> nodeClass) {
         SgNode node = nodes.get(index);
         if (nodeClass.isInstance(node)) {
@@ -184,10 +248,19 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         }
     }
 
+    /**
+     * Returns iterator for all nodes in this group
+     * @return
+     */
     public @NonNull Iterator<SgNode> iterator() {
         return nodes.iterator();
     }
 
+
+    /**
+     * Returns iteraator for all attributes in this node.
+     * @return
+     */
     public @Nullable Iterator<Attribute<?>> attributeIterator() {
         if (attributes != null) {
             return attributes.iterator();
@@ -249,8 +322,11 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
     }
 
 
-
-
+    /**
+     * Searches a hit path for a touch event
+     * @param nodeHitPath
+     * @param touchPoint
+     */
     void searchForHitPath(@NonNull SgNodeHitPath nodeHitPath, float[] touchPoint) {
         for (int i= nodes.size() - 1 ; i >= 0; i--) {
             SgNode node = nodes.get(i);
@@ -263,11 +339,18 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
     }
 
 
+    /**
+     * Creates a new group builder
+     * @return
+     */
     public static Builder create() {
         return new Builder();
     }
 
 
+    /**
+     * A group builder class
+     */
     public static class Builder extends SgNode.Builder<Builder, SgGroup> {
 
         private Builder() {
@@ -275,11 +358,21 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
         }
 
 
+        /**
+         * Adds a node to this group
+         * @param node
+         * @return
+         */
         public Builder add(@NonNull SgNode node) {
             getNode().addNode(node);
             return getBuilder();
         }
 
+        /**
+         * Adds multiple nodes to this group
+         * @param nodes
+         * @return
+         */
         public Builder add(@NonNull SgNode... nodes) {
             for (SgNode node: nodes) {
                 getNode().addNode(node);
@@ -287,11 +380,21 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
             return getBuilder();
         }
 
+        /**
+         * Adss a node builder to this group
+         * @param nodeBuilder
+         * @return
+         */
         public Builder add(@NonNull SgNode.Builder<?,?> nodeBuilder) {
             getNode().addNode(nodeBuilder.build());
             return getBuilder();
         }
 
+        /**
+         * Adds multiple node builders to this group
+         * @param nodeBuilders
+         * @return
+         */
         public Builder add(@NonNull SgNode.Builder<?,?>... nodeBuilders) {
             for (SgNode.Builder<?,?> nodeBuilder: nodeBuilders) {
                 getNode().addNode(nodeBuilder.build());
@@ -299,11 +402,21 @@ public class SgGroup extends SgNode implements Iterable<SgNode> {
             return getBuilder();
         }
 
+        /**
+         * Sets a specific attribute on this group
+         * @param attribute
+         * @return
+         */
         public Builder attribute(@NonNull Attribute<?> attribute) {
             getNode().setAttribute(attribute);
             return getBuilder();
         }
 
+        /**
+         * Sets a specific attribute builder on this group
+         * @param attributeBuilder
+         * @return
+         */
         public Builder attribute(@NonNull Attribute.AttributeBuilder<?> attributeBuilder) {
             getNode().setAttribute(attributeBuilder.buildAttribute());
             return getBuilder();

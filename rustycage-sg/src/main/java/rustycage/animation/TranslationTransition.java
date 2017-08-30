@@ -9,9 +9,10 @@ import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
+ * A transition for translating a given node
+ *
  * Created by breh on 2/3/17.
  */
-
 public final class TranslationTransition extends AbstractTransition<TranslationTransition, AnimatorSet> {
 
     private float fromX = Float.NaN;

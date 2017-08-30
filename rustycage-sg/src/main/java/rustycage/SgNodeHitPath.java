@@ -10,9 +10,11 @@ import java.util.List;
 import rustycage.event.TouchEvent;
 
 /**
+ *
+ * A private class representing node hit path for touch events
+ *
  * Created by breh on 2/10/17.
  */
-
 final class SgNodeHitPath {
 
     private static final int INITIAL_SIZE = 50; // depth of 50

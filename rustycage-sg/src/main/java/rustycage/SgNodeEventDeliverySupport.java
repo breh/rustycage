@@ -17,9 +17,10 @@ import rustycage.impl.event.ListenerHelper;
 import rustycage.util.Preconditions;
 
 /**
+ * A class for node delivery.
+ *
  * Created by breh on 8/1/17.
  */
-
 class SgNodeEventDeliverySupport {
 
     private static List<SgNode> eventDeliveryPath = new ArrayList<>();

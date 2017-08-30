@@ -1,6 +1,5 @@
 package rustycage.animation;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
 
@@ -8,9 +7,10 @@ import rustycage.SgNode;
 import rustycage.util.Preconditions;
 
 /**
+ * A transition representing rotation
+ *
  * Created by breh on 2/3/17.
  */
-
 public final class RotationTransition extends AbstractTransition<RotationTransition, ObjectAnimator> {
 
     private float from = Float.NaN;
@@ -29,18 +29,35 @@ public final class RotationTransition extends AbstractTransition<RotationTransit
         return new RotationTransition(targetNode);
     }
 
+    /**
+     * Sets from which rotation value this transition animates. Call is optional, in
+     * such a case "current" value is used.
+     * @param r
+     * @return
+     */
     @NonNull
     public RotationTransition from(float r) {
         this.from = r;
         return getThisTransition();
     }
 
+    /**
+     * Sets to which rotation value this transition animates. The value should be specified either
+     * by this call or by "by" call.
+     * @param r
+     * @return
+     */
     @NonNull
     public RotationTransition to(float r) {
         this.to = r;
         return getThisTransition();
     }
 
+    /**
+     * Sets by which rotation value this transition animates.
+     * @param r
+     * @return
+     */
     @NonNull
     public RotationTransition by(float r) {
         this.by = r;

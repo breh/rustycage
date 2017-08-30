@@ -19,6 +19,10 @@ import rustycage.impl.Bounds;
 import rustycage.util.Preconditions;
 
 /**
+ *
+ * A class representing a node in a scene graph. A node can be transformed using affine transformation
+ * and can be made translucent using opacity attribute.
+ *
  * Created by breh on 9/9/16.
  */
 public abstract class SgNode {
@@ -27,6 +31,7 @@ public abstract class SgNode {
 
     // FIXME - all these fields need memory optimization
     private String id;
+    private SgNode parent;
 
     private float[] localBounds = new float[4];
 
@@ -38,26 +43,75 @@ public abstract class SgNode {
     SgNode() {
     }
 
+    /**
+     * Gets parent of this node. Can be null.
+     * @return
+     */
+    public final @Nullable SgNode getParent() {
+        return parent;
+    }
+
+    /**
+     * package private - sets parent
+     * @param parent
+     */
+    final void setParent(@Nullable SgNode parent) {
+        this.parent = parent;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(super.toString());
+        if (id != null) {
+            sb.append(", id: '").append(id).append("'");
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * Gets id of this node, or null if no id has been assigned
+     * @return id or null
+     */
     @Nullable
     public String getId() {
         return id;
     }
 
+    /**
+     * Sets id to this node. If set to null, this node no longer has any id
+     * @param id id, can be null.
+     */
     public void setId(@Nullable String id) {
         this.id = id;
     }
 
+
+    /**
+     * Translated node in X direction
+     * @param tx
+     */
     public final void setTranslationX(float tx) {
         getOrCreateTransformationSupport().setTx(tx);
         invalidate();
     }
 
+    /**
+     * Translates node in Y direction
+     * @param ty
+     */
     public final void setTranslationY(float ty) {
         getOrCreateTransformationSupport().setTy(ty);
         invalidate();
     }
 
 
+    /**
+     * Translates node in X and Y directions.
+     * @param tx
+     * @param ty
+     */
     public final void setTranslation(float tx, float ty) {
         NodeTransformationSupport support = getOrCreateTransformationSupport();
         support.setTx(tx);
@@ -65,10 +119,23 @@ public abstract class SgNode {
         invalidate();
     }
 
+    /**
+     * Scales this node by given factor (applied in both x an y direction). Scaling
+     * is happening around specified pivot point (if not specified, center of
+     * the node is used)
+     * @param s
+     */
     public final void setScale(float s) {
         setScale(s, s);
     }
 
+    /**
+     * Scales this node by given factor in x and y directions.  Scaling
+     * is happening around specified pivot point (if not specified, center of
+     * the node is used)
+     * @param sx
+     * @param sy
+     */
     public final void setScale(float sx, float sy) {
         NodeTransformationSupport support = getOrCreateTransformationSupport();
         support.setScaleX(sx);
@@ -76,59 +143,112 @@ public abstract class SgNode {
         invalidate();
     }
 
+    /**
+     * Rotates node by given amount around its pivot point (if not specified, center of
+     * the node is used).
+     * @param r rotation in degrees
+     */
     public final void setRotation(float r) {
         getOrCreateTransformationSupport().setRotation(r);
         invalidate();
     }
 
+    /**
+     * Sets pivot point to a speficif value.
+     * @param px
+     * @param py
+     */
     public void setPivot(float px, float py) {
         getOrCreateTransformationSupport().setPivot(px, py);
         invalidate();
     }
 
+    /**
+     * Resets pivot point to its default value (center of th node)
+     */
     public void resetPivot() {
         getOrCreateTransformationSupport().resetPivot();
         invalidate();
     }
 
+    /**
+     * Returns X coordinate of the pivot point. If not set, Float.NaN is returned
+     * @return
+     */
     public float getPivotX() {
         return transformationSupport != null ? transformationSupport.getPivotX() : Float.NaN;
     }
 
+    /**
+     * Returns Y coordinate of the pivot point. If not set, Float.NaN is returned
+     * @return
+     */
     public float getPivotY() {
         return transformationSupport != null ? transformationSupport.getPivotY() : Float.NaN;
     }
 
 
+    /**
+     * Returns X coordinate of the node translation
+     * @return
+     */
     public final float getTranslationX() {
         return transformationSupport != null ? transformationSupport.getTx() : 0f;
     }
 
+    /**
+     * Returns Y coordinate of the node translation
+     * @return
+     */
     public final float getTranslationY() {
         return transformationSupport != null ? transformationSupport.getTy() : 0f;
     }
 
+    /**
+     * Gets current scale factor. If not uniform, only X value is returned
+     * @return
+     */
     public final float getScale() {
         return getScaleX();
     }
 
+    /**
+     * Gets X value of the scale factor
+     * @return
+     */
     public final float getScaleX() {
         return transformationSupport != null ? transformationSupport.getSx() : 1f;
     }
 
+    /**
+     * Gets Y value of the scale factor
+     * @return
+     */
     public final float getScaleY() {
         return transformationSupport != null ? transformationSupport.getSy() : 1f;
     }
 
+    /**
+     * Gets rotation angle in degrees
+     * @return
+     */
     public final float getRotation() {
         return transformationSupport != null ? transformationSupport.getR() : 0f;
     }
 
 
+    /**
+     * Gets current opacity of this node
+     * @return
+     */
     public float getOpacity() {
         return opacity;
     }
 
+    /**
+     * Sets opacity value to this node. Expected range 0-1
+     * @param opacity
+     */
     public void setOpacity(float opacity) {
         if (opacity > 1f) opacity = 1f;
         if (opacity < 0f) opacity = 0f;
@@ -152,52 +272,90 @@ public abstract class SgNode {
         }
     }
 
+    /**
+     * Package private - onInvalidated callback
+     */
     void onInvalidated() {
     }
 
 
+    /**
+     * Clears invalidated state
+     */
     void clearInvalidated() {
         if (dirty) {
             dirty = false;
         }
     }
 
-
+    /**
+     * Check whether this node has been invalidated
+     * @return
+     */
     protected final boolean isInvalidated() {
         return dirty;
     }
 
+    /**
+     * Gets local left bound of this node (X)
+     * @return
+     */
     public final float getLocalBoundsLeft() {
         return getLocalBoundsArray()[0];
     }
 
+    /**
+     * Gets local right bound of this node (X)
+     * @return
+     */
     public final float getLocalBoundsRight() {
         return getLocalBoundsArray()[2];
     }
 
+    /**
+     * Gets local top bound of this node (Y)
+     * @return
+     */
     public final float getLocalBoundsTop() {
         return getLocalBoundsArray()[1];
     }
 
+    /**
+     * Gets local bottom bound of this node (Y)
+     * @return
+     */
     public final float getLocalBoundsBottom() {
         return getLocalBoundsArray()[3];
     }
 
 
+    /**
+     * Gets local bounds of this node. Please note, this causes creation
+     * of the Bounds object. For more efficient see getLocalBounds({@link Bounds}) method
+     * @return
+     * // FIXME - should not be public
+     */
     @NonNull
     public final Bounds getLocalBounds() {
         return getLocalBounds(null);
     }
 
 
-
+    /**
+     * Gets local bounds of this node.
+     * @param outBounds - a optionally specified bounds object which gets filled by the
+     *                  bounds value. Can be null (in which case the bounds object
+     *                  gets created and returned)
+     * @return bounds of this object
+     * // FIXME - should  not be public
+     */
     @NonNull
-    public final Bounds getLocalBounds(@Nullable Bounds bounds) {
-        if (bounds == null) {
-            bounds = new Bounds();
+    public final Bounds getLocalBounds(@Nullable Bounds outBounds) {
+        if (outBounds == null) {
+            outBounds = new Bounds();
         }
-        bounds.set(getLocalBoundsArray());
-        return bounds;
+        outBounds.set(getLocalBoundsArray());
+        return outBounds;
     }
 
     private final float[] getLocalBoundsArray() {
@@ -206,6 +364,9 @@ public abstract class SgNode {
     }
 
 
+    /**
+     * Invalidates local bounds (should be called when a geometry of this node changes)
+     */
     protected final void invalidateLocalBounds() {
         localBoundsDirty = true;
         if (transformationSupport != null) {
@@ -222,32 +383,60 @@ public abstract class SgNode {
         }
     }
 
+    /**
+     * Computes local bounds of this node
+     * @param bounds - an array representing the local bounds as [left,top,right,bottom] (FIXME - verify)
+     */
     protected abstract void computeLocalBounds(@NonNull float[] bounds);
 
 
+    /**
+     * Gets transformed left bound of this node (X)
+     * @return
+     */
     public final float getTransformedBoundsLeft() {
         return transformationSupport != null ? transformationSupport.getTransformedLeft(this) : getLocalBoundsLeft();
     }
 
+    /**
+     * Gets transformed right bound of this node (X)
+     * @return
+     */
     public final float getTransformedBoundsRight() {
         return transformationSupport != null ? transformationSupport.getTransformedRight(this) : getLocalBoundsRight();
     }
 
+    /**
+     * Gets transformed top bound of this node (Y)
+     * @return
+     */
     public final float getTransformedBoundsTop() {
         return transformationSupport != null ? transformationSupport.getTransformedTop(this) : getLocalBoundsTop();
     }
 
+    /**
+     * Gets transformed bottom bounds of this node (Y)
+     * @return
+     */
     public final float getTransformedBoundsBottom() {
         return transformationSupport != null ? transformationSupport.getTransformedBottom(this) : getLocalBoundsBottom();
     }
 
 
-
+    /**
+     * Gets transformed bounds of this node
+     * @return
+     * FIXME - should not be public
+     */
     @NonNull
     public final Bounds getTransformedBounds() {
         return transformationSupport != null ? transformationSupport.getTransformedBounds(this, null) : getLocalBounds();
     }
 
+    /**
+     * Package private - computes transformed bounds of this object
+     * @param transformedBounds
+     */
     void computeTransformedBounds(@NonNull float[] transformedBounds) {
         if (transformationSupport != null) {
             NodeTransformationSupport.computeTransformedBounds(getLocalBoundsArray(), transformationSupport.getMatrix(this), transformedBounds);
@@ -257,20 +446,39 @@ public abstract class SgNode {
     }
 
 
+    /**
+     * Gets transformation matrix for this node.
+     * FIXME - should not be public
+     * @return
+     */
     @Nullable
     public final Matrix getMatrix() {
         return transformationSupport != null ? transformationSupport.getMatrix(this) : null;
     }
-    // size
 
+
+    /**
+     * Gets width of this node (in local coordinate system)
+     * @return
+     */
     public final float getWidth() {
         return Math.abs(getLocalBoundsRight() - getLocalBoundsLeft());
     }
 
+    /**
+     * Gets height of this node (in local coordinate system)
+     * @return
+     */
     public final float getHeight() {
         return Math.abs(getLocalBoundsBottom() - getLocalBoundsTop());
     }
 
+
+    /**
+     * Node transformation support. The main idea is it is instantiated only when
+     * there is a transformation applied to this node. If there is no changes, no
+     * need ot allocate a new object as default values are being used by the renderer
+     */
 
     private NodeTransformationSupport transformationSupport;
 
@@ -282,10 +490,25 @@ public abstract class SgNode {
     }
 
 
+    /**
+     * Event delivery support. As with the transformation support, the idea is
+     * to instantiate this support only in the case there is event listeners attached
+     * to this node.
+     */
+
+
+    /**
+     * package private - checks if there is any capture listener on this node
+     * @return
+     */
     final boolean hasCaptureListener() {
         return captureEventDeliverySupport != null && captureEventDeliverySupport.hasEventListeners();
     }
 
+    /**
+     * package private - checks if there is any bubble listener on this tnode
+     * @return
+     */
     final boolean hasBubbleListener() {
         return eventDeliverySupport != null && eventDeliverySupport.hasEventListeners();
     }
@@ -310,14 +533,35 @@ public abstract class SgNode {
     }
 
 
+    /**
+     * Adds a bubbling listener to this node. The specified event class "filters"
+     * the events being delivered (only events of this class or its subclasses get delivered to the listener)
+     * @param eventClass a class of the listener event - cannot be null
+     * @param listener the listener instance - needs to be of specified class or its super class - cannot be null
+     * @param <T>
+     */
     public final <T extends SgEvent> void addListener(@NonNull Class<T> eventClass, @NonNull SgEventListener<? super T> listener) {
         getEventDeliverySupport().addEventListner(eventClass, listener);
     }
 
+    /**
+     * Adds capturing listener to this node. The specified event class "filters"
+     * the events being delivered (only events of this class or its subclasses get delivered to the listener)
+     * @param eventClass a class of the listener event - cannot be null
+     * @param listener the listener instance - needs to be of specified class or its super class - cannot be null
+     * @param <T>
+     */
     public final <T extends SgEvent> void addCapturingListener(@NonNull Class<T> eventClass, @NonNull SgEventListener<? super T> listener) {
         getCaptureEventDeliverySupport().addEventListner(eventClass, listener);
     }
 
+    /**
+     * Removes listener from this node.
+     * @param eventClass
+     * @param listener
+     * @param <T>
+     * @return true if removed, false if not found
+     */
     public final <T extends SgEvent> boolean removeListener(@NonNull Class<T> eventClass, @NonNull SgEventListener<? super T> listener) {
         boolean result = false;
         if (eventDeliverySupport != null) {
@@ -409,26 +653,16 @@ public abstract class SgNode {
     void searchForHitPath(@NonNull SgNodeHitPath nodeHitPath, float[] touchPoint) {
     }
 
-    private SgNode parent;
-
-    public final @Nullable SgNode getParent() {
-        return parent;
-    }
-
-    final void setParent(@Nullable SgNode parent) {
-        this.parent = parent;
-    }
+    /*
+     * Builder
+     */
 
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(super.toString());
-        if (id != null) {
-            sb.append(", id: '").append(id).append("'");
-        }
-        return sb.toString();
-    }
-
+    /**
+     * Abstract builder for all nodes
+     * @param <B>
+     * @param <N>
+     */
     public static abstract class Builder<B extends Builder<B, N>, N extends SgNode> {
 
         private final N node;
@@ -449,54 +683,101 @@ public abstract class SgNode {
             return (B) this;
         }
 
+        /**
+         * translates the node to x and y
+         * @param x
+         * @param y
+         * @return
+         */
         @NonNull
         public final B txy(float x, float y) {
             getNode().setTranslation(x, y);
             return getBuilder();
         }
 
+        /**
+         * translates the node to x
+         * @param x
+         * @return
+         */
         @NonNull
         public final B tx(float x) {
             getNode().setTranslationX(x);
             return getBuilder();
         }
 
+        /**
+         * translates the node to y
+         * @param y
+         * @return
+         */
         @NonNull
         public final B ty(float y) {
             getNode().setTranslationY(y);
             return getBuilder();
         }
 
+        /**
+         * Rotates the node to given angle (degrees)
+         * @param r
+         * @return
+         */
         @NonNull
         public final B r(float r) {
             getNode().setRotation(r);
             return getBuilder();
         }
 
+        /**
+         * Scales node by given scale factor
+         * @param s
+         * @return
+         */
         @NonNull
         public final B s(float s) {
             getNode().setScale(s);
             return getBuilder();
         }
 
+        /**
+         * Sets id to given node
+         * @param id  - cannot be null
+         * @return
+         */
         @NonNull
         public final B id(@NonNull String id) {
             getNode().setId(id);
             return getBuilder();
         }
 
+        /**
+         * Sets pivot point of this node
+         * @param px
+         * @param py
+         * @return
+         */
         @NonNull
         public final B pivot(float px, float py) {
             getNode().setPivot(px, py);
             return getBuilder();
         }
 
+        /**
+         * Sets opacity (value 0-1)
+         * @param opacity
+         * @return
+         */
         @NonNull
         public final B opacity(float opacity) {
             getNode().setOpacity(opacity);
             return getBuilder();
         }
 
+        /**
+         * Adds on touch listener
+         * @param listener
+         * @return
+         */
         @NonNull
         public final B onTouch(@NonNull SgEventListener<TouchEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
@@ -504,13 +785,12 @@ public abstract class SgNode {
             return getBuilder();
         }
 
-        @NonNull
-        public final B onTouchCapture(@Nullable TouchEvent.TouchType touchType, @NonNull SgEventListener<TouchEvent> listener) {
-            Preconditions.assertNotNull(listener, "listener");
-            getNode().addCapturingListener(TouchEvent.class,listener);
-            return getBuilder();
-        }
 
+        /**
+         * Adds on touch down listener
+         * @param listener
+         * @return
+         */
         @NonNull
         public final B onTouchDown(@NonNull SgEventListener<? super TouchDownEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
@@ -518,6 +798,11 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        /**
+         * Adds on touch up listener
+         * @param listener
+         * @return
+         */
         @NonNull
         public final B onTouchUp(@NonNull SgEventListener<? super TouchUpEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
@@ -525,6 +810,11 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        /**
+         * Adds on touch move listener
+         * @param listener
+         * @return
+         */
         @NonNull
         public final B onTouchMove(@NonNull SgEventListener<? super TouchMoveEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
@@ -532,6 +822,11 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        /**
+         * Adds on touch enter listener
+         * @param listener
+         * @return
+         */
         @NonNull
         public final B onTouchEnter(@NonNull SgEventListener<? super TouchEnterEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
@@ -539,6 +834,11 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        /**
+         * Adds on touch exit listener
+         * @param listener
+         * @return
+         */
         @NonNull
         public final B onTouchExit(@NonNull SgEventListener<? super TouchExitEvent> listener) {
             Preconditions.assertNotNull(listener, "listener");
@@ -546,6 +846,11 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        /**
+         * Specifies transition started on touch down
+         * @param transition
+         * @return
+         */
         @NonNull
         public final B onTouchDownTransition(final @NonNull AbstractTransition<?,?>  transition) {
             Preconditions.assertNotNull(transition, "transition");
@@ -558,6 +863,11 @@ public abstract class SgNode {
             return getBuilder();
         }
 
+        /**
+         * Sppecifies transition started on touch up
+         * @param transition
+         * @return
+         */
         @NonNull
         public final B onTouchUpTransition(final @NonNull AbstractTransition<?,?>  transition) {
             Preconditions.assertNotNull(transition, "transition");
@@ -570,7 +880,10 @@ public abstract class SgNode {
             return getBuilder();
         }
 
-
+        /**
+         * Builds the node
+         * @return
+         */
         public N build() {
             return node;
         }
@@ -579,7 +892,11 @@ public abstract class SgNode {
     }
 
 
-    // node transformation support
+    /*
+     * Node transformation support
+     */
+
+
     private final static class NodeTransformationSupport {
 
         private float tx, ty = 0f;

@@ -12,6 +12,8 @@ import rustycage.ResolutionUnit;
 import rustycage.SgPath;
 
 /**
+ * Renderer for {@link SgPath}
+ *
  * Created by breh on 2/16/17.
  */
 

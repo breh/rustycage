@@ -11,6 +11,8 @@ import rustycage.SgEllipse;
 import rustycage.ResolutionUnit;
 
 /**
+ * Render for {@link SgEllipse}
+ *
  * Created by breh on 1/21/17.
  */
 

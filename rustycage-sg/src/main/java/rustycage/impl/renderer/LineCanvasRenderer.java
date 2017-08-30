@@ -11,6 +11,8 @@ import rustycage.SgLine;
 import rustycage.ResolutionUnit;
 
 /**
+ * Renderer for {@link SgLine}
+ *
  * Created by breh on 10/14/16.
  */
 public class LineCanvasRenderer extends ShapeCanvasRenderer<SgLine> {

@@ -3,9 +3,10 @@ package rustycage.impl.event;
 import android.support.annotation.NonNull;
 
 /**
+ * Allows firing a genetric event on generic listener
+ *
  * Created by breh on 3/2/17.
  */
-
 public interface Fireable<T,E> {
 
     /**

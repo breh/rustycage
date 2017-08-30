@@ -12,6 +12,8 @@ import rustycage.impl.AttributesStack;
 import rustycage.impl.FloatStack;
 
 /**
+ * Renderer for {@link SgText}
+ *
  * Created by breh on 1/23/17.
  */
 

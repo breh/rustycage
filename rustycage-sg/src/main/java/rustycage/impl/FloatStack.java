@@ -1,6 +1,8 @@
 package rustycage.impl;
 
 /**
+ * A helper representing an efficient stack of float numbers
+ *
  * Created by breh on 2/2/17.
  */
 public final class FloatStack {

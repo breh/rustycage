@@ -12,9 +12,12 @@ import rustycage.event.SgEventListener;
 import rustycage.util.Preconditions;
 
 /**
+ * A helper for dealing with typed and generified events.
+ *
+ * Provides memory optimal implementatoin for one (most of the time) or more listeners
+ *
  * Created by breh on 3/2/17.
  */
-
 public final class ListenerHelper<T extends SgEventListener<? super E>,E extends SgEvent> {
 
     private @Nullable T listener;
