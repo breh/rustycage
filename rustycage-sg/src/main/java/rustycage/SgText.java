@@ -13,33 +13,20 @@ import rustycage.util.PaintBuilder;
  *
  * Created by breh on 1/23/17.
  */
-public final class SgText extends SgNode {
+public final class SgText extends SgShape {
 
     private static final String TAG = "SgText";
 
     private static final TextPaint DEFAULT_TEXT_PAINT = new TextPaint();
 
     private float x,y;
-    private Paint textPaint = DEFAULT_TEXT_PAINT;
     private CharSequence text;
 
     private SgText(@Nullable CharSequence text, float x, float y) {
         this.text = text;
         this.x = x;
         this.y = y;
-    }
-
-    public void setTextPaint(@Nullable Paint textPaint) {
-        this.textPaint = textPaint;
-        invalidateLocalBounds();
-    }
-
-    public Paint getTextPaint() {
-        if (textPaint != DEFAULT_TEXT_PAINT) {
-            return textPaint;
-        } else {
-            return null;
-        }
+        setPaint(DEFAULT_TEXT_PAINT);
     }
 
     public CharSequence getText() {
@@ -73,6 +60,7 @@ public final class SgText extends SgNode {
     protected void computeLocalBounds(@NonNull float[] bounds) {
         if (text != null) {
             Rect textBounds = new Rect();
+            Paint textPaint = getPaint();
             textPaint.getTextBounds(text.toString(), 0, text.length(), textBounds);
             Paint.Align align = textPaint.getTextAlign();
             switch (align) {
@@ -111,20 +99,10 @@ public final class SgText extends SgNode {
     }
 
 
-    public static class Builder extends SgNode.Builder<Builder, SgText> {
+    public static class Builder extends  SgShape.Builder<SgText.Builder, SgText> {
 
         private Builder(@Nullable CharSequence text, float x, float y) {
             super(new SgText(text, x, y));
-        }
-
-        public Builder textPaint(@NonNull Paint paint) {
-            getNode().setTextPaint(paint);
-            return getBuilder();
-        }
-
-        public Builder textPaint(@NonNull PaintBuilder paintBuilder) {
-            getNode().setTextPaint(paintBuilder.build());
-            return getBuilder();
         }
 
         public Builder x(float x) {

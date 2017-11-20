@@ -86,7 +86,7 @@ public final class SimpleButton extends SgCustomNode {
         return SgGroup.create()
                 .add(SgRectangle.createWithSize(0,0,width,height,10, 10).paint(bgPaint))
                 .add(outlineNode = SgRectangle.createWithSize(0,0,width,height,10, 10).paint(outlinePaint).build())
-                .add(textNode = SgText.create(text,width/2, textY).textPaint(textPaint).build())
+                .add(textNode = SgText.create(text,width/2, textY).paint(textPaint).build())
                 .onTouchDown(new TouchEventListener() {
                     @Override
                     public void onEvent(@NonNull TouchEvent touchEvent, @NonNull SgNode currentNode, boolean isCapturePhase) {

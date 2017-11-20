@@ -26,6 +26,7 @@ public final class SgImage extends SgNode {
 
     /**
      * Sets bitmap to this node.
+     *
      * @param bitmap
      */
     public final void setBitmap(@Nullable Bitmap bitmap) {
@@ -43,6 +44,7 @@ public final class SgImage extends SgNode {
 
     /**
      * Gets bitmap of this node
+     *
      * @return
      */
     public Bitmap getBitmap() {
@@ -53,6 +55,7 @@ public final class SgImage extends SgNode {
 
     /**
      * Creates a node with given bitmap
+     *
      * @param bitmap
      * @return
      */
@@ -62,16 +65,20 @@ public final class SgImage extends SgNode {
 
     /**
      * Creates a node with given bitmap as a resource
+     *
      * @param resources
      * @param id
      * @return
      */
     public static Builder createWithResource(@NonNull Resources resources, int id) {
-        Preconditions.assertNotNull(resources,"resources");
+        Preconditions.assertNotNull(resources, "resources");
         Bitmap bitmap = BitmapFactory.decodeResource(resources, id);
         return new Builder(bitmap);
     }
 
+    public static Builder createEmpty() {
+        return new Builder(null);
+    }
 
 
     public static class Builder extends SgNode.Builder<SgImage.Builder, SgImage> {

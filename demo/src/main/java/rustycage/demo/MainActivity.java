@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                 .add(gn2)
                 .add(SgEllipse.createCircle(200, 400,400).paint(circularGradient).opacity(0.7f))
                 .add(SgEllipse.createEllipse(200,100,300,800))
-                .add(textNode = SgText.create("XXXX").textPaint(textPaint).xy(300,300).build())
+                .add(textNode = SgText.create("XXXX").paint(textPaint).xy(300,300).build())
                 .add(sgPath)
                 .add(SgEllipse.createCircle(100).txy(800,300).onTouchDown(new TouchEventListener() {
                     @Override
